@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import net.minecraft.server.DataWatcher;
+import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet201PlayerInfo;
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet24MobSpawn;
@@ -78,6 +79,19 @@ public class Disguise {
 	public String data; // $ means invisible player
 	public MobType mob; // null if player
 	DataWatcher metadata = new DataWatcher();
+	private double lastVectorX;
+	private double lastVectorY;
+	private double lastVectorZ;
+	
+	private double lastposX;
+	private double lastposY;
+	private double lastposZ;
+	
+	private int encposX;
+	private int encposY;
+	private int encposZ;
+	
+	private boolean firstpos = true;
 	
 	public Disguise(int entityID, String data, MobType mob) {
 		this.entityID = entityID;
@@ -126,12 +140,21 @@ public class Disguise {
 	// Packet creation methods
 	public Packet24MobSpawn getMobSpawnPacket(Location loc) {
 		if (mob != null) {
+			int x = MathHelper.floor(loc.getX() *32D);
+			int y = MathHelper.floor(loc.getY() *32D);
+			int z = MathHelper.floor(loc.getZ() *32D);
+			if(firstpos) {
+				encposX = x;
+				encposY = y;
+				encposZ = z;
+				firstpos = false;
+			}
 			Packet24MobSpawn packet = new Packet24MobSpawn();
 			packet.a = entityID;
 			packet.b = mob.id;
-			packet.c = (int) (32 * loc.getX());
-			packet.d = (int) (32 * loc.getY());
-			packet.e = (int) (32 * loc.getZ());
+			packet.c = (int) x;
+			packet.d = (int) y;
+			packet.e = (int) z;
 			packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
 			packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
 			try {
@@ -157,9 +180,18 @@ public class Disguise {
 			Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn();
 	        packet.a = entityID;
 	        packet.b = data;
-	        packet.c = (int) (32 * loc.getX());
-	        packet.d = (int) (32 * loc.getY());
-	        packet.e = (int) (32 * loc.getZ());
+	        int x = MathHelper.floor(loc.getX() *32D);
+			int y = MathHelper.floor(loc.getY() *32D);
+			int z = MathHelper.floor(loc.getZ() *32D);
+			if(firstpos) {
+				encposX = x;
+				encposY = y;
+				encposZ = z;
+				firstpos = false;
+			}
+	        packet.c = (int) x;
+	        packet.d = (int) y;
+	        packet.e = (int) z;
 	        packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
 	        packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
 	        packet.h = item;
@@ -184,25 +216,31 @@ public class Disguise {
 	public Packet32EntityLook getEntityLookPacket(Location loc) {
 		Packet32EntityLook packet = new Packet32EntityLook();
 		packet.a = entityID;
-		packet.b = DisguiseCraft.degreeToByte(loc.getYaw());
-		packet.c = DisguiseCraft.degreeToByte(loc.getPitch());
+		packet.b = 0;
+		packet.c = 0;
+		packet.d = 0;
+		packet.e = DisguiseCraft.degreeToByte(loc.getYaw());
+		packet.f = DisguiseCraft.degreeToByte(loc.getPitch());
 		
 		// EnderDragon specific
 		if (mob == MobType.EnderDragon) {
-			packet.b = (byte) (packet.b - 128);
+			packet.e = (byte) (packet.b - 128);
 		}
 		return packet;
 	}
 	
-	public Packet33RelEntityMoveLook getEntityMoveLookPacket(Vector move, Location look) {
+	public Packet33RelEntityMoveLook getEntityMoveLookPacket(Location look) {
 		Packet33RelEntityMoveLook packet = new Packet33RelEntityMoveLook();
 		packet.a = entityID;
-		packet.b = (byte) ((int) (32 * move.getX()));
-		packet.c = (byte) ((int) (32 * move.getY()));
-		packet.d = (byte) ((int) (32 * move.getZ()));
+		MovementValues movement = getMovement(look);
+		encposX += movement.x;
+		encposY += movement.y;
+		encposZ += movement.z;
+		packet.b = (byte) movement.x;
+		packet.c = (byte) movement.y;
+		packet.d = (byte) movement.z;
 		packet.e = DisguiseCraft.degreeToByte(look.getYaw());
 		packet.f = DisguiseCraft.degreeToByte(look.getPitch());
-		
 		// EnderDragon specific
 		if (mob == MobType.EnderDragon) {
 			packet.e = (byte) (packet.e - 128);
@@ -213,9 +251,15 @@ public class Disguise {
 	public Packet34EntityTeleport getEntityTeleportPacket(Location loc) {
 		Packet34EntityTeleport packet = new Packet34EntityTeleport();
 		packet.a = entityID;
-		packet.b = (int) (32 * loc.getX());
-		packet.c = (int) (32 * loc.getY());
-		packet.d = (int) (32 * loc.getZ());
+		int x = (int) MathHelper.floor(32D * loc.getX());
+		int y = (int) MathHelper.floor(32D * loc.getY());
+		int z = (int) MathHelper.floor(32D * loc.getZ());
+		packet.b = x;
+		packet.c = y;
+		packet.d = z;
+		encposX = x;
+		encposY = y;
+		encposZ = z;
 		packet.e = DisguiseCraft.degreeToByte(loc.getYaw());
 		packet.f = DisguiseCraft.degreeToByte(loc.getPitch());
 		
@@ -251,5 +295,15 @@ public class Disguise {
 			packet = new Packet201PlayerInfo(data, show, ping);
 		}
 		return packet;
+	}
+	
+	public MovementValues getMovement(Location to) {
+		int x = MathHelper.floor(to.getX() *32D);
+		int y = MathHelper.floor(to.getY() *32D);
+		int z = MathHelper.floor(to.getZ() *32D);
+		int diffx = x - encposX;
+		int diffy = y - encposY;
+		int diffz = z - encposZ;
+		return new MovementValues(diffx, diffy, diffz, DisguiseCraft.degreeToByte(to.getYaw()), DisguiseCraft.degreeToByte(to.getPitch()));
 	}
 }

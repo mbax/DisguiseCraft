@@ -13,7 +13,7 @@ public class DCMainListener implements Listener {
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
-			plugin.sendMovement(event.getPlayer(), null, event.getFrom(), event.getTo());
+			plugin.sendMovement(event.getPlayer(), null, event.getPlayer().getVelocity(), event.getTo());
 		}
 	}
 }

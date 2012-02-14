@@ -15,6 +15,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
+import org.getspout.spoutapi.SpoutManager;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 
@@ -29,11 +30,14 @@ public class DisguiseCraft extends JavaPlugin {
     // Permissions support
     static PermissionHandler Permissions;
     
+    boolean debug = false;
+    
     // Listener
     DCMainListener mainListener = new DCMainListener(this);
     
     // Disguise database
     HashMap<String, Disguise> disguiseDB = new HashMap<String, Disguise>();
+    HashMap<String, String> disguisedentID = new HashMap<String, String>();
     
     // Custom display nick saving
     HashMap<String, String> customNick = new HashMap<String, String>();
@@ -45,6 +49,24 @@ public class DisguiseCraft extends JavaPlugin {
 			boolean dirCreation = pluginDir.mkdirs();
 			if (dirCreation) {
 				System.out.println("New DisguiseCraft directory created!");
+			}
+		}
+		
+		//24 = entity spawn
+		//28 = entity velocity
+		//29 = destroy entity
+		//30 = just an entity packet
+		//31 = entity relative move
+		//32 = entity look
+		//33 = Entity Look and Relative Move
+		//34 = Entity Teleport
+		
+		//If we are debugging show packet output for disguised players using spout.
+		if(debug) {
+			int[] listenPackets = new int[] {24, 28, 29, 30, 31, 32, 33, 34}; // The entity look related packets
+			DebugPacketOutput packetListener = new DebugPacketOutput(this);
+			for (int id : listenPackets) {
+				SpoutManager.getPacketManager().addListener(id, packetListener);
 			}
 		}
 		
@@ -115,6 +137,7 @@ public class DisguiseCraft extends JavaPlugin {
     		player.setDisplayName(disguise.data);
     	}
     	disguiseDB.put(player.getName(), disguise);
+    	disguisedentID.put(Integer.toString(disguise.entityID), "true");
     	sendDisguise(player, null);
     }
     
@@ -133,7 +156,9 @@ public class DisguiseCraft extends JavaPlugin {
 	    		player.setDisplayName(name);
 	    	}
     		sendUnDisguise(player, null);
+    		Disguise disguise = disguiseDB.get(name);
     		disguiseDB.remove(name);
+    		disguisedentID.remove(Integer.toString(disguise.entityID));
     	}
     }
     
@@ -200,41 +225,34 @@ public class DisguiseCraft extends JavaPlugin {
     	}
     }
     
-    public void sendMovement(Player disguised, Player observer, Location from, Location to) {
+    public void sendMovement(Player disguised, Player observer, Vector vector, Location to) {
     	if (disguiseDB.containsKey(disguised.getName())) {
     		Disguise disguise = disguiseDB.get(disguised.getName());
-    		Vector difference = to.subtract(from).toVector();
-    		if (difference.length() < 4) { // Relative movement
-    			if (difference.length() == 0) { // Just looked around
-    				/* Client doesn't seem to want to register this
-    				Packet packet = disguise.getEntityLookPacket(to);
-    				if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet);
-    				} else {
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    				}*/
-    				
-    				Packet packet = disguise.getEntityTeleportPacket(to);
-        			if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet);
-    				} else {
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    				}
-    			} else { // Moved legs
-    				Packet packet = disguise.getEntityMoveLookPacket(difference, to);
-    				if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet);
-    				} else {
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    				}
-    			}
-    		} else { // That's like a teleport right there!
+    		MovementValues movement = disguise.getMovement(to);
+    		if (movement.x < -128 || movement.x > 128 || movement.y < -128 || movement.y > 128 || movement.z < -128 || movement.z > 128) { // That's like a teleport right there!
     			Packet packet = disguise.getEntityTeleportPacket(to);
     			if (observer == null) {
 					sendPacketToWorld(disguised.getWorld(), packet);
 				} else {
 					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
 				}
+    		} else { // Relative movement
+    			if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
+    				//Client doesn't seem to want to register this
+    				Packet packet = disguise.getEntityLookPacket(to);
+    				if (observer == null) {
+    					sendPacketToWorld(disguised.getWorld(), packet);
+    				} else {
+    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    				}
+    			} else { // Moved legs
+    				Packet packet = disguise.getEntityMoveLookPacket(to);
+    				if (observer == null) {
+    					sendPacketToWorld(disguised.getWorld(), packet);
+    				} else {
+    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    				}
+    			}
     		}
     	}
     }
