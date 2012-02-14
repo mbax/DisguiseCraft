@@ -61,7 +61,7 @@ public class DCCommandListener implements CommandExecutor {
 					String subTypes = MobType.subTypes.toString();
 					player.sendMessage(ChatColor.GREEN + "Available subtypes: " + subTypes.substring(1, subTypes.length() - 1));
 				}
-			} else if (args[0].equalsIgnoreCase("player")) {
+			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
 					if (args.length > 1) {
 						Disguise disguise;
@@ -90,7 +90,7 @@ public class DCCommandListener implements CommandExecutor {
 				} else { // Current mob
 					if (plugin.disguiseDB.containsKey(player.getName())) {
 						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-						if (Arrays.asList(disguise.data.split(",")).contains("baby")) {
+						if (disguise.data != null && Arrays.asList(disguise.data.split(",")).contains("baby")) {
 							sender.sendMessage(ChatColor.RED + "Already in baby form.");
 						} else {
 							if (disguise.mob.isSubclass(Animals.class)) {
@@ -100,9 +100,9 @@ public class DCCommandListener implements CommandExecutor {
 									disguise.setData(disguise.data + ",baby");
 								}
 								plugin.changeDisguise(player, disguise);
-								player.sendMessage(ChatColor.GOLD + "You have been disguised as a baby " + disguise.mob.name());
+								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + disguise.mob.name());
 								if (isConsole) {
-									sender.sendMessage(player.getName() + " was disguised as a baby " + disguise.mob.name());
+									sender.sendMessage(player.getName() + " was disguised as a Baby " + disguise.mob.name());
 								}
 							} else {
 								sender.sendMessage(ChatColor.RED + "No baby form for: " + disguise.mob.name());

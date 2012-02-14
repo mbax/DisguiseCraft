@@ -109,7 +109,7 @@ public class DisguiseCraft extends JavaPlugin {
     
     public void disguisePlayer(Player player, Disguise disguise) {
     	if (disguise.isPlayer()) {
-    		if (!player.getName().equals(player.getDisplayName())) {
+    		if (!player.getName().equals(player.getDisplayName()) && !customNick.containsKey(player.getName())) {
         		customNick.put(player.getName(), player.getDisplayName());
         	}
     		player.setDisplayName(disguise.data);
@@ -118,34 +118,20 @@ public class DisguiseCraft extends JavaPlugin {
     	sendDisguise(player, null);
     }
     
-    public void changeDisguise(Player player, Disguise disguise) {
-    	Disguise original = disguiseDB.get(player.getName());
-    	if (original.isPlayer()) {
-    		sendPacketToWorld(player.getWorld(), original.getEntityDestroyPacket(), original.getPlayerInfoPacket(player, false));
-    	} else {
-    		sendPacketToWorld(player.getWorld(), original.getEntityDestroyPacket());
-    	}
-    	if (customNick.containsKey(player.getName())) {
-    		player.setDisplayName(customNick.get(player.getName()));
-    		customNick.remove(player.getName());
-    	} else {
-    		player.setDisplayName(player.getName());
-    	}
-    	disguisePlayer(player, disguise);
+    public void changeDisguise(Player player, Disguise newDisguise) {
+    	unDisguisePlayer(player);
+    	disguisePlayer(player, newDisguise);
     }
     
     public void unDisguisePlayer(Player player) {
     	String name = player.getName();
     	if (disguiseDB.containsKey(name)) {
-    		Disguise disguise = disguiseDB.get(name);
-    		if (disguise.isPlayer()) {
-    	    	if (customNick.containsKey(name)) {
-    	    		player.setDisplayName(customNick.get(name));
-    	    		customNick.remove(name);
-    	    	} else {
-    	    		player.setDisplayName(name);
-    	    	}
-        	}
+    		if (customNick.containsKey(name)) {
+	    		player.setDisplayName(customNick.get(name));
+	    		customNick.remove(name);
+	    	} else {
+	    		player.setDisplayName(name);
+	    	}
     		sendUnDisguise(player, null);
     		disguiseDB.remove(name);
     	}
@@ -220,8 +206,16 @@ public class DisguiseCraft extends JavaPlugin {
     		Vector difference = to.subtract(from).toVector();
     		if (difference.length() < 4) { // Relative movement
     			if (difference.length() == 0) { // Just looked around
+    				/* Client doesn't seem to want to register this
     				Packet packet = disguise.getEntityLookPacket(to);
     				if (observer == null) {
+    					sendPacketToWorld(disguised.getWorld(), packet);
+    				} else {
+    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    				}*/
+    				
+    				Packet packet = disguise.getEntityTeleportPacket(to);
+        			if (observer == null) {
     					sendPacketToWorld(disguised.getWorld(), packet);
     				} else {
     					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);

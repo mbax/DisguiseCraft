@@ -104,9 +104,13 @@ public class Disguise {
 	}
 	
 	public void handleData() {
-		if (mob != null && data != null) {
-			if (data.contains("baby")) {
-				metadata.a(12, -23999);
+		if (mob != null) {
+			if (data != null) {
+				if (data.contains("baby")) {
+					metadata.a(12, -23999);
+				}
+			} else {
+				metadata.a(12, 0);
 			}
 		}
 	}
@@ -238,7 +242,13 @@ public class Disguise {
 	public Packet201PlayerInfo getPlayerInfoPacket(Player player, boolean show) {
 		Packet201PlayerInfo packet = null;
 		if (isPlayer()) {
-			packet = new Packet201PlayerInfo(data, show, ((CraftPlayer) player).getHandle().ping);
+			int ping;
+			if (show) {
+				ping = ((CraftPlayer) player).getHandle().ping;
+			} else {
+				ping = 9999;
+			}
+			packet = new Packet201PlayerInfo(data, show, ping);
 		}
 		return packet;
 	}
