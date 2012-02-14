@@ -1,0 +1,258 @@
+name: DisguiseCraft
+main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
+version: 0.1
+author: PG Dev Team
+authors: [Tux2, DrKabob]
+description: Turn into any mob you want!
+
+commands:
+   disguise:
+      description: Set a disguise.
+      usage: /<command>
+   d:
+      description: Set a disguise.
+      usage: /<command>
+   undisguise:
+      description: Remove a disguise.
+      usage: /<command>
+   u:
+      description: Remove a disguise.
+      usage: /<command>
+
+permissions:
+    disguisecraft.*:
+        default: op
+        description: Can use any DisguiseCraft functionality.
+        children:
+            disguisecraft.player: true
+            disguisecraft.mob.*: true
+    disguisecraft.player:
+        default: op
+        description: Can disguise as another player.
+    disguisecraft.mob.*:
+        default: true
+        description: Can disguise as any mob.
+        children:
+            disguisecraft.mob.blaze: true
+            disguisecraft.mob.cavespider: true
+            disguisecraft.mob.chicken: true
+            disguisecraft.mob.chicken.baby: true
+            disguisecraft.mob.cow: true
+            disguisecraft.mob.cow.baby: true
+            disguisecraft.mob.creeper: true
+            disguisecraft.mob.creeper.charged: true
+            disguisecraft.mob.enderdragon: true
+            disguisecraft.mob.enderman: true
+            disguisecraft.mob.ghast: true
+            disguisecraft.mob.giant: true
+            disguisecraft.mob.magmacube: true
+            disguisecraft.mob.magmacube.size.*: true
+            disguisecraft.mob.mushroomcow: true
+            disguisecraft.mob.mushroomcow.baby: true
+            disguisecraft.mob.pig: true
+            disguisecraft.mob.pig.baby: true
+            disguisecraft.mob.pigzombie: true
+            disguisecraft.mob.sheep: true
+            disguisecraft.mob.sheep.baby: true
+            disguisecraft.mob.sheep.color.*: true
+            disguisecraft.mob.silverfish: true
+            disguisecraft.mob.skeleton: true
+            disguisecraft.mob.slime: true
+            disguisecraft.mob.slime.size.*: true
+            disguisecraft.mob.snowman: true
+            disguisecraft.mob.spider: true
+            disguisecraft.mob.squid: true
+            disguisecraft.mob.villager: true
+            disguisecraft.mob.wolf: true
+            disguisecraft.mob.wolf.baby: true
+            disguisecraft.mob.zombie: true
+    disguisecraft.mob.blaze:
+        default: true
+        description: Can disguise as a blaze.
+    disguisecraft.mob.cavespider:
+        default: true
+        description: Can disguise as a cave spider.
+    disguisecraft.mob.chicken:
+        default: true
+        description: Can disguise as a chicken.
+    disguisecraft.mob.chicken.baby:
+        default: true
+        description: Can disguise as a baby chicken.
+    disguisecraft.mob.cow:
+        default: true
+        description: Can disguise as a cow.
+    disguisecraft.mob.cow.baby:
+        default: true
+        description: Can disguise as a baby cow.
+    disguisecraft.mob.creeper:
+        default: true
+        description: Can disguise as a creeper.
+    disguisecraft.mob.creeper.charged:
+        default: true
+        description: Can disguise as a charged creeper.
+    disguisecraft.mob.enderdragon:
+        default: true
+        description: Can disguise as a ender dragon.
+    disguisecraft.mob.enderman:
+        default: true
+        description: Can disguise as a enderman.
+    disguisecraft.mob.ghast:
+        default: true
+        description: Can disguise as a ghast.
+    disguisecraft.mob.giant:
+        default: true
+        description: Can disguise as a giant.
+    disguisecraft.mob.magmacube:
+        default: true
+        description: Can disguise as a magma cube.
+    disguisecraft.mob.magmacube.size.*:
+        default: true
+        description: Can disguise as a magmacube of any size.
+        children:
+            disguisecraft.mob.magmacube.size.tiny: true
+            disguisecraft.mob.magmacube.size.small: true
+            disguisecraft.mob.magmacube.size.big: true
+    disguisecraft.mob.magmacube.size.tiny:
+        default: true
+        description: Can disguise as a magmacube of size tiny.
+    disguisecraft.mob.magmacube.size.small:
+        default: true
+        description: Can disguise as a magmacube of size small.
+    disguisecraft.mob.magmacube.size.big:
+        default: true
+        description: Can disguise as a magmacube of size big.
+    disguisecraft.mob.mushroomcow:
+        default: true
+        description: Can disguise as a mooshroom.
+    disguisecraft.mob.mushroomcow.baby:
+        default: true
+        description: Can disguise as a baby mooshroom.
+    disguisecraft.mob.pig:
+        default: true
+        description: Can disguise as a pig.
+    disguisecraft.mob.pig.baby:
+        default: true
+        description: Can disguise as a baby pig.
+    disguisecraft.mob.pigzombie:
+        default: true
+        description: Can disguise as a zombie pigman.
+    disguisecraft.mob.sheep:
+        default: true
+        description: Can disguise as a sheep.
+    disguisecraft.mob.sheep.baby:
+        default: true
+        description: Can disguise as a baby sheep.
+    disguisecraft.mob.sheep.color.*:
+        default: true
+        description: Can disguise as a sheep of any color.
+        children:
+            disguisecraft.mob.sheep.color.black: true
+            disguisecraft.mob.sheep.color.blue: true
+            disguisecraft.mob.sheep.color.brown: true
+            disguisecraft.mob.sheep.color.cyan: true
+            disguisecraft.mob.sheep.color.gray: true
+            disguisecraft.mob.sheep.color.green: true
+            disguisecraft.mob.sheep.color.lightblue: true
+            disguisecraft.mob.sheep.color.lime: true
+            disguisecraft.mob.sheep.color.magenta: true
+            disguisecraft.mob.sheep.color.orange: true
+            disguisecraft.mob.sheep.color.pink: true
+            disguisecraft.mob.sheep.color.purple: true
+            disguisecraft.mob.sheep.color.red: true
+            disguisecraft.mob.sheep.color.silver: true
+            disguisecraft.mob.sheep.color.white: true
+            disguisecraft.mob.sheep.color.yellow: true
+    disguisecraft.mob.sheep.color.black:
+        default: true
+        description: Can disguise as a sheep of the color black.
+    disguisecraft.mob.sheep.color.blue:
+        default: true
+        description: Can disguise as a sheep of the color blue.
+    disguisecraft.mob.sheep.color.brown:
+        default: true
+        description: Can disguise as a sheep of the color brown.
+    disguisecraft.mob.sheep.color.cyan:
+        default: true
+        description: Can disguise as a sheep of the color cyan.
+    disguisecraft.mob.sheep.color.gray:
+        default: true
+        description: Can disguise as a sheep of the color gray.
+    disguisecraft.mob.sheep.color.green:
+        default: true
+        description: Can disguise as a sheep of the color green.
+    disguisecraft.mob.sheep.color.lightblue:
+        default: true
+        description: Can disguise as a sheep of the color light blue.
+    disguisecraft.mob.sheep.color.lime:
+        default: true
+        description: Can disguise as a sheep of the color lime.
+    disguisecraft.mob.sheep.color.magenta:
+        default: true
+        description: Can disguise as a sheep of the color magenta.
+    disguisecraft.mob.sheep.color.orange:
+        default: true
+        description: Can disguise as a sheep of the color orange.
+    disguisecraft.mob.sheep.color.pink:
+        default: true
+        description: Can disguise as a sheep of the color pink.
+    disguisecraft.mob.sheep.color.purple:
+        default: true
+        description: Can disguise as a sheep of the color purple.
+    disguisecraft.mob.sheep.color.red:
+        default: true
+        description: Can disguise as a sheep of the color red.
+    disguisecraft.mob.sheep.color.silver:
+        default: true
+        description: Can disguise as a sheep of the color silver.
+    disguisecraft.mob.sheep.color.white:
+        default: true
+        description: Can disguise as a sheep of the color white.
+    disguisecraft.mob.sheep.color.yellow:
+        default: true
+        description: Can disguise as a sheep of the color yellow.
+    disguisecraft.mob.silverfish:
+        default: true
+        description: Can disguise as a silverfish.
+    disguisecraft.mob.skeleton:
+        default: true
+        description: Can disguise as a skeleton.
+    disguisecraft.mob.slime:
+        default: true
+        description: Can disguise as a slime.
+    disguisecraft.mob.slime.size.*:
+        default: true
+        description: Can disguise as a slime of any size.
+        children:
+            disguisecraft.mob.slime.size.tiny: true
+            disguisecraft.mob.slime.size.small: true
+            disguisecraft.mob.slime.size.big: true
+    disguisecraft.mob.slime.size.tiny:
+        default: true
+        description: Can disguise as a slime of any size tiny.
+    disguisecraft.mob.slime.size.small:
+        default: true
+        description: Can disguise as a slime of any size small.
+    disguisecraft.mob.slime.size.big:
+        default: true
+        description: Can disguise as a slime of any size big.
+    disguisecraft.mob.snowman:
+        default: true
+        description: Can disguise as a snow golem.
+    disguisecraft.mob.spider:
+        default: true
+        description: Can disguise as a spider.
+    disguisecraft.mob.squid:
+        default: true
+        description: Can disguise as a squid.
+    disguisecraft.mob.villager:
+        default: true
+        description: Can disguise as a villager.
+    disguisecraft.mob.wolf:
+        default: true
+        description: Can disguise as a wolf.
+    disguisecraft.mob.wolf.baby:
+        default: true
+        description: Can disguise as a baby wolf.
+    disguisecraft.mob.zombie:
+        default: true
+        description: Can disguise as a zombie.
