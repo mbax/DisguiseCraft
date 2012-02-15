@@ -71,7 +71,7 @@ public class Disguise {
 			return null;
 		}
 		
-		public static String[] subTypes = {"baby"};
+		public static String[] subTypes = {"baby", "charged"};
 	}
 	
 	// Individual disguise stuff
@@ -98,6 +98,7 @@ public class Disguise {
 		this.data = data;
 		this.mob = mob;
 		
+		initializeData();
 		handleData();
 	}
 	
@@ -117,14 +118,20 @@ public class Disguise {
 		return this;
 	}
 	
+	public void initializeData() {
+		metadata.a(12, 0);
+	}
+	
 	public void handleData() {
 		if (mob != null) {
 			if (data != null) {
 				if (data.contains("baby")) {
-					metadata.a(12, -23999);
+					metadata.watch(12, -23999);
+				} else {
+					metadata.watch(12, 0);
 				}
 			} else {
-				metadata.a(12, 0);
+				metadata.watch(12, 0);
 			}
 		}
 	}
@@ -168,6 +175,10 @@ public class Disguise {
 			// Ender Dragon fix
 			if (mob == MobType.EnderDragon) {
 				packet.f = (byte) (packet.f - 128);
+			}
+			// Chicken fix
+			if (mob == MobType.Chicken) {
+				packet.g = (byte) (packet.g * -1);
 			}
 			return packet;
 		} else {
@@ -224,7 +235,11 @@ public class Disguise {
 		
 		// EnderDragon specific
 		if (mob == MobType.EnderDragon) {
-			packet.e = (byte) (packet.b - 128);
+			packet.e = (byte) (packet.e - 128);
+		}
+		// Chicken fix
+		if (mob == MobType.Chicken) {
+			packet.f = (byte) (packet.f * -1);
 		}
 		return packet;
 	}
@@ -241,9 +256,14 @@ public class Disguise {
 		packet.d = (byte) movement.z;
 		packet.e = DisguiseCraft.degreeToByte(look.getYaw());
 		packet.f = DisguiseCraft.degreeToByte(look.getPitch());
+		
 		// EnderDragon specific
 		if (mob == MobType.EnderDragon) {
 			packet.e = (byte) (packet.e - 128);
+		}
+		// Chicken fix
+		if (mob == MobType.Chicken) {
+			packet.f = (byte) (packet.f * -1);
 		}
 		return packet;
 	}
@@ -266,6 +286,10 @@ public class Disguise {
 		// EnderDragon specific
 		if (mob == MobType.EnderDragon) {
 			packet.e = (byte) (packet.e - 128);
+		}
+		// Chicken fix
+		if (mob == MobType.Chicken) {
+			packet.f = (byte) (packet.f * -1);
 		}
 		return packet;
 	}

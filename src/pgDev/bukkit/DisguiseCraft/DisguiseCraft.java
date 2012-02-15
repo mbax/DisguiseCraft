@@ -15,7 +15,7 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-import org.getspout.spoutapi.SpoutManager;
+//import org.getspout.spoutapi.SpoutManager;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 
@@ -52,6 +52,7 @@ public class DisguiseCraft extends JavaPlugin {
 			}
 		}
 		
+		/* Spout stuff
 		//24 = entity spawn
 		//28 = entity velocity
 		//29 = destroy entity
@@ -68,7 +69,7 @@ public class DisguiseCraft extends JavaPlugin {
 			for (int id : listenPackets) {
 				SpoutManager.getPacketManager().addListener(id, packetListener);
 			}
-		}
+		}*/
 		
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
@@ -91,6 +92,10 @@ public class DisguiseCraft extends JavaPlugin {
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+	}
+	
+	public boolean spoutEnabled() {
+		return (this.getServer().getPluginManager().getPlugin("Spout") != null);
 	}
 	
 	public void onDisable() {
@@ -131,7 +136,7 @@ public class DisguiseCraft extends JavaPlugin {
     
     public void disguisePlayer(Player player, Disguise disguise) {
     	if (disguise.isPlayer()) {
-    		if (!player.getName().equals(player.getDisplayName()) && !customNick.containsKey(player.getName())) {
+    		if (!customNick.containsKey(player.getName()) && !player.getName().equals(player.getDisplayName())) {
         		customNick.put(player.getName(), player.getDisplayName());
         	}
     		player.setDisplayName(disguise.data);
