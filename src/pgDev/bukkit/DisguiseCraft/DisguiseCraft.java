@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import net.minecraft.server.Packet;
+import net.minecraft.server.Packet201PlayerInfo;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,9 +16,9 @@ import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
-//import org.getspout.spoutapi.SpoutManager;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
+import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -37,7 +38,7 @@ public class DisguiseCraft extends JavaPlugin {
     
     // Disguise database
     HashMap<String, Disguise> disguiseDB = new HashMap<String, Disguise>();
-    HashMap<String, String> disguisedentID = new HashMap<String, String>();
+    public HashMap<String, String> disguisedentID = new HashMap<String, String>();
     
     // Custom display nick saving
     HashMap<String, String> customNick = new HashMap<String, String>();
@@ -52,24 +53,14 @@ public class DisguiseCraft extends JavaPlugin {
 			}
 		}
 		
-		/* Spout stuff
-		//24 = entity spawn
-		//28 = entity velocity
-		//29 = destroy entity
-		//30 = just an entity packet
-		//31 = entity relative move
-		//32 = entity look
-		//33 = Entity Look and Relative Move
-		//34 = Entity Teleport
-		
-		//If we are debugging show packet output for disguised players using spout.
-		if(debug) {
-			int[] listenPackets = new int[] {24, 28, 29, 30, 31, 32, 33, 34}; // The entity look related packets
-			DebugPacketOutput packetListener = new DebugPacketOutput(this);
-			for (int id : listenPackets) {
-				SpoutManager.getPacketManager().addListener(id, packetListener);
+		// If we are debugging show packet output for disguised players using spout.
+		if (debug) {
+			if (spoutEnabled()) {
+				new DebugPacketOutput(this);
+			} else {
+				System.out.println("DisguiseCraft's debug mode requires Spout.");
 			}
-		}*/
+		}
 		
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
@@ -147,8 +138,22 @@ public class DisguiseCraft extends JavaPlugin {
     }
     
     public void changeDisguise(Player player, Disguise newDisguise) {
+    	// Check for player change
+    	String oldName = null;
+    	Disguise old = disguiseDB.get(player.getName());
+    	if (old.isPlayer()) {
+    		oldName = old.data;
+    		
+    	}
+    	
+    	// Disguise Change
     	unDisguisePlayer(player);
     	disguisePlayer(player, newDisguise);
+    	
+    	// Name removal from list
+    	if (oldName != null) {
+    		sendPacketToWorld(player.getWorld(), new Packet201PlayerInfo(oldName, false, 9999));
+    	}
     }
     
     public void unDisguisePlayer(Player player) {
@@ -174,13 +179,12 @@ public class DisguiseCraft extends JavaPlugin {
     public void sendDisguise(Player disguised, Player observer) {
     	if (disguiseDB.containsKey(disguised.getName())) {
     		Disguise disguise = disguiseDB.get(disguised.getName());
-    		//((CraftPlayer) observer).hidePlayer(disguised);
     		if (disguise.mob == null) { // Non-mob disguise
     			if (disguise.data.equals("$")) { // Invisible
     				if (observer == null) {
     					disguiseToWorld(disguised.getWorld(), disguised, (Packet[]) null);
     				} else {
-    					((CraftPlayer) observer).hidePlayer(disguised);
+    					observer.hidePlayer(disguised);
     				}
     			} else { // Player disguise
     				Packet packet = disguise.getPlayerSpawnPacket(disguised.getLocation(), (short) disguised.getItemInHand().getTypeId());
@@ -225,7 +229,7 @@ public class DisguiseCraft extends JavaPlugin {
 					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
 				}
 				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-				((CraftPlayer) observer).showPlayer(disguised);
+				observer.showPlayer(disguised);
 			}
     	}
     }
@@ -273,7 +277,7 @@ public class DisguiseCraft extends JavaPlugin {
     public void disguiseToWorld(World world, Player player, Packet... packet) {
     	for (Player observer : world.getPlayers()) {
 	    	if (observer != player) {
-	    		((CraftPlayer) observer).hidePlayer(player);
+	    		observer.hidePlayer(player);
 	    		for (Packet p : packet) {
 	    			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
 	    		}
@@ -287,7 +291,7 @@ public class DisguiseCraft extends JavaPlugin {
 	    		for (Packet p : packet) {
 	    			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
 	    		}
-				((CraftPlayer) observer).showPlayer(player);
+				observer.showPlayer(player);
     		}
     	}
     }

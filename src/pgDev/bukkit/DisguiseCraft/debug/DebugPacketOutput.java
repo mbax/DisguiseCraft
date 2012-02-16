@@ -1,4 +1,4 @@
-package pgDev.bukkit.DisguiseCraft;
+package pgDev.bukkit.DisguiseCraft.debug;
 
 import java.lang.reflect.Field;
 
@@ -13,16 +13,33 @@ import net.minecraft.server.Packet33RelEntityMoveLook;
 import net.minecraft.server.Packet34EntityTeleport;
 
 import org.bukkit.entity.Player;
+import org.getspout.spoutapi.SpoutManager;
 import org.getspout.spoutapi.packet.listener.PacketListener;
 import org.getspout.spoutapi.packet.standard.MCPacket;
 import org.getspout.spoutapi.packet.standard.MCPacketUnknown;
 
+import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
+
 public class DebugPacketOutput implements PacketListener {
+	//24 = entity spawn
+	//28 = entity velocity
+	//29 = destroy entity
+	//30 = just an entity packet
+	//31 = entity relative move
+	//32 = entity look
+	//33 = Entity Look and Relative Move
+	//34 = Entity Teleport
 	
 	DisguiseCraft plugin;
 	
+	int[] listenPackets = new int[] {24, 28, 29, 30, 31, 32, 33, 34}; // The entity look related packets
+	
 	public DebugPacketOutput(DisguiseCraft plugin) {
 		this.plugin = plugin;
+		
+		for (int id : listenPackets) {
+			SpoutManager.getPacketManager().addListener(id, this);
+		}
 	}
 
 	@Override

@@ -64,19 +64,22 @@ public class DCCommandListener implements CommandExecutor {
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
 					if (args.length > 1) {
-						Disguise disguise;
-						if (plugin.disguiseDB.containsKey(player.getName())) {
-							disguise = plugin.disguiseDB.get(player.getName());
-							disguise.setData(args[1]);
-							disguise.setMob(null);
-							plugin.sendPacketToWorld(player.getWorld(), disguise.getEntityDestroyPacket());
+						if (args[1].length() <= 16) {
+							if (plugin.disguiseDB.containsKey(player.getName())) {
+								Disguise disguise = plugin.disguiseDB.get(player.getName());
+								disguise.setData(args[1]);
+								disguise.setMob(null);
+								plugin.sendPacketToWorld(player.getWorld(), disguise.getEntityDestroyPacket());
+								plugin.changeDisguise(player, disguise);
+							} else {
+								plugin.disguisePlayer(player, new Disguise(plugin.getNextAvailableID(), args[1], null));
+							}
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as player: " + args[1]);
+							if (isConsole) {
+								sender.sendMessage(player.getName() + " was disguised as player: " + args[1]);
+							}
 						} else {
-							disguise = new Disguise(plugin.getNextAvailableID(), args[1], null);
-						}
-						plugin.disguisePlayer(player, disguise);
-						player.sendMessage(ChatColor.GOLD + "You have been disguised as player: " + args[1]);
-						if (isConsole) {
-							sender.sendMessage(player.getName() + " was disguised as player: " + args[1]);
+							sender.sendMessage(ChatColor.RED + "The specified player name is too long. (Must be 16 characters or less)");
 						}
 					} else {
 						sender.sendMessage(ChatColor.RED + "You must specify the player to disguis as.");
