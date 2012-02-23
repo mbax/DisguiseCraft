@@ -3,6 +3,7 @@ package pgDev.bukkit.DisguiseCraft;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Timer;
 
 import net.minecraft.server.Packet;
 import net.minecraft.server.Packet201PlayerInfo;
@@ -20,6 +21,7 @@ import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
+import pgDev.bukkit.DisguiseCraft.delayedtasks.FullDisguiseRun;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -140,22 +142,9 @@ public class DisguiseCraft extends JavaPlugin {
     }
     
     public void changeDisguise(Player player, Disguise newDisguise) {
-    	// Check for player change
-    	String oldName = null;
-    	Disguise old = disguiseDB.get(player.getName());
-    	if (old.isPlayer()) {
-    		oldName = old.data;
-    		
-    	}
-    	
     	// Disguise Change
     	unDisguisePlayer(player);
-    	disguisePlayer(player, newDisguise);
-    	
-    	// Name removal from list
-    	if (oldName != null) {
-    		sendPacketToWorld(player.getWorld(), new Packet201PlayerInfo(oldName, false, 9999));
-    	}
+    	getServer().getScheduler().scheduleSyncDelayedTask(this, new FullDisguiseRun(this, player, newDisguise));
     }
     
     public void unDisguisePlayer(Player player) {
@@ -298,5 +287,16 @@ public class DisguiseCraft extends JavaPlugin {
 				observer.showPlayer(player);
     		}
     	}
+    }
+    
+    public void showWorldDisguises(Player observer) {
+    	for (String disguisedName : disguiseDB.keySet()) {
+			Player disguised = getServer().getPlayer(disguisedName);
+			if (disguised != null && disguised != observer) {
+				if (disguised.getWorld() == observer.getWorld()) {
+					sendDisguise(disguised, observer);
+				}
+			}
+		}
     }
 }

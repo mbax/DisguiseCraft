@@ -1,9 +1,17 @@
 package pgDev.bukkit.DisguiseCraft;
 
+import java.util.Timer;
+
+import net.minecraft.server.Packet;
+
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
+import org.bukkit.event.Event.Priority;
 import org.bukkit.event.player.*;
+
+import pgDev.bukkit.DisguiseCraft.delayedtasks.WorldDisguiseTask;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
@@ -20,17 +28,10 @@ public class DCMainListener implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		// Show disguises to newly joined players
-		for (String disguisedName : plugin.disguiseDB.keySet()) {
-			Player disguised = plugin.getServer().getPlayer(disguisedName);
-			if (disguised != null) {
-				if (disguised.getWorld() == event.getPlayer().getWorld()) {
-					plugin.sendDisguise(disguised, event.getPlayer());
-				}
-			}
-		}
+		plugin.showWorldDisguises(event.getPlayer());
 		
 		// If he was a disguise-quitter, tell him
 		if (plugin.disguiseQuitters.contains(event.getPlayer().getName())) {
@@ -46,5 +47,37 @@ public class DCMainListener implements Listener {
 			plugin.unDisguisePlayer(event.getPlayer());
 			plugin.disguiseQuitters.add(event.getPlayer().getName());
 		}
+	}
+	
+	@EventHandler
+	public void onPlayerWorldChange(PlayerChangedWorldEvent event) {
+		// Handle disguise wearer going through a portal
+		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
+			Player disguisee = event.getPlayer();
+			Disguise disguise = plugin.disguiseDB.get(disguisee.getName());
+			
+			// Packets
+			Packet killPacket = disguise.getEntityDestroyPacket();
+    		Packet killListPacket = disguise.getPlayerInfoPacket(disguisee, false);
+    		Packet revivePacket = disguise.getPlayerSpawnPacket(disguisee.getLocation(), (short) disguisee.getItemInHand().getTypeId());
+			Packet reviveListPacket = disguise.getPlayerInfoPacket(disguisee, true);
+    		
+			// Remove his disguise from the old world
+			if (killListPacket == null) {
+				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket);
+			} else {
+				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket, killListPacket);
+			}
+			
+			// Show the disguise to the people in the new world
+			if (reviveListPacket == null) {
+				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 600);
+			} else {
+				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
+			}
+		}
+		
+		// World Change is like a join
+		plugin.showWorldDisguises(event.getPlayer());
 	}
 }
