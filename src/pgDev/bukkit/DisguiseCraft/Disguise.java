@@ -139,6 +139,10 @@ public class Disguise {
 		return new Disguise(entityID, data, mob);
 	}
 	
+	public boolean equals(Disguise other) {
+		return (entityID == other.entityID && data.equals(other.data) && mob == other.mob);
+	}
+	
 	public boolean isPlayer() {
 		return (mob == null && !data.equals("$"));
 	}

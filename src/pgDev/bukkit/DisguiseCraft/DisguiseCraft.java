@@ -2,6 +2,7 @@ package pgDev.bukkit.DisguiseCraft;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import net.minecraft.server.Packet;
 import net.minecraft.server.Packet201PlayerInfo;
@@ -39,6 +40,7 @@ public class DisguiseCraft extends JavaPlugin {
     // Disguise database
     HashMap<String, Disguise> disguiseDB = new HashMap<String, Disguise>();
     public HashMap<String, String> disguisedentID = new HashMap<String, String>();
+    public LinkedList<String> disguiseQuitters = new LinkedList<String>();
     
     // Custom display nick saving
     HashMap<String, String> customNick = new HashMap<String, String>();
@@ -196,6 +198,7 @@ public class DisguiseCraft extends JavaPlugin {
     						disguiseToWorld(disguised.getWorld(), disguised, packet, packet2);
     					}
     				} else {
+    					observer.hidePlayer(disguised);
     					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
     					if (packet2 != null) {
     						((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
@@ -207,6 +210,7 @@ public class DisguiseCraft extends JavaPlugin {
     			if (observer == null) {
     				disguiseToWorld(disguised.getWorld(), disguised, packet);
     			} else {
+    				observer.hidePlayer(disguised);
     				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
     			}
     		}
