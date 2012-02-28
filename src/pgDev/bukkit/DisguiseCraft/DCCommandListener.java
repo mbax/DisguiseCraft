@@ -67,9 +67,12 @@ public class DCCommandListener implements CommandExecutor {
 						if (args[1].length() <= 16) {
 							if (plugin.disguiseDB.containsKey(player.getName())) {
 								Disguise disguise = plugin.disguiseDB.get(player.getName());
+								if (disguise.isPlayer()) {
+									player.sendMessage(ChatColor.RED + "You'll have to undisguise first. We're still having unusual issues updating the player list when you switch between player disguises.");
+									return true;
+								}
 								disguise.setData(args[1]);
 								disguise.setMob(null);
-								plugin.sendPacketToWorld(player.getWorld(), disguise.getEntityDestroyPacket());
 								plugin.changeDisguise(player, disguise);
 							} else {
 								plugin.disguisePlayer(player, new Disguise(plugin.getNextAvailableID(), args[1], null));
@@ -89,7 +92,24 @@ public class DCCommandListener implements CommandExecutor {
 				}
 			} else if (args[0].equalsIgnoreCase("baby")) {
 				if (args.length > 1) { // New disguise
-					
+					MobType type = MobType.fromString(args[1]);
+					if (type == null) {
+						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
+					} else {
+						if (type.isSubclass(Animals.class)) {
+							if (plugin.disguiseDB.containsKey(player.getName())) {
+								Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+								disguise.setMob(type);
+								disguise.setData("baby");
+								plugin.changeDisguise(player, disguise);
+							} else {
+								plugin.disguisePlayer(player, new Disguise(plugin.getNextAvailableID(), "baby", type));
+							}
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + plugin.disguiseDB.get(player.getName()).mob.name());
+						} else {
+							sender.sendMessage(ChatColor.RED + "No baby form for: " + type.name());
+						}
+					}
 				} else { // Current mob
 					if (plugin.disguiseDB.containsKey(player.getName())) {
 						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();

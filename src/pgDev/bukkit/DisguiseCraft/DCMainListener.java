@@ -42,11 +42,16 @@ public class DCMainListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		Player player = event.getPlayer();
+		
 		// Undisguise them because they left
-		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
-			plugin.unDisguisePlayer(event.getPlayer());
-			plugin.disguiseQuitters.add(event.getPlayer().getName());
+		if (plugin.disguiseDB.containsKey(player.getName())) {
+			plugin.unDisguisePlayer(player);
+			plugin.disguiseQuitters.add(player.getName());
 		}
+		
+		// Undisguise others
+		plugin.halfUndisguiseAllToPlayer(player);
 	}
 	
 	@EventHandler

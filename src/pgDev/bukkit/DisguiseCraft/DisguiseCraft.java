@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Timer;
+import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.Packet;
-import net.minecraft.server.Packet201PlayerInfo;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
-import pgDev.bukkit.DisguiseCraft.delayedtasks.FullDisguiseRun;
+import pgDev.bukkit.DisguiseCraft.delayedtasks.DisguiseChangeTask;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -40,7 +40,7 @@ public class DisguiseCraft extends JavaPlugin {
     DCMainListener mainListener = new DCMainListener(this);
     
     // Disguise database
-    HashMap<String, Disguise> disguiseDB = new HashMap<String, Disguise>();
+    ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
     public HashMap<String, String> disguisedentID = new HashMap<String, String>();
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
     
@@ -142,9 +142,9 @@ public class DisguiseCraft extends JavaPlugin {
     }
     
     public void changeDisguise(Player player, Disguise newDisguise) {
-    	// Disguise Change
     	unDisguisePlayer(player);
-    	getServer().getScheduler().scheduleSyncDelayedTask(this, new FullDisguiseRun(this, player, newDisguise));
+    	disguisePlayer(player, newDisguise);
+    	//(new Timer()).schedule(new DisguiseChangeTask(this, player, newDisguise), 500);
     }
     
     public void unDisguisePlayer(Player player) {
@@ -160,6 +160,18 @@ public class DisguiseCraft extends JavaPlugin {
     		Disguise disguise = disguiseDB.get(name);
     		disguiseDB.remove(name);
     		disguisedentID.remove(Integer.toString(disguise.entityID));
+    	}
+    }
+    
+    public void halfUndisguiseAllToPlayer(Player observer) {
+    	World world = observer.getWorld();
+    	for (String name : disguiseDB.keySet()) {
+    		Player disguised = getServer().getPlayer(name);
+    		if (disguised != null) {
+    			if (world == disguised.getWorld()) {
+    				observer.showPlayer(disguised);
+    			}
+    		}
     	}
     }
     
