@@ -5,10 +5,8 @@ import java.util.Timer;
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
-import org.bukkit.event.Event.Priority;
 import org.bukkit.event.player.*;
 
 import pgDev.bukkit.DisguiseCraft.delayedtasks.WorldDisguiseTask;

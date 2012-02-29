@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 0.1
+version: 0.2
 author: PG Dev Team
 authors: [Tux2, DrKabob]
 description: Turn into any mob you want!
@@ -12,10 +12,16 @@ commands:
    d:
       description: Set a disguise.
       usage: /<command>
+   dis:
+      description: Set a disguise.
+      usage: /<command>
    undisguise:
       description: Remove a disguise.
       usage: /<command>
    u:
+      description: Remove a disguise.
+      usage: /<command>
+   undis:
       description: Remove a disguise.
       usage: /<command>
 

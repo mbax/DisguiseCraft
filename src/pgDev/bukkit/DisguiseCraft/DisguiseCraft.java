@@ -3,7 +3,6 @@ package pgDev.bukkit.DisguiseCraft;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Timer;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.Packet;
@@ -21,7 +20,6 @@ import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
-import pgDev.bukkit.DisguiseCraft.delayedtasks.DisguiseChangeTask;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -40,12 +38,12 @@ public class DisguiseCraft extends JavaPlugin {
     DCMainListener mainListener = new DCMainListener(this);
     
     // Disguise database
-    ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
+    public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
     public HashMap<String, String> disguisedentID = new HashMap<String, String>();
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
     
     // Custom display nick saving
-    HashMap<String, String> customNick = new HashMap<String, String>();
+    public HashMap<String, String> customNick = new HashMap<String, String>();
     
 	public void onEnable() {
 		// Check for the plugin directory (create if it does not exist)
@@ -72,7 +70,7 @@ public class DisguiseCraft extends JavaPlugin {
 		
 		// Toss over the command events
 		DCCommandListener commandListener = new DCCommandListener(this);
-		String[] commandList = {"disguise", "d", "undisguise", "u"};
+		String[] commandList = {"disguise", "d", "dis", "undisguise", "u", "undis"};
         for (String command : commandList) {
         	try {
         		this.getCommand(command).setExecutor(commandListener);
@@ -109,7 +107,7 @@ public class DisguiseCraft extends JavaPlugin {
         }
     }
     
-    public static boolean hasPermissions(Player player, String node) {
+    public boolean hasPermissions(Player player, String node) {
         if (Permissions != null) {
         	return Permissions.has(player, node);
         } else {
@@ -119,6 +117,10 @@ public class DisguiseCraft extends JavaPlugin {
     
     // Obtaining the API
     public DisguiseCraftAPI api = new DisguiseCraftAPI(this);
+    /**
+     * Get the DisguiseCraft API
+     * @return The API
+     */
     public static DisguiseCraftAPI getAPI() {
     	return ((DisguiseCraft) Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft")).api;
     }

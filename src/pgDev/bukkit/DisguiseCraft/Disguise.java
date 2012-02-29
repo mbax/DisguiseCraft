@@ -52,6 +52,11 @@ public class Disguise {
 			id = (byte) i;
 		}
 		
+		/**
+		 * Check if the mob type is a subclass of an Entity class from Bukkit
+		 * @param cls The class to compare to
+		 * @return true if the mobtype is a subclass, false otherwise
+		 */
 		public boolean isSubclass(Class<?> cls) {
 			try {
 				return cls.isAssignableFrom(Class.forName("org.bukkit.entity." + name()));
@@ -61,6 +66,12 @@ public class Disguise {
 			return false;
 		}
 		
+		/**
+		 * Get the MobType from its name
+		 * Works like valueOf, but not case sensitive
+		 * @param text The string to match with a MobType
+		 * @return The MobType with the given name (null if none are found)
+		 */
 		public static MobType fromString(String text) {
 			for (MobType m : MobType.values()) {
 				if (text.equalsIgnoreCase(m.name())) {
@@ -70,7 +81,7 @@ public class Disguise {
 			return null;
 		}
 		
-		public static String[] subTypes = {"baby", "charged"};
+		public static String subTypes = "baby";
 	}
 	
 	// Individual disguise stuff
@@ -92,6 +103,12 @@ public class Disguise {
 	
 	private boolean firstpos = true;
 	
+	/**
+	 * Constructs a new Disguise object
+	 * @param entityID The entity ID of the disguise
+	 * @param data The metadata of the disguise (if a player, the name goes here) (null if there is no special data)
+	 * @param mob The type of mob the disguise is (null if player)
+	 */
 	public Disguise(int entityID, String data, MobType mob) {
 		this.entityID = entityID;
 		this.data = data;
@@ -101,17 +118,32 @@ public class Disguise {
 		handleData();
 	}
 	
+	/**
+	 * Set the entity ID
+	 * @param entityID The ID to set
+	 * @return The new Disguise object (for chaining)
+	 */
 	public Disguise setEntityID(int entityID) {
 		this.entityID = entityID;
 		return this;
 	}
 	
+	/**
+	 * Set the metadata
+	 * @param data The metadata to set
+	 * @return The new Disguise object (for chaining)
+	 */
 	public Disguise setData(String data) {
 		this.data = data;
 		handleData();
 		return this;
 	}
 	
+	/**
+	 * Set the mob type
+	 * @param mob
+	 * @return The new Disguise object (for chaining)
+	 */
 	public Disguise setMob(MobType mob) {
 		this.mob = mob;
 		return this;
@@ -135,14 +167,27 @@ public class Disguise {
 		}
 	}
 	
+	/**
+	 * Clone the Disguise object
+	 * @return A clone of this Disguise object
+	 */
 	public Disguise clone() {
 		return new Disguise(entityID, data, mob);
 	}
 	
+	/**
+	 * See if the disguises match
+	 * @param other The disguise to compare with
+	 * @return
+	 */
 	public boolean equals(Disguise other) {
 		return (entityID == other.entityID && data.equals(other.data) && mob == other.mob);
 	}
 	
+	/**
+	 * Check if the disguise is of another player
+	 * @return true if it is a player disguise, false otherwise
+	 */
 	public boolean isPlayer() {
 		return (mob == null && !data.equals("$"));
 	}

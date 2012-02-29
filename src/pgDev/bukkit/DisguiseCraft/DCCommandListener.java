@@ -10,6 +10,7 @@ import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
 
 import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
+import pgDev.bukkit.DisguiseCraft.api.*;
 
 public class DCCommandListener implements CommandExecutor {
 	final DisguiseCraft plugin;
@@ -58,8 +59,7 @@ public class DCCommandListener implements CommandExecutor {
 					if (!types.equals("")) {
 						player.sendMessage(ChatColor.GREEN + "Available types: " + types);
 					}
-					String subTypes = MobType.subTypes.toString();
-					player.sendMessage(ChatColor.GREEN + "Available subtypes: " + subTypes.substring(1, subTypes.length() - 1));
+					player.sendMessage(ChatColor.GREEN + "Available subtypes: " + MobType.subTypes);
 				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
@@ -67,15 +67,30 @@ public class DCCommandListener implements CommandExecutor {
 						if (args[1].length() <= 16) {
 							if (plugin.disguiseDB.containsKey(player.getName())) {
 								Disguise disguise = plugin.disguiseDB.get(player.getName());
+								
+								// Temporary fix
 								if (disguise.isPlayer()) {
 									player.sendMessage(ChatColor.RED + "You'll have to undisguise first. We're still having unusual issues updating the player list when you switch between player disguises.");
 									return true;
 								}
-								disguise.setData(args[1]);
-								disguise.setMob(null);
+								
+								disguise.setData(args[1]).setMob(null);
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
 								plugin.changeDisguise(player, disguise);
 							} else {
-								plugin.disguisePlayer(player, new Disguise(plugin.getNextAvailableID(), args[1], null));
+								Disguise disguise = new Disguise(plugin.getNextAvailableID(), args[1], null);
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.disguisePlayer(player, disguise);
 							}
 							player.sendMessage(ChatColor.GOLD + "You have been disguised as player: " + args[1]);
 							if (isConsole) {
@@ -99,11 +114,23 @@ public class DCCommandListener implements CommandExecutor {
 						if (type.isSubclass(Animals.class)) {
 							if (plugin.disguiseDB.containsKey(player.getName())) {
 								Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-								disguise.setMob(type);
-								disguise.setData("baby");
+								disguise.setMob(type).setData("baby");
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
 								plugin.changeDisguise(player, disguise);
 							} else {
-								plugin.disguisePlayer(player, new Disguise(plugin.getNextAvailableID(), "baby", type));
+								Disguise disguise = new Disguise(plugin.getNextAvailableID(), "baby", type);
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.disguisePlayer(player, disguise);
 							}
 							player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + plugin.disguiseDB.get(player.getName()).mob.name());
 						} else {
@@ -122,6 +149,12 @@ public class DCCommandListener implements CommandExecutor {
 								} else {
 									disguise.setData(disguise.data + ",baby");
 								}
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
 								plugin.changeDisguise(player, disguise);
 								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + disguise.mob.name());
 								if (isConsole) {
@@ -142,11 +175,23 @@ public class DCCommandListener implements CommandExecutor {
 				} else {
 					if (plugin.disguiseDB.containsKey(player.getName())) {
 						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-						disguise.setData(null);
-						disguise.setMob(type);
+						disguise.setData(null).setMob(type);
+						
+						// Pass the event
+						PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+						plugin.getServer().getPluginManager().callEvent(ev);
+						if (ev.isCancelled()) return true;
+						
 						plugin.changeDisguise(player, disguise);
 					} else {
-						plugin.disguisePlayer(player, new Disguise(plugin.getNextAvailableID(), null, type));
+						Disguise disguise = new Disguise(plugin.getNextAvailableID(), null, type);
+						
+						// Pass the event
+						PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+						plugin.getServer().getPluginManager().callEvent(ev);
+						if (ev.isCancelled()) return true;
+						
+						plugin.disguisePlayer(player, disguise);
 					}
 					player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + type.name());
 					if (isConsole) {
@@ -156,6 +201,11 @@ public class DCCommandListener implements CommandExecutor {
 			}
 		} else if (label.toLowerCase().startsWith("u")) {
 			if (plugin.disguiseDB.containsKey(player.getName())) {
+				// Pass the event
+				PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player);
+				plugin.getServer().getPluginManager().callEvent(ev);
+				if (ev.isCancelled()) return true;
+				
 				plugin.unDisguisePlayer(player);
 				player.sendMessage(ChatColor.GOLD + "You were undisguised.");
 				if (isConsole) {

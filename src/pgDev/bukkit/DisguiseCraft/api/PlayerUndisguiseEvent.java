@@ -1,12 +1,12 @@
 package pgDev.bukkit.DisguiseCraft.api;
 
 import org.bukkit.entity.Player;
-import org.bukkit.event.*;
-
-import pgDev.bukkit.DisguiseCraft.Disguise;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 @SuppressWarnings("serial")
-public class PlayerDisguiseEvent extends Event implements Cancellable {
+public class PlayerUndisguiseEvent extends Event implements Cancellable {
 	// Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();
     
@@ -20,27 +20,17 @@ public class PlayerDisguiseEvent extends Event implements Cancellable {
     
     // Actual event things
     Player player;
-    Disguise disguise;
     
-    public PlayerDisguiseEvent(Player player, Disguise disguise) {
+    public PlayerUndisguiseEvent(Player player) {
     	this.player = player;
-    	this.disguise = disguise;
     }
     
     /**
 	 * Get the player
-	 * @return The player who is to be disguised.
+	 * @return The player who is to be undisguised.
 	 */
     public Player getPlayer() {
     	return player;
-    }
-    
-    /**
-	 * Get the disguise
-	 * @return The disguise that the player is going to wear.
-	 */
-    public Disguise getDisguise() {
-    	return disguise;
     }
     
     // Cancel methods
