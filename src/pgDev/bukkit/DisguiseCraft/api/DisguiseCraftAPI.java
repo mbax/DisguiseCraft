@@ -42,25 +42,51 @@ public class DisguiseCraftAPI {
 	 * Disguise a player
 	 * @param player The player to be disguised
 	 * @param disguise The disguise to be placed on the player
+	 * @return true for success, false if canceled
 	 */
-	public void disguisePlayer(Player player, Disguise disguise) {
-		plugin.disguisePlayer(player, disguise);
+	public boolean disguisePlayer(Player player, Disguise disguise) {
+		PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+		plugin.getServer().getPluginManager().callEvent(ev);
+		if (ev.isCancelled()) {
+			return false;
+		} else {
+			plugin.disguisePlayer(player, disguise);
+			return true;
+		}
 	}
 	
 	/**
 	 * Change the player's disguise (For use when the player is already disguised)
 	 * @param player The player whose disguise will be changed
 	 * @param newDisguise The new disguise
+	 * @return true for success, false if canceled
 	 */
-	public void changePlayerDisguise(Player player, Disguise newDisguise) {
-		plugin.changeDisguise(player, newDisguise);
+	public boolean changePlayerDisguise(Player player, Disguise newDisguise) {
+		// Pass the event
+		PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, newDisguise);
+		plugin.getServer().getPluginManager().callEvent(ev);
+		if (ev.isCancelled())  {
+			return false;
+		} else {
+			plugin.changeDisguise(player, newDisguise);
+			return true;
+		}
 	}
 	
 	/**
 	 * Undisguise a player
 	 * @param player The player to undisguise
+	 * @return true for success, false if canceled
 	 */
-	public void undisguisePlayer(Player player) {
-		plugin.unDisguisePlayer(player);
+	public boolean undisguisePlayer(Player player) {
+		// Pass the event
+		PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player);
+		plugin.getServer().getPluginManager().callEvent(ev);
+		if (ev.isCancelled()) {
+			return false;
+		} else {
+			plugin.unDisguisePlayer(player);
+			return true;
+		}
 	}
 }

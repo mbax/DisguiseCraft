@@ -112,27 +112,31 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 					} else {
 						if (type.isSubclass(Animals.class)) {
-							if (plugin.disguiseDB.containsKey(player.getName())) {
-								Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-								disguise.setMob(type).setData("baby");
-								
-								// Pass the event
-								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-								plugin.getServer().getPluginManager().callEvent(ev);
-								if (ev.isCancelled()) return true;
-								
-								plugin.changeDisguise(player, disguise);
+							if (isConsole || plugin.hasPermissions(player, "disguisecraft." + type.name().toLowerCase() + ".baby")) {
+								if (plugin.disguiseDB.containsKey(player.getName())) {
+									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+									disguise.setMob(type).setData("baby");
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.changeDisguise(player, disguise);
+								} else {
+									Disguise disguise = new Disguise(plugin.getNextAvailableID(), "baby", type);
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.disguisePlayer(player, disguise);
+								}
+								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + plugin.disguiseDB.get(player.getName()).mob.name());
 							} else {
-								Disguise disguise = new Disguise(plugin.getNextAvailableID(), "baby", type);
-								
-								// Pass the event
-								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-								plugin.getServer().getPluginManager().callEvent(ev);
-								if (ev.isCancelled()) return true;
-								
-								plugin.disguisePlayer(player, disguise);
+								player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a Baby " + type.name());
 							}
-							player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + plugin.disguiseDB.get(player.getName()).mob.name());
 						} else {
 							sender.sendMessage(ChatColor.RED + "No baby form for: " + type.name());
 						}
@@ -150,15 +154,20 @@ public class DCCommandListener implements CommandExecutor {
 									disguise.setData(disguise.data + ",baby");
 								}
 								
-								// Pass the event
-								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-								plugin.getServer().getPluginManager().callEvent(ev);
-								if (ev.isCancelled()) return true;
-								
-								plugin.changeDisguise(player, disguise);
-								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + disguise.mob.name());
-								if (isConsole) {
-									sender.sendMessage(player.getName() + " was disguised as a Baby " + disguise.mob.name());
+								// Check for permissions
+								if (isConsole || plugin.hasPermissions(player, "disguisecraft." + disguise.mob.name().toLowerCase() + ".baby")) {
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.changeDisguise(player, disguise);
+									player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + disguise.mob.name());
+									if (isConsole) {
+										sender.sendMessage(player.getName() + " was disguised as a Baby " + disguise.mob.name());
+									}
+								} else {
+									player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a Baby " + disguise.mob.name());
 								}
 							} else {
 								sender.sendMessage(ChatColor.RED + "No baby form for: " + disguise.mob.name());
@@ -173,29 +182,34 @@ public class DCCommandListener implements CommandExecutor {
 				if (type == null) {
 					sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 				} else {
-					if (plugin.disguiseDB.containsKey(player.getName())) {
-						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-						disguise.setData(null).setMob(type);
-						
-						// Pass the event
-						PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-						plugin.getServer().getPluginManager().callEvent(ev);
-						if (ev.isCancelled()) return true;
-						
-						plugin.changeDisguise(player, disguise);
+					// Check for permissions
+					if (isConsole || plugin.hasPermissions(player, "disguisecraft." + type.name().toLowerCase())) {
+						if (plugin.disguiseDB.containsKey(player.getName())) {
+							Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+							disguise.setData(null).setMob(type);
+							
+							// Pass the event
+							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+							plugin.getServer().getPluginManager().callEvent(ev);
+							if (ev.isCancelled()) return true;
+							
+							plugin.changeDisguise(player, disguise);
+						} else {
+							Disguise disguise = new Disguise(plugin.getNextAvailableID(), null, type);
+							
+							// Pass the event
+							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+							plugin.getServer().getPluginManager().callEvent(ev);
+							if (ev.isCancelled()) return true;
+							
+							plugin.disguisePlayer(player, disguise);
+						}
+						player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + type.name());
+						if (isConsole) {
+							sender.sendMessage(player.getName() + " was disguised as a " + type.name());
+						}
 					} else {
-						Disguise disguise = new Disguise(plugin.getNextAvailableID(), null, type);
-						
-						// Pass the event
-						PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-						plugin.getServer().getPluginManager().callEvent(ev);
-						if (ev.isCancelled()) return true;
-						
-						plugin.disguisePlayer(player, disguise);
-					}
-					player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + type.name());
-					if (isConsole) {
-						sender.sendMessage(player.getName() + " was disguised as a " + type.name());
+						player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a " + type.name());
 					}
 				}
 			}

@@ -1,8 +1,8 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 0.2
+version: 0.3
 author: PG Dev Team
-authors: [Tux2, DrKabob]
+authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
 
 commands:
