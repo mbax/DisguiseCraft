@@ -48,7 +48,7 @@ public class DCCommandListener implements CommandExecutor {
 					player.sendMessage(ChatColor.GREEN + "Usage: /" + label + " [subtype] <mob/playername>");
 					String types = "";
 					for (MobType type : MobType.values()) {
-						if (plugin.hasPermissions(player, "disguisecraft." + type.name().toLowerCase())) {
+						if (plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
 							if (types.equals("")) {
 								types = type.name();
 							} else {
@@ -112,7 +112,7 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 					} else {
 						if (type.isSubclass(Animals.class)) {
-							if (isConsole || plugin.hasPermissions(player, "disguisecraft." + type.name().toLowerCase() + ".baby")) {
+							if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase() + ".baby")) {
 								if (plugin.disguiseDB.containsKey(player.getName())) {
 									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
 									disguise.setMob(type).setData("baby");
@@ -155,7 +155,7 @@ public class DCCommandListener implements CommandExecutor {
 								}
 								
 								// Check for permissions
-								if (isConsole || plugin.hasPermissions(player, "disguisecraft." + disguise.mob.name().toLowerCase() + ".baby")) {
+								if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby")) {
 									// Pass the event
 									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
 									plugin.getServer().getPluginManager().callEvent(ev);
@@ -183,7 +183,7 @@ public class DCCommandListener implements CommandExecutor {
 					sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 				} else {
 					// Check for permissions
-					if (isConsole || plugin.hasPermissions(player, "disguisecraft." + type.name().toLowerCase())) {
+					if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
 						if (plugin.disguiseDB.containsKey(player.getName())) {
 							Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
 							disguise.setData(null).setMob(type);

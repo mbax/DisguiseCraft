@@ -1,5 +1,6 @@
 package pgDev.bukkit.DisguiseCraft;
 
+import java.util.Arrays;
 import java.util.Timer;
 
 import net.minecraft.server.Packet;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
 
+import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
 import pgDev.bukkit.DisguiseCraft.delayedtasks.WorldDisguiseTask;
 
 public class DCMainListener implements Listener {
@@ -72,11 +74,31 @@ public class DCMainListener implements Listener {
 				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket, killListPacket);
 			}
 			
-			// Show the disguise to the people in the new world
-			if (reviveListPacket == null) {
-				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 600);
+			// Permissions check
+			if ((disguise.isPlayer() && !plugin.hasPermissions(disguisee, "disguisecraft.player"))
+					|| (Arrays.asList(disguise.data.split(",")).contains("baby") && !plugin.hasPermissions(disguisee, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby"))
+					|| (disguise.data == null && !plugin.hasPermissions(disguisee, "disguisecraft.mob." + disguise.mob.name().toLowerCase()))) {
+				// Pass the event
+				PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(disguisee);
+				plugin.getServer().getPluginManager().callEvent(ev);
+				if (!ev.isCancelled()) {
+					plugin.unDisguisePlayer(disguisee);
+					disguisee.sendMessage(ChatColor.RED + "You've been undisguised because you do not have permissions to wear that disguise in this world.");
+				} else {
+					// Show the disguise to the people in the new world
+					if (reviveListPacket == null) {
+						(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 600);
+					} else {
+						(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
+					}
+				}
 			} else {
-				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
+				// Show the disguise to the people in the new world
+				if (reviveListPacket == null) {
+					(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 600);
+				} else {
+					(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
+				}
 			}
 		}
 		
