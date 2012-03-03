@@ -201,7 +201,9 @@ public class DisguiseCraft extends JavaPlugin {
     						disguiseToWorld(disguised.getWorld(), disguised, packet, packet2);
     					}
     				} else {
-    					observer.hidePlayer(disguised);
+    					if (!hasPermissions(observer, "disguisecraft.seer")) {
+    						observer.hidePlayer(disguised);
+    					}
     					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
     					if (packet2 != null) {
     						((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
@@ -213,7 +215,9 @@ public class DisguiseCraft extends JavaPlugin {
     			if (observer == null) {
     				disguiseToWorld(disguised.getWorld(), disguised, packet);
     			} else {
-    				observer.hidePlayer(disguised);
+    				if (!hasPermissions(observer, "disguisecraft.seer")) {
+						observer.hidePlayer(disguised);
+					}
     				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
     			}
     		}
@@ -284,7 +288,9 @@ public class DisguiseCraft extends JavaPlugin {
     public void disguiseToWorld(World world, Player player, Packet... packet) {
     	for (Player observer : world.getPlayers()) {
 	    	if (observer != player) {
-	    		observer.hidePlayer(player);
+	    		if (!hasPermissions(observer, "disguisecraft.seer")) {
+					observer.hidePlayer(player);
+				}
 	    		for (Packet p : packet) {
 	    			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
 	    		}
