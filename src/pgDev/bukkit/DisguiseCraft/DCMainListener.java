@@ -1,17 +1,11 @@
 package pgDev.bukkit.DisguiseCraft;
 
-import java.util.Arrays;
-import java.util.Timer;
-
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
-
-import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
-import pgDev.bukkit.DisguiseCraft.delayedtasks.WorldDisguiseTask;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
@@ -64,7 +58,8 @@ public class DCMainListener implements Listener {
 			// Packets
 			Packet killPacket = disguise.getEntityDestroyPacket();
     		Packet killListPacket = disguise.getPlayerInfoPacket(disguisee, false);
-    		Packet revivePacket = disguise.getPlayerSpawnPacket(disguisee.getLocation(), (short) disguisee.getItemInHand().getTypeId());
+    		Packet revivePacket = disguise.getMobSpawnPacket(disguisee.getLocation());
+    		Packet revivePlayerPacket = disguise.getPlayerSpawnPacket(disguisee.getLocation(), (short) disguisee.getItemInHand().getTypeId());
 			Packet reviveListPacket = disguise.getPlayerInfoPacket(disguisee, true);
     		
 			// Remove his disguise from the old world
@@ -72,6 +67,13 @@ public class DCMainListener implements Listener {
 				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket);
 			} else {
 				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket, killListPacket);
+			}
+			
+			// Show the disguise to the people in the new world
+			if (disguise.isPlayer()) {
+				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePlayerPacket, reviveListPacket);
+			} else {
+				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePacket);
 			}
 			
 			/*
@@ -101,13 +103,6 @@ public class DCMainListener implements Listener {
 					(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
 				}
 			}*/
-			
-			// Show the disguise to the people in the new world
-			if (reviveListPacket == null) {
-				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 1200);
-			} else {
-				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 1200);
-			}
 		}
 		
 		// World Change is like a join
