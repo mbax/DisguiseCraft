@@ -30,6 +30,7 @@ permissions:
         default: op
         description: Can use any DisguiseCraft functionality.
         children:
+            disguisecraft.seer: true
             disguisecraft.player: true
             disguisecraft.mob.*: true
     disguisecraft.seer:
