@@ -34,7 +34,7 @@ permissions:
             disguisecraft.player: true
             disguisecraft.mob.*: true
     disguisecraft.seer:
-        default: false
+        default: op
         description: Can see through disguises.
     disguisecraft.player:
         default: op
