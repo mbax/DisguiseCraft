@@ -45,7 +45,7 @@ public class DCCommandListener implements CommandExecutor {
 					String subTypes = MobType.subTypes.toString();
 					sender.sendMessage("Available subtypes: " + subTypes.substring(1, subTypes.length() - 1));
 				} else { // Player output
-					player.sendMessage(ChatColor.GREEN + "Usage: /" + label + " [subtype] <mob/playername>");
+					player.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " [subtype] <mob/playername>");
 					String types = "";
 					for (MobType type : MobType.values()) {
 						if (plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
@@ -57,9 +57,9 @@ public class DCCommandListener implements CommandExecutor {
 						}
 					}
 					if (!types.equals("")) {
-						player.sendMessage(ChatColor.GREEN + "Available types: " + types);
+						player.sendMessage(ChatColor.DARK_GREEN + "Available types: " + ChatColor.GREEN + types);
 					}
-					player.sendMessage(ChatColor.GREEN + "Available subtypes: " + MobType.subTypes);
+					player.sendMessage(ChatColor.DARK_GREEN + "Available subtypes: " + ChatColor.GREEN + MobType.subTypes);
 				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {

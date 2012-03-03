@@ -81,7 +81,7 @@ public class Disguise {
 			return null;
 		}
 		
-		public static String subTypes = "baby";
+		public static String subTypes = "player, baby";
 	}
 	
 	// Individual disguise stuff
@@ -218,6 +218,7 @@ public class Disguise {
 				metadataField.set(packet, metadata);
 			} catch (Exception e) {
 				System.out.println("DisguiseCraft was unable to set the metadata for a " + mob.name() +  " disguise!");
+				e.printStackTrace();
 			}
 			
 			// Ender Dragon fix
@@ -351,6 +352,7 @@ public class Disguise {
 			metadataField.set(packet, metadata);
 		} catch (Exception e) {
 			System.out.println("DisguiseCraft was unable to set the metadata for a " + mob.name() +  " disguise!");
+			e.printStackTrace();
 		}
 		return packet;
 	}

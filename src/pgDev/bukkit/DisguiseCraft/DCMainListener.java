@@ -74,6 +74,7 @@ public class DCMainListener implements Listener {
 				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket, killListPacket);
 			}
 			
+			/*
 			// Permissions check
 			if ((disguise.isPlayer() && !plugin.hasPermissions(disguisee, "disguisecraft.player"))
 					|| (Arrays.asList(disguise.data.split(",")).contains("baby") && !plugin.hasPermissions(disguisee, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby"))
@@ -99,6 +100,13 @@ public class DCMainListener implements Listener {
 				} else {
 					(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
 				}
+			}*/
+			
+			// Show the disguise to the people in the new world
+			if (reviveListPacket == null) {
+				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 1200);
+			} else {
+				(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 1200);
 			}
 		}
 		
