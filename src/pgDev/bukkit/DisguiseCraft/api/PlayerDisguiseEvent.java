@@ -5,7 +5,6 @@ import org.bukkit.event.*;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 
-@SuppressWarnings("serial")
 public class PlayerDisguiseEvent extends Event implements Cancellable {
 	// Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();

@@ -32,8 +32,10 @@ public class Disguise {
 		Enderman(58),
 		Ghast(56),
 		Giant(53),
+		IronGolem(99),
 		MagmaCube(62),
 		MushroomCow(96),
+		Ocelot(98),
 		Pig(90),
 		PigZombie(57),
 		Sheep(91),
@@ -213,7 +215,7 @@ public class Disguise {
 			packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
 			packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
 			try {
-				Field metadataField = packet.getClass().getDeclaredField("h");
+				Field metadataField = packet.getClass().getDeclaredField("i");
 				metadataField.setAccessible(true);
 				metadataField.set(packet, metadata);
 			} catch (Exception e) {
