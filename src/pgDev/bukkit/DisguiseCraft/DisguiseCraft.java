@@ -260,17 +260,21 @@ public class DisguiseCraft extends JavaPlugin {
     			if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
     				//Client doesn't seem to want to register this
     				Packet packet = disguise.getEntityLookPacket(to);
+    				Packet packet2 = disguise.getHeadRotatePacket(to);
     				if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet);
+    					sendPacketToWorld(disguised.getWorld(), packet, packet2);
     				} else {
     					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
     				}
     			} else { // Moved legs
     				Packet packet = disguise.getEntityMoveLookPacket(to);
+    				Packet packet2 = disguise.getHeadRotatePacket(to);
     				if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet);
+    					sendPacketToWorld(disguised.getWorld(), packet, packet2);
     				} else {
     					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
     				}
     			}
     		}

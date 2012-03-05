@@ -17,6 +17,7 @@ import net.minecraft.server.Packet29DestroyEntity;
 import net.minecraft.server.Packet32EntityLook;
 import net.minecraft.server.Packet33RelEntityMoveLook;
 import net.minecraft.server.Packet34EntityTeleport;
+import net.minecraft.server.Packet35EntityHeadRotation;
 import net.minecraft.server.Packet40EntityMetadata;
 import net.minecraft.server.Packet5EntityEquipment;
 
@@ -214,6 +215,7 @@ public class Disguise {
 			packet.e = (int) z;
 			packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
 			packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
+			packet.h = packet.f;
 			try {
 				Field metadataField = packet.getClass().getDeclaredField("i");
 				metadataField.setAccessible(true);
@@ -381,5 +383,9 @@ public class Disguise {
 		int diffy = y - encposY;
 		int diffz = z - encposZ;
 		return new MovementValues(diffx, diffy, diffz, DisguiseCraft.degreeToByte(to.getYaw()), DisguiseCraft.degreeToByte(to.getPitch()));
+	}
+	
+	public Packet35EntityHeadRotation getHeadRotatePacket(Location loc) {
+		return new Packet35EntityHeadRotation(entityID, DisguiseCraft.degreeToByte(loc.getYaw()));
 	}
 }
