@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 0.7
+version: 0.8
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
@@ -112,6 +112,9 @@ permissions:
     disguisecraft.mob.giant:
         default: op
         description: Can disguise as a giant.
+    disguisecraft.mob.irongolem:
+        default: op
+        description: Can disguise as an iron golem.
     disguisecraft.mob.magmacube:
         default: op
         description: Can disguise as a magma cube.
@@ -137,6 +140,12 @@ permissions:
     disguisecraft.mob.mushroomcow.baby:
         default: op
         description: Can disguise as a baby mooshroom.
+    disguisecraft.mob.ocelot:
+        default: op
+        description: Can disguise as an ocelot.
+    disguisecraft.mob.ocelot.baby:
+        default: op
+        description: Can disguise as a baby ocelot.
     disguisecraft.mob.pig:
         default: op
         description: Can disguise as a pig.
