@@ -257,6 +257,9 @@ permissions:
     disguisecraft.mob.villager:
         default: op
         description: Can disguise as a villager.
+    disguisecraft.mob.villager.baby:
+        default: op
+        description: Can disguise as a baby villager.
     disguisecraft.mob.wolf:
         default: op
         description: Can disguise as a wolf.

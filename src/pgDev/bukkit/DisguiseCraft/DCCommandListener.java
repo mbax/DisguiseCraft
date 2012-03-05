@@ -111,7 +111,7 @@ public class DCCommandListener implements CommandExecutor {
 					if (type == null) {
 						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 					} else {
-						if (type.isSubclass(Animals.class)) {
+						if (type.isSubclass(Animals.class) || type == MobType.Villager) {
 							if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase() + ".baby")) {
 								if (plugin.disguiseDB.containsKey(player.getName())) {
 									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
@@ -147,7 +147,7 @@ public class DCCommandListener implements CommandExecutor {
 						if (disguise.data != null && Arrays.asList(disguise.data.split(",")).contains("baby")) {
 							sender.sendMessage(ChatColor.RED + "Already in baby form.");
 						} else {
-							if (disguise.mob.isSubclass(Animals.class)) {
+							if (disguise.mob.isSubclass(Animals.class) || disguise.mob == MobType.Villager) {
 								if (disguise.data == null) {
 									disguise.setData("baby");
 								} else {
