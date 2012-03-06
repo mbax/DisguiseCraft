@@ -136,7 +136,7 @@ public class DisguiseCraft extends JavaPlugin {
     		if (!customNick.containsKey(player.getName()) && !player.getName().equals(player.getDisplayName())) {
         		customNick.put(player.getName(), player.getDisplayName());
         	}
-    		player.setDisplayName(disguise.data);
+    		player.setDisplayName(disguise.data.getFirst());
     	}
     	disguiseDB.put(player.getName(), disguise);
     	disguisedentID.put(Integer.toString(disguise.entityID), "true");

@@ -1,6 +1,7 @@
 package pgDev.bukkit.DisguiseCraft;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -89,7 +90,7 @@ public class Disguise {
 	
 	// Individual disguise stuff
 	public int entityID;
-	public String data; // $ means invisible player
+	public LinkedList<String> data; // $ means invisible player
 	public MobType mob; // null if player
 	DataWatcher metadata = new DataWatcher();
 	private double lastVectorX;
@@ -112,13 +113,43 @@ public class Disguise {
 	 * @param data The metadata of the disguise (if a player, the name goes here) (null if there is no special data)
 	 * @param mob The type of mob the disguise is (null if player)
 	 */
-	public Disguise(int entityID, String data, MobType mob) {
+	public Disguise(int entityID, LinkedList<String> data, MobType mob) {
 		this.entityID = entityID;
 		this.data = data;
 		this.mob = mob;
 		
 		initializeData();
 		handleData();
+	}
+	
+	/**
+	 * Constructs a new Disguise object with a single data value
+	 * @param entityID The entity ID of the disguise
+	 * @param data The metadata of the disguise (if a player, the name goes here) (null if there is no special data)
+	 * @param mob The type of mob the disguise is (null if player)
+	 */
+	public Disguise(int entityID, String data, MobType mob) {
+		this.entityID = entityID;
+		LinkedList<String> dt = new LinkedList<String>();
+		dt.addFirst(data);
+		this.data = dt;
+		this.mob = mob;
+		
+		initializeData();
+		handleData();
+	}
+	
+	/**
+	 * Constructs a new Disguise object with null data
+	 * @param entityID The entity ID of the disguise
+	 * @param mob The type of mob the disguise is (null if player)
+	 */
+	public Disguise(int entityID, MobType mob) {
+		this.entityID = entityID;
+		this.data = null;
+		this.mob = mob;
+		
+		initializeData();
 	}
 	
 	/**
@@ -136,8 +167,39 @@ public class Disguise {
 	 * @param data The metadata to set
 	 * @return The new Disguise object (for chaining)
 	 */
-	public Disguise setData(String data) {
+	public Disguise setData(LinkedList<String> data) {
 		this.data = data;
+		handleData();
+		return this;
+	}
+	
+	/**
+	 * Sets the metadata to a single value (Likely a player name)
+	 * @param data The metadata to set
+	 * @return The new Disguise object (for chaining)
+	 */
+	public Disguise setSingleData(String data) {
+		if (this.data != null) {
+			this.data = new LinkedList<String>();
+		}
+		this.data.clear();
+		this.data.addFirst(data);
+		handleData();
+		return this;
+	}
+	
+	/**
+	 * Adds a single metadata string
+	 * @param data The metadata to add
+	 * @return The new Disguise object (for chaining)
+	 */
+	public Disguise addSingleData(String data) {
+		if (this.data == null) {
+			this.data = new LinkedList<String>();
+		}
+		if (!this.data.contains(data)) {
+			this.data.add(data);
+		}
 		handleData();
 		return this;
 	}
@@ -243,7 +305,7 @@ public class Disguise {
 		if (mob == null && !data.equals("$")) {
 			Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn();
 	        packet.a = entityID;
-	        packet.b = data;
+	        packet.b = data.getFirst();
 	        int x = MathHelper.floor(loc.getX() *32D);
 			int y = MathHelper.floor(loc.getY() *32D);
 			int z = MathHelper.floor(loc.getZ() *32D);
@@ -370,7 +432,7 @@ public class Disguise {
 			} else {
 				ping = 9999;
 			}
-			packet = new Packet201PlayerInfo(data, show, ping);
+			packet = new Packet201PlayerInfo(data.getFirst(), show, ping);
 		}
 		return packet;
 	}

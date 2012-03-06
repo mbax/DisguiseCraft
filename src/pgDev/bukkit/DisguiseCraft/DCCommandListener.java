@@ -74,7 +74,7 @@ public class DCCommandListener implements CommandExecutor {
 									return true;
 								}
 								
-								disguise.setData(args[1]).setMob(null);
+								disguise.setSingleData(args[1]).setMob(null);
 								
 								// Pass the event
 								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
@@ -115,7 +115,7 @@ public class DCCommandListener implements CommandExecutor {
 							if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase() + ".baby")) {
 								if (plugin.disguiseDB.containsKey(player.getName())) {
 									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-									disguise.setMob(type).setData("baby");
+									disguise.setMob(type).setSingleData("baby");
 									
 									// Pass the event
 									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
@@ -144,15 +144,11 @@ public class DCCommandListener implements CommandExecutor {
 				} else { // Current mob
 					if (plugin.disguiseDB.containsKey(player.getName())) {
 						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-						if (disguise.data != null && Arrays.asList(disguise.data.split(",")).contains("baby")) {
+						if (disguise.data != null && disguise.data.contains("baby")) {
 							sender.sendMessage(ChatColor.RED + "Already in baby form.");
 						} else {
 							if (disguise.mob.isSubclass(Animals.class) || disguise.mob == MobType.Villager) {
-								if (disguise.data == null) {
-									disguise.setData("baby");
-								} else {
-									disguise.setData(disguise.data + ",baby");
-								}
+								disguise.addSingleData("baby");
 								
 								// Check for permissions
 								if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby")) {
@@ -195,7 +191,7 @@ public class DCCommandListener implements CommandExecutor {
 							
 							plugin.changeDisguise(player, disguise);
 						} else {
-							Disguise disguise = new Disguise(plugin.getNextAvailableID(), null, type);
+							Disguise disguise = new Disguise(plugin.getNextAvailableID(), type);
 							
 							// Pass the event
 							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
