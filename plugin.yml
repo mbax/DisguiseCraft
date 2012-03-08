@@ -27,14 +27,14 @@ commands:
 
 permissions:
     disguisecraft.*:
-        default: op
+        default: false
         description: Can use any DisguiseCraft functionality.
         children:
             disguisecraft.seer: true
             disguisecraft.player: true
             disguisecraft.mob.*: true
     disguisecraft.seer:
-        default: op
+        default: false
         description: Can see through disguises.
     disguisecraft.player:
         default: op
