@@ -179,7 +179,7 @@ public class Disguise {
 	 * @return The new Disguise object (for chaining)
 	 */
 	public Disguise setSingleData(String data) {
-		if (this.data != null) {
+		if (this.data == null) {
 			this.data = new LinkedList<String>();
 		}
 		this.data.clear();
