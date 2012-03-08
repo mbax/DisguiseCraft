@@ -147,26 +147,30 @@ public class DCCommandListener implements CommandExecutor {
 						if (disguise.data != null && disguise.data.contains("baby")) {
 							sender.sendMessage(ChatColor.RED + "Already in baby form.");
 						} else {
-							if (disguise.mob.isSubclass(Animals.class) || disguise.mob == MobType.Villager) {
-								disguise.addSingleData("baby");
-								
-								// Check for permissions
-								if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby")) {
-									// Pass the event
-									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-									plugin.getServer().getPluginManager().callEvent(ev);
-									if (ev.isCancelled()) return true;
+							if (disguise.isPlayer()) {
+								sender.sendMessage(ChatColor.RED + "Player disguises cannot turn into babies.");
+							} else {
+								if (disguise.mob.isSubclass(Animals.class) || disguise.mob == MobType.Villager) {
+									disguise.addSingleData("baby");
 									
-									plugin.changeDisguise(player, disguise);
-									player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + disguise.mob.name());
-									if (isConsole) {
-										sender.sendMessage(player.getName() + " was disguised as a Baby " + disguise.mob.name());
+									// Check for permissions
+									if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby")) {
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) return true;
+										
+										plugin.changeDisguise(player, disguise);
+										player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + disguise.mob.name());
+										if (isConsole) {
+											sender.sendMessage(player.getName() + " was disguised as a Baby " + disguise.mob.name());
+										}
+									} else {
+										player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a Baby " + disguise.mob.name());
 									}
 								} else {
-									player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a Baby " + disguise.mob.name());
+									sender.sendMessage(ChatColor.RED + "No baby form for: " + disguise.mob.name());
 								}
-							} else {
-								sender.sendMessage(ChatColor.RED + "No baby form for: " + disguise.mob.name());
 							}
 						}
 					} else {
