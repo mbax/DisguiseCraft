@@ -7,10 +7,12 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.inventory.ItemStack;
 
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.MathHelper;
+import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.Packet201PlayerInfo;
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet24MobSpawn;
@@ -449,5 +451,14 @@ public class Disguise {
 	
 	public Packet35EntityHeadRotation getHeadRotatePacket(Location loc) {
 		return new Packet35EntityHeadRotation(entityID, DisguiseCraft.degreeToByte(loc.getYaw()));
+	}
+	
+	public Packet18ArmAnimation getAnimationPacket(PlayerAnimationType animation) {
+		Packet18ArmAnimation packet = new Packet18ArmAnimation();
+		packet.a = entityID;
+		if (animation == PlayerAnimationType.ARM_SWING) {
+			packet.b = 1;
+		}
+		return packet;
 	}
 }
