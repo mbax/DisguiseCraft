@@ -332,7 +332,7 @@ public class Disguise {
 	}
 	
 	public Packet5EntityEquipment getEquipmentChangePacket(short slot, ItemStack item) {
-		if (mob == null && !data.equals("$")) {
+		if (isPlayer()) {
 			return new Packet5EntityEquipment(entityID, slot, ((CraftItemStack) item).getHandle());
 		} else {
 			return null;

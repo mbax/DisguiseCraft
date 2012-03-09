@@ -20,6 +20,7 @@ import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
+import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;

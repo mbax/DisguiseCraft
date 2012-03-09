@@ -1,4 +1,4 @@
-package pgDev.bukkit.DisguiseCraft;
+package pgDev.bukkit.DisguiseCraft.listeners;
 
 import net.minecraft.server.Packet;
 
@@ -6,6 +6,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.player.*;
+
+import pgDev.bukkit.DisguiseCraft.Disguise;
+import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
