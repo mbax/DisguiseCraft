@@ -1,0 +1,10 @@
+#
+# DisguiseCraft Configuration
+#
+
+# Efficiency Booster
+#	With this false, the following features are disabled
+#	to increase efficiency:
+#		-Player held item changing
+#		-Player arm-swing animation
+optionals=true

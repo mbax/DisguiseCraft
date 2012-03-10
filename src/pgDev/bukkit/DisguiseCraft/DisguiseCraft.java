@@ -1,8 +1,10 @@
 package pgDev.bukkit.DisguiseCraft;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.minecraft.server.Packet;
@@ -21,6 +23,7 @@ import org.bukkit.util.Vector;
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
+import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -35,8 +38,9 @@ public class DisguiseCraft extends JavaPlugin {
     
     boolean debug = false;
     
-    // Listener
+    // Listeners
     DCMainListener mainListener = new DCMainListener(this);
+    DCOptionalListener optionalListener = new DCOptionalListener(this);
     
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
@@ -45,6 +49,9 @@ public class DisguiseCraft extends JavaPlugin {
     
     // Custom display nick saving
     public HashMap<String, String> customNick = new HashMap<String, String>();
+    
+    // Plugin Configuration
+    public DCConfig pluginSettings;
     
 	public void onEnable() {
 		// Check for the plugin directory (create if it does not exist)
@@ -55,6 +62,25 @@ public class DisguiseCraft extends JavaPlugin {
 				System.out.println("New DisguiseCraft directory created!");
 			}
 		}
+		
+		// Load the Configuration
+    	try {
+        	Properties preSettings = new Properties();
+        	if ((new File(pluginConfigLocation)).exists()) {
+        		preSettings.load(new FileInputStream(new File(pluginConfigLocation)));
+        		pluginSettings = new DCConfig(preSettings, this);
+        		if (!pluginSettings.upToDate) {
+        			pluginSettings.createConfig();
+        			System.out.println("DisguiseCraft Configuration updated!");
+        		}
+        	} else {
+        		pluginSettings = new DCConfig(preSettings, this);
+        		pluginSettings.createConfig();
+        		System.out.println("DisguiseCraft Configuration created!");
+        	}
+        } catch (Exception e) {
+        	System.out.println("Could not load DisguiseCraft configuration! " + e);
+        }
 		
 		// If we are debugging show packet output for disguised players using spout.
 		if (debug) {
@@ -68,6 +94,9 @@ public class DisguiseCraft extends JavaPlugin {
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(mainListener, this);
+		if (pluginSettings.optionalListeners) {
+			pm.registerEvents(optionalListener, this);
+		}
 		
 		// Toss over the command events
 		DCCommandListener commandListener = new DCCommandListener(this);
