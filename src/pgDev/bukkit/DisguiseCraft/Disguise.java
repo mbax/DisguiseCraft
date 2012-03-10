@@ -335,10 +335,17 @@ public class Disguise {
 	
 	public Packet5EntityEquipment getEquipmentChangePacket(short slot, ItemStack item) {
 		if (isPlayer()) {
+			Packet5EntityEquipment packet;
 			if (item == null) {
-				item = new ItemStack(0);
+				packet = new Packet5EntityEquipment();
+				packet.a = entityID;
+				packet.b = slot;
+				packet.c = -1;
+				packet.d = 0;
+			} else {
+				packet = new Packet5EntityEquipment(entityID, slot, ((CraftItemStack) item).getHandle());
 			}
-			return new Packet5EntityEquipment(entityID, slot, ((CraftItemStack) item).getHandle());
+			return packet;
 		} else {
 			return null;
 		}
