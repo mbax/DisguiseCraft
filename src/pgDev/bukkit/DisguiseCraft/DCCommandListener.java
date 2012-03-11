@@ -191,6 +191,10 @@ public class DCCommandListener implements CommandExecutor {
 								sender.sendMessage(ChatColor.RED + "Player disguises cannot change colors.");
 							} else {
 								if (disguise.mob == MobType.Sheep) {
+									String currentColor = disguise.getColor();
+									if (currentColor != null) {
+										disguise.data.remove(currentColor);
+									}
 									disguise.addSingleData(args[0].toLowerCase());
 									
 									// Check for permissions

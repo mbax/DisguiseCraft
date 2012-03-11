@@ -87,7 +87,9 @@ public class Disguise {
 			return null;
 		}
 		
-		public static String subTypes = "player, baby";
+		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
+			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
+			"silver, white, yellow";
 	}
 	
 	// Individual disguise stuff
@@ -303,6 +305,24 @@ public class Disguise {
 	 */
 	public boolean isPlayer() {
 		return (mob == null && !data.equals("$"));
+	}
+	
+	/**
+	 * Get the color of the disguise
+	 * @return The disguise color (null if no color)
+	 */
+	public String getColor() {
+		String[] colors = {"black", "blue", "brown", "cyan", "gray", "green",
+			"lightblue", "lime", "magenta", "orange", "pink", "purple", "red",
+			"silver", "white", "yellow"};
+		if (data != null) {
+			for (String color : colors) {
+				if (data.contains(color)) {
+					return color;
+				}
+			}
+		}
+		return null;
 	}
 	
 	// Packet creation methods
