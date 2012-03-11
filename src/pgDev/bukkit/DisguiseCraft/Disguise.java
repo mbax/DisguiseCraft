@@ -188,6 +188,8 @@ public class Disguise {
 		}
 		this.data.clear();
 		this.data.addFirst(data);
+		metadata = new DataWatcher();
+		initializeData();
 		handleData();
 		return this;
 	}

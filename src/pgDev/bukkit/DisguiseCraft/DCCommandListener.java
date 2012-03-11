@@ -221,7 +221,7 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
-			} else if (args[0].toLowerCase().startsWith("p")) {
+			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
 					if (args.length > 1) {
 						if (args[1].length() <= 16) {
@@ -260,7 +260,7 @@ public class DCCommandListener implements CommandExecutor {
 							sender.sendMessage(ChatColor.RED + "The specified player name is too long. (Must be 16 characters or less)");
 						}
 					} else {
-						sender.sendMessage(ChatColor.RED + "You must specify the player to disguis as.");
+						sender.sendMessage(ChatColor.RED + "You must specify the player to disguise as.");
 					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "You do not have the permission to diguise as another player.");
