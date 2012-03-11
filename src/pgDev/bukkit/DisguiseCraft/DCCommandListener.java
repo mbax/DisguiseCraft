@@ -2,6 +2,7 @@ package pgDev.bukkit.DisguiseCraft;
 
 import java.util.Arrays;
 
+import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -90,6 +91,9 @@ public class DCCommandListener implements CommandExecutor {
 									plugin.disguisePlayer(player, disguise);
 								}
 								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Baby " + plugin.disguiseDB.get(player.getName()).mob.name());
+								if (isConsole) {
+									sender.sendMessage(player.getName() + " was disguised as a Baby " + plugin.disguiseDB.get(player.getName()).mob.name());
+								}
 							} else {
 								player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a Baby " + type.name());
 							}
@@ -144,7 +148,38 @@ public class DCCommandListener implements CommandExecutor {
 					if (type == null) {
 						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 					} else {
-						
+						if (type == MobType.Sheep) {
+							if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase() + ".color." + args[0].toLowerCase())) {
+								if (plugin.disguiseDB.containsKey(player.getName())) {
+									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+									disguise.setMob(type).setSingleData(args[0].toLowerCase());
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.changeDisguise(player, disguise);
+								} else {
+									Disguise disguise = new Disguise(plugin.getNextAvailableID(), args[0].toLowerCase(), type);
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.disguisePlayer(player, disguise);
+								}
+								player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + WordUtils.capitalize(args[0].toLowerCase()) + " " + plugin.disguiseDB.get(player.getName()).mob.name());
+								if (isConsole) {
+									sender.sendMessage(player.getName() + " was disguised as a " + WordUtils.capitalize(args[0].toLowerCase()) + " " + plugin.disguiseDB.get(player.getName()).mob.name());
+								}
+							} else {
+								player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a " + WordUtils.capitalize(args[0].toLowerCase()) + " " + type.name());
+							}
+						} else {
+							sender.sendMessage(ChatColor.RED + "A " + type.name() + " cannot be colored.");
+						}
 					}
 				} else { // Current mob
 					if (plugin.disguiseDB.containsKey(player.getName())) {
@@ -159,22 +194,22 @@ public class DCCommandListener implements CommandExecutor {
 									disguise.addSingleData(args[0].toLowerCase());
 									
 									// Check for permissions
-									if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + "." + args[0].toLowerCase())) {
+									if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".color." + args[0].toLowerCase())) {
 										// Pass the event
 										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
 										plugin.getServer().getPluginManager().callEvent(ev);
 										if (ev.isCancelled()) return true;
 										
 										plugin.changeDisguise(player, disguise);
-										player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + args[0].toLowerCase() + " " + disguise.mob.name());
+										player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + WordUtils.capitalize(args[0].toLowerCase()) + " " + disguise.mob.name());
 										if (isConsole) {
-											sender.sendMessage(player.getName() + " was disguised as a " + args[0].toLowerCase() + " " + disguise.mob.name());
+											sender.sendMessage(player.getName() + " was disguised as a " + WordUtils.capitalize(args[0].toLowerCase()) + " " + disguise.mob.name());
 										}
 									} else {
-										player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a " + args[0].toLowerCase() + " " + disguise.mob.name());
+										player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a " + WordUtils.capitalize(args[0].toLowerCase()) + " " + disguise.mob.name());
 									}
 								} else {
-									sender.sendMessage(ChatColor.RED + disguise.mob.name() + "'s cannot be colored.");
+									sender.sendMessage(ChatColor.RED + "A " + disguise.mob.name() + " cannot be colored.");
 								}
 							}
 						}

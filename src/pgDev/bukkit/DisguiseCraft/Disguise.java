@@ -226,14 +226,12 @@ public class Disguise {
 	public void handleData() {
 		if (mob != null) {
 			if (data != null) {
-				// Age
 				if (data.contains("baby")) {
 					metadata.watch(12, -23999);
 				} else {
 					metadata.watch(12, 0);
 				}
 				
-				// Color
 				if (data.contains("black")) {
 					metadata.watch(16, (byte) 15);
 				} else if (data.contains("blue")) {
@@ -266,6 +264,8 @@ public class Disguise {
 					metadata.watch(16, (byte) 0);
 				} else if (data.contains("yellow")) {
 					metadata.watch(16, (byte) 4);
+				} else if (data.contains("sheared")) {
+					metadata.watch(16, (byte) 16);
 				} else {
 					if (mob == MobType.Sheep) {
 						metadata.watch(16, (byte) 0);
