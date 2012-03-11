@@ -61,50 +61,6 @@ public class DCCommandListener implements CommandExecutor {
 					}
 					player.sendMessage(ChatColor.DARK_GREEN + "Available subtypes: " + ChatColor.GREEN + MobType.subTypes);
 				}
-			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
-				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
-					if (args.length > 1) {
-						if (args[1].length() <= 16) {
-							if (plugin.disguiseDB.containsKey(player.getName())) {
-								Disguise disguise = plugin.disguiseDB.get(player.getName());
-								
-								// Temporary fix
-								if (disguise.isPlayer()) {
-									player.sendMessage(ChatColor.RED + "You'll have to undisguise first. We're still having unusual issues updating the player list when you switch between player disguises.");
-									return true;
-								}
-								
-								disguise.setSingleData(args[1]).setMob(null);
-								
-								// Pass the event
-								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-								plugin.getServer().getPluginManager().callEvent(ev);
-								if (ev.isCancelled()) return true;
-								
-								plugin.changeDisguise(player, disguise);
-							} else {
-								Disguise disguise = new Disguise(plugin.getNextAvailableID(), args[1], null);
-								
-								// Pass the event
-								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-								plugin.getServer().getPluginManager().callEvent(ev);
-								if (ev.isCancelled()) return true;
-								
-								plugin.disguisePlayer(player, disguise);
-							}
-							player.sendMessage(ChatColor.GOLD + "You have been disguised as player: " + args[1]);
-							if (isConsole) {
-								sender.sendMessage(player.getName() + " was disguised as player: " + args[1]);
-							}
-						} else {
-							sender.sendMessage(ChatColor.RED + "The specified player name is too long. (Must be 16 characters or less)");
-						}
-					} else {
-						sender.sendMessage(ChatColor.RED + "You must specify the player to disguis as.");
-					}
-				} else {
-					sender.sendMessage(ChatColor.RED + "You do not have the permission to diguise as another player.");
-				}
 			} else if (args[0].equalsIgnoreCase("baby")) {
 				if (args.length > 1) { // New disguise
 					MobType type = MobType.fromString(args[1]);
@@ -225,6 +181,50 @@ public class DCCommandListener implements CommandExecutor {
 					} else {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
+				}
+			} else if (args[0].toLowerCase().startsWith("p")) {
+				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
+					if (args.length > 1) {
+						if (args[1].length() <= 16) {
+							if (plugin.disguiseDB.containsKey(player.getName())) {
+								Disguise disguise = plugin.disguiseDB.get(player.getName());
+								
+								// Temporary fix
+								if (disguise.isPlayer()) {
+									player.sendMessage(ChatColor.RED + "You'll have to undisguise first. We're still having unusual issues updating the player list when you switch between player disguises.");
+									return true;
+								}
+								
+								disguise.setSingleData(args[1]).setMob(null);
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.changeDisguise(player, disguise);
+							} else {
+								Disguise disguise = new Disguise(plugin.getNextAvailableID(), args[1], null);
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.disguisePlayer(player, disguise);
+							}
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as player: " + args[1]);
+							if (isConsole) {
+								sender.sendMessage(player.getName() + " was disguised as player: " + args[1]);
+							}
+						} else {
+							sender.sendMessage(ChatColor.RED + "The specified player name is too long. (Must be 16 characters or less)");
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "You must specify the player to disguis as.");
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "You do not have the permission to diguise as another player.");
 				}
 			} else {
 				MobType type = MobType.fromString(args[0]);
