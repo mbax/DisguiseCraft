@@ -177,6 +177,55 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
+			} else if (args[0].equalsIgnoreCase("black") || args[0].equalsIgnoreCase("blue")|| args[0].equalsIgnoreCase("brown")
+				|| args[0].equalsIgnoreCase("cyan") || args[0].equalsIgnoreCase("gray") || args[0].equalsIgnoreCase("green")
+				|| args[0].equalsIgnoreCase("lightblue") || args[0].equalsIgnoreCase("lime") || args[0].equalsIgnoreCase("magenta")
+				|| args[0].equalsIgnoreCase("orange") || args[0].equalsIgnoreCase("pink") || args[0].equalsIgnoreCase("purple")
+				|| args[0].equalsIgnoreCase("red") || args[0].equalsIgnoreCase("silver") || args[0].equalsIgnoreCase("white")
+				|| args[0].equalsIgnoreCase("yellow")) {
+				if (args.length > 1) { // New disguise
+					MobType type = MobType.fromString(args[1]);
+					if (type == null) {
+						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
+					} else {
+						
+					}
+				} else { // Current mob
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+						if (disguise.data != null && disguise.data.contains(args[0].toLowerCase())) {
+							sender.sendMessage(ChatColor.RED + "Already " + args[0] + ".");
+						} else {
+							if (disguise.isPlayer()) {
+								sender.sendMessage(ChatColor.RED + "Player disguises cannot change colors.");
+							} else {
+								if (disguise.mob == MobType.Sheep) {
+									disguise.addSingleData(args[0].toLowerCase());
+									
+									// Check for permissions
+									if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + "." + args[0].toLowerCase())) {
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) return true;
+										
+										plugin.changeDisguise(player, disguise);
+										player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + args[0].toLowerCase() + " " + disguise.mob.name());
+										if (isConsole) {
+											sender.sendMessage(player.getName() + " was disguised as a " + args[0].toLowerCase() + " " + disguise.mob.name());
+										}
+									} else {
+										player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a " + args[0].toLowerCase() + " " + disguise.mob.name());
+									}
+								} else {
+									sender.sendMessage(ChatColor.RED + disguise.mob.name() + "'s cannot be colored.");
+								}
+							}
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
+					}
+				}
 			} else {
 				MobType type = MobType.fromString(args[0]);
 				if (type == null) {

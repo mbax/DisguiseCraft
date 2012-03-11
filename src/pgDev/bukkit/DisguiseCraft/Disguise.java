@@ -218,18 +218,64 @@ public class Disguise {
 	
 	public void initializeData() {
 		metadata.a(12, 0);
+		if (mob == MobType.Sheep) {
+			metadata.a(16, (byte) 0);
+		}
 	}
 	
 	public void handleData() {
 		if (mob != null) {
 			if (data != null) {
+				// Age
 				if (data.contains("baby")) {
 					metadata.watch(12, -23999);
 				} else {
 					metadata.watch(12, 0);
 				}
+				
+				// Color
+				if (data.contains("black")) {
+					metadata.watch(16, (byte) 15);
+				} else if (data.contains("blue")) {
+					metadata.watch(16, (byte) 11);
+				} else if (data.contains("brown")) {
+					metadata.watch(16, (byte) 12);
+				} else if (data.contains("cyan")) {
+					metadata.watch(16, (byte) 9);
+				} else if (data.contains("gray")) {
+					metadata.watch(16, (byte) 7);
+				} else if (data.contains("green")) {
+					metadata.watch(16, (byte) 13);
+				} else if (data.contains("lightblue")) {
+					metadata.watch(16, (byte) 3);
+				} else if (data.contains("lime")) {
+					metadata.watch(16, (byte) 5);
+				} else if (data.contains("magenta")) {
+					metadata.watch(16, (byte) 2);
+				} else if (data.contains("orange")) {
+					metadata.watch(16, (byte) 1);
+				} else if (data.contains("pink")) {
+					metadata.watch(16, (byte) 6);
+				} else if (data.contains("purple")) {
+					metadata.watch(16, (byte) 10);
+				} else if (data.contains("red")) {
+					metadata.watch(16, (byte) 14);
+				} else if (data.contains("silver")) {
+					metadata.watch(16, (byte) 8);
+				} else if (data.contains("white")) {
+					metadata.watch(16, (byte) 0);
+				} else if (data.contains("yellow")) {
+					metadata.watch(16, (byte) 4);
+				} else {
+					if (mob == MobType.Sheep) {
+						metadata.watch(16, (byte) 0);
+					}
+				}
 			} else {
 				metadata.watch(12, 0);
+				if (mob == MobType.Sheep) {
+					metadata.watch(16, (byte) 0);
+				}
 			}
 		}
 	}
