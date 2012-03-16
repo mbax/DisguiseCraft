@@ -108,7 +108,7 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow";
+			"silver, white, yellow, charged";
 	}
 	
 	// Individual disguise stuff
@@ -254,6 +254,9 @@ public class Disguise {
 		if (mob == MobType.Sheep) {
 			metadata.a(16, (byte) 0);
 		}
+		if (mob == MobType.Creeper) {
+			metadata.a(17, (byte) 0);
+		}
 	}
 	
 	public void handleData() {
@@ -304,10 +307,17 @@ public class Disguise {
 						metadata.watch(16, (byte) 0);
 					}
 				}
+				
+				if (data.contains("charged")) {
+					metadata.watch(17, (byte) 1);
+				}
 			} else {
 				metadata.watch(12, 0);
 				if (mob == MobType.Sheep) {
 					metadata.watch(16, (byte) 0);
+				}
+				if (mob == MobType.Creeper) {
+					metadata.watch(17, (byte) 0);
 				}
 			}
 		}

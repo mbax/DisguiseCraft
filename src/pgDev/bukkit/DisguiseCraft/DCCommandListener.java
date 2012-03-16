@@ -221,6 +221,81 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
+			} else if (args[0].equalsIgnoreCase("charged")) {
+				if (args.length > 1) { // New disguise
+					MobType type = MobType.fromString(args[1]);
+					if (type == null) {
+						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
+					} else {
+						if (type == MobType.Creeper) {
+							if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase() + ".charged")) {
+								if (plugin.disguiseDB.containsKey(player.getName())) {
+									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+									disguise.setMob(type).setSingleData("charged");
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.changeDisguise(player, disguise);
+								} else {
+									Disguise disguise = new Disguise(plugin.getNextAvailableID(), "charged", type);
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.disguisePlayer(player, disguise);
+								}
+								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Charged " + plugin.disguiseDB.get(player.getName()).mob.name());
+								if (isConsole) {
+									sender.sendMessage(player.getName() + " was disguised as a Charged " + plugin.disguiseDB.get(player.getName()).mob.name());
+								}
+							} else {
+								player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a Charged " + type.name());
+							}
+						} else {
+							sender.sendMessage(ChatColor.RED + "A " + type.name() + " cannot be charged.");
+						}
+					}
+				} else { // Current mob
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+						if (disguise.data != null && disguise.data.contains("charged")) {
+							sender.sendMessage(ChatColor.RED + "Already charged.");
+						} else {
+							if (disguise.isPlayer()) {
+								sender.sendMessage(ChatColor.RED + "Player disguises cannot be charged.");
+							} else {
+								if (disguise.mob == MobType.Creeper) {
+									disguise.addSingleData("charged");
+									
+									// Check for permissions
+									if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".charged")) {
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) return true;
+										
+										plugin.changeDisguise(player, disguise);
+										player.sendMessage(ChatColor.GOLD + "You have been disguised as a Charged " + disguise.mob.name());
+										if (isConsole) {
+											sender.sendMessage(player.getName() + " was disguised as a Charged " + disguise.mob.name());
+										}
+									} else {
+										player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a Charged " + disguise.mob.name());
+									}
+								} else {
+									sender.sendMessage(ChatColor.RED + "A " + disguise.mob.name() + " cannot be charged.");
+								}
+							}
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
+					}
+				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
 					if (args.length > 1) {
