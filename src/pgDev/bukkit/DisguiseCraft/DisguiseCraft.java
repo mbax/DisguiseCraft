@@ -30,8 +30,8 @@ import com.nijikokun.bukkit.Permissions.Permissions;
 
 /**
  * The DisguiseCraft plugin main class. With the exception of the
- * getAPI() function, methods in this class should not be used
- * by other plugins.
+ * getAPI() and getNextAvailableID() functions, methods in this class
+ * should not be used by other plugins.
  * @author PG Dev Team (Devil Boy)
  */
 public class DisguiseCraft extends JavaPlugin {
@@ -163,6 +163,10 @@ public class DisguiseCraft extends JavaPlugin {
     
     // Important Disguise Methods
     protected int nextID = Integer.MIN_VALUE;
+    /**
+     * Gives you the next usable entity ID
+     * @return An ID to use
+     */
     public int getNextAvailableID() {
     	return nextID++;
     }
