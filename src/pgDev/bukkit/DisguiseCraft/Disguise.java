@@ -24,8 +24,17 @@ import net.minecraft.server.Packet35EntityHeadRotation;
 import net.minecraft.server.Packet40EntityMetadata;
 import net.minecraft.server.Packet5EntityEquipment;
 
+/**
+ * This is the class for every disguise object. It contains
+ * the functions for creating, editing, and sending disguises.
+ * @author PG Dev Team (Devil Boy, Tux2)
+ */
 public class Disguise {
-	// MobType Enum
+	/**
+	 * This is the list of possible mob disguises listed by
+	 * their Bukkit class name.
+	 * @author PG Dev Team (Devil Boy)
+	 */
 	public enum MobType {
 		Blaze(61),
 		CaveSpider(59),
@@ -53,13 +62,19 @@ public class Disguise {
 		Wolf(95),
 		Zombie(54);
 		
+		/**
+		 * The entity-type ID.
+		 */
 		public final byte id;
 		MobType(int i) {
 			id = (byte) i;
 		}
 		
 		/**
-		 * Check if the mob type is a subclass of an Entity class from Bukkit
+		 * Check if the mob type is a subclass of an Entity class from Bukkit.
+		 * This is extremely useful to seeing if a mob can have a certain
+		 * subtype. For example: only members of the Animal class (and villagers)
+		 * can have a baby form.
 		 * @param cls The class to compare to
 		 * @return true if the mobtype is a subclass, false otherwise
 		 */
@@ -87,23 +102,37 @@ public class Disguise {
 			return null;
 		}
 		
+		/**
+		 * Just a string containing the possible subtypes. This is mainly
+		 * used for plugin help output.
+		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
 			"silver, white, yellow";
 	}
 	
 	// Individual disguise stuff
+	/**
+	 * The entity ID that this disguise uses in its packets.
+	 */
 	public int entityID;
+	/**
+	 * The metadata contained in this disguise.
+	 */
 	public LinkedList<String> data; // $ means invisible player
+	/**
+	 * The type of mob this disguise is. (null if not a mob)
+	 */
 	public MobType mob; // null if player
 	DataWatcher metadata = new DataWatcher();
+	/*
 	private double lastVectorX;
 	private double lastVectorY;
 	private double lastVectorZ;
 	
 	private double lastposX;
 	private double lastposY;
-	private double lastposZ;
+	private double lastposZ;*/
 	
 	private int encposX;
 	private int encposY;

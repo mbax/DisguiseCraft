@@ -5,6 +5,11 @@ import org.bukkit.event.*;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 
+/**
+ * This cancellable event is called whenever a player is to be
+ * disguised either by command or another plugin.
+ * @author PG Dev Team (Devil Boy)
+ */
 public class PlayerDisguiseEvent extends Event implements Cancellable {
 	// Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();

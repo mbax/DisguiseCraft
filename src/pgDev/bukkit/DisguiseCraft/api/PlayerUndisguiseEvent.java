@@ -5,6 +5,12 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * This cancellable event is thrown when a player is to be
+ * undisguised either by command or by another plugin. It is
+ * not called on player quits.
+ * @author PG Dev Team (Devil Boy)
+ */
 public class PlayerUndisguiseEvent extends Event implements Cancellable {
 	// Custom Event Requirements
     private static final HandlerList handlers = new HandlerList();

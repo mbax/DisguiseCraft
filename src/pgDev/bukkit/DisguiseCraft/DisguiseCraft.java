@@ -28,6 +28,12 @@ import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
+/**
+ * The DisguiseCraft plugin main class. With the exception of the
+ * getAPI() function, methods in this class should not be used
+ * by other plugins.
+ * @author PG Dev Team (Devil Boy)
+ */
 public class DisguiseCraft extends JavaPlugin {
 	// File Locations
     static String pluginMainDir = "./plugins/DisguiseCraft";

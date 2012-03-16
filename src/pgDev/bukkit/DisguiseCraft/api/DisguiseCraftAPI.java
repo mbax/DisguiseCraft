@@ -5,6 +5,11 @@ import org.bukkit.entity.Player;
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
+/**
+ * This API class allows you to control what disguises
+ * any player wears.
+ * @author PG Dev Team (Devil Boy)
+ */
 public class DisguiseCraftAPI {
 	final DisguiseCraft plugin;
 	
