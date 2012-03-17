@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 1.5
+version: 1.6
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
@@ -283,6 +283,12 @@ permissions:
     disguisecraft.mob.wolf.baby:
         default: op
         description: Can disguise as a baby wolf.
+    disguisecraft.mob.wolf.tamed:
+        default: op
+        description: Can disguise as a tamed wolf.
+    disguisecraft.mob.wolf.aggressive:
+        default: op
+        description: Can disguise as a agressive wolf.
     disguisecraft.mob.zombie:
         default: op
         description: Can disguise as a zombie.

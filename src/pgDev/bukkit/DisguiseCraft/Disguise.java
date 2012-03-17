@@ -321,6 +321,26 @@ public class Disguise {
 				} else if (data.contains("big")) {
 					metadata.watch(16, (byte) 4);
 				}
+				
+				if (data.contains("sitting")) {
+					try {
+						metadata.a(16, (byte) 1);
+					} catch (IllegalArgumentException e) {
+						metadata.watch(16, (byte) 1);
+					}
+				} else if (data.contains("aggressive")) {
+					try {
+						metadata.a(16, (byte) 2);
+					} catch (IllegalArgumentException e) {
+						metadata.watch(16, (byte) 2);
+					}
+				} else if (data.contains("tamed")) {
+					try {
+						metadata.a(16, (byte) 0);
+					} catch (IllegalArgumentException e) {
+						metadata.watch(16, (byte) 0);
+					}
+				}
 			}
 		}
 	}
