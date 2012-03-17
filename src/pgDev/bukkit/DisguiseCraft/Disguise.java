@@ -108,7 +108,7 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, charged";
+			"silver, white, yellow, charged, tiny, small, big";
 	}
 	
 	// Individual disguise stuff
@@ -253,6 +253,8 @@ public class Disguise {
 		metadata.a(12, 0);
 		if (mob == MobType.Sheep) {
 			metadata.a(16, (byte) 0);
+		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
+			metadata.a(16, (byte) 3);
 		}
 		if (mob == MobType.Creeper) {
 			metadata.a(17, (byte) 0);
@@ -311,13 +313,13 @@ public class Disguise {
 				if (data.contains("charged")) {
 					metadata.watch(17, (byte) 1);
 				}
-			} else {
-				metadata.watch(12, 0);
-				if (mob == MobType.Sheep) {
-					metadata.watch(16, (byte) 0);
-				}
-				if (mob == MobType.Creeper) {
-					metadata.watch(17, (byte) 0);
+				
+				if (data.contains("tiny")) {
+					metadata.watch(16, (byte) 1);
+				} else if (data.contains("small")) {
+					metadata.watch(16, (byte) 2);
+				} else if (data.contains("big")) {
+					metadata.watch(16, (byte) 4);
 				}
 			}
 		}
@@ -360,6 +362,22 @@ public class Disguise {
 			for (String color : colors) {
 				if (data.contains(color)) {
 					return color;
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Get the size of the disguise
+	 * @return The disguise size (null if no special size)
+	 */
+	public String getSize() {
+		String[] sizes = {"tiny", "small", "big"};
+		if (data != null) {
+			for (String size : sizes) {
+				if (data.contains(size)) {
+					return size;
 				}
 			}
 		}
