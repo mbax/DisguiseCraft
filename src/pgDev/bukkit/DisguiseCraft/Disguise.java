@@ -336,9 +336,9 @@ public class Disguise {
 					}
 				} else if (data.contains("tamed")) {
 					try {
-						metadata.a(16, (byte) 0);
+						metadata.a(16, (byte) 4);
 					} catch (IllegalArgumentException e) {
-						metadata.watch(16, (byte) 0);
+						metadata.watch(16, (byte) 4);
 					}
 				}
 			}
