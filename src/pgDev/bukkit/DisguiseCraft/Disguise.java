@@ -108,7 +108,7 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, charged, tiny, small, big";
+			"silver, white, yellow, charged, tiny, small, big, tamed, aggressive";
 	}
 	
 	// Individual disguise stuff
@@ -124,7 +124,7 @@ public class Disguise {
 	 * The type of mob this disguise is. (null if not a mob)
 	 */
 	public MobType mob; // null if player
-	DataWatcher metadata = new DataWatcher();
+	DataWatcher metadata;
 	/*
 	private double lastVectorX;
 	private double lastVectorY;
@@ -202,6 +202,7 @@ public class Disguise {
 	 */
 	public Disguise setData(LinkedList<String> data) {
 		this.data = data;
+		initializeData();
 		handleData();
 		return this;
 	}
@@ -235,6 +236,7 @@ public class Disguise {
 		if (!this.data.contains(data)) {
 			this.data.add(data);
 		}
+		initializeData();
 		handleData();
 		return this;
 	}
@@ -250,6 +252,7 @@ public class Disguise {
 	}
 	
 	public void initializeData() {
+		metadata = new DataWatcher();
 		metadata.a(12, 0);
 		if (mob == MobType.Sheep) {
 			metadata.a(16, (byte) 0);
