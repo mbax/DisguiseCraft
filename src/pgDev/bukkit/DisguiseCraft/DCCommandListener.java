@@ -142,7 +142,7 @@ public class DCCommandListener implements CommandExecutor {
 				|| args[0].equalsIgnoreCase("lightblue") || args[0].equalsIgnoreCase("lime") || args[0].equalsIgnoreCase("magenta")
 				|| args[0].equalsIgnoreCase("orange") || args[0].equalsIgnoreCase("pink") || args[0].equalsIgnoreCase("purple")
 				|| args[0].equalsIgnoreCase("red") || args[0].equalsIgnoreCase("silver") || args[0].equalsIgnoreCase("white")
-				|| args[0].equalsIgnoreCase("yellow")) {
+				|| args[0].equalsIgnoreCase("yellow") || args[0].equalsIgnoreCase("sheared")) {
 				if (args.length > 1) { // New disguise
 					MobType type = MobType.fromString(args[1]);
 					if (type == null) {

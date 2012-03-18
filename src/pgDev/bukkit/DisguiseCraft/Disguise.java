@@ -108,7 +108,7 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, charged, tiny, small, big, tamed, aggressive";
+			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive";
 	}
 	
 	// Individual disguise stuff
@@ -307,10 +307,6 @@ public class Disguise {
 					metadata.watch(16, (byte) 4);
 				} else if (data.contains("sheared")) {
 					metadata.watch(16, (byte) 16);
-				} else {
-					if (mob == MobType.Sheep) {
-						metadata.watch(16, (byte) 0);
-					}
 				}
 				
 				if (data.contains("charged")) {
@@ -380,7 +376,7 @@ public class Disguise {
 	public String getColor() {
 		String[] colors = {"black", "blue", "brown", "cyan", "gray", "green",
 			"lightblue", "lime", "magenta", "orange", "pink", "purple", "red",
-			"silver", "white", "yellow"};
+			"silver", "white", "yellow", "sheared"};
 		if (data != null) {
 			for (String color : colors) {
 				if (data.contains(color)) {

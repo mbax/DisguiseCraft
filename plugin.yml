@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 1.7
+version: 1.8
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
@@ -67,7 +67,6 @@ permissions:
             disguisecraft.mob.pigzombie: true
             disguisecraft.mob.sheep: true
             disguisecraft.mob.sheep.baby: true
-            disguisecraft.mob.sheep.sheared: true
             disguisecraft.mob.sheep.color.*: true
             disguisecraft.mob.silverfish: true
             disguisecraft.mob.skeleton: true
@@ -168,9 +167,6 @@ permissions:
     disguisecraft.mob.sheep.baby:
         default: op
         description: Can disguise as a baby sheep.
-    disguisecraft.mob.sheep.sheared:
-        default: op
-        description: Can disguise as a sheared sheep.
     disguisecraft.mob.sheep.color.*:
         default: op
         description: Can disguise as a sheep of any color.
@@ -191,6 +187,7 @@ permissions:
             disguisecraft.mob.sheep.color.silver: true
             disguisecraft.mob.sheep.color.white: true
             disguisecraft.mob.sheep.color.yellow: true
+            disguisecraft.mob.sheep.color.sheared: true
     disguisecraft.mob.sheep.color.black:
         default: op
         description: Can disguise as a sheep of the color black.
@@ -239,6 +236,9 @@ permissions:
     disguisecraft.mob.sheep.color.yellow:
         default: op
         description: Can disguise as a sheep of the color yellow.
+    disguisecraft.mob.sheep.color.sheared:
+        default: op
+        description: Can disguise as a sheared sheep.
     disguisecraft.mob.silverfish:
         default: op
         description: Can disguise as a silverfish.
