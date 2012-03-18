@@ -108,7 +108,8 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive";
+			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive" +
+			"tabby, tuxedo, siamese";
 	}
 	
 	// Individual disguise stuff
@@ -262,6 +263,9 @@ public class Disguise {
 		if (mob == MobType.Creeper) {
 			metadata.a(17, (byte) 0);
 		}
+		if (mob == MobType.Ocelot) {
+			metadata.a(18, (byte) 0);
+		}
 	}
 	
 	public void handleData() {
@@ -339,6 +343,14 @@ public class Disguise {
 					} catch (IllegalArgumentException e) {
 						metadata.watch(16, (byte) 4);
 					}
+				}
+				
+				if (data.contains("tabby")) {
+					metadata.watch(18, (byte) 2);
+				} else if (data.contains("tuxedo")) {
+					metadata.watch(18, (byte) 1);
+				} else if (data.contains("siamese")) {
+					metadata.watch(18, (byte) 3);
 				}
 			}
 		}

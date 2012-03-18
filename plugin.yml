@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 1.8
+version: 1.9
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
@@ -62,6 +62,7 @@ permissions:
             disguisecraft.mob.mushroomcow.baby: true
             disguisecraft.mob.ocelot: true
             disguisecraft.mob.ocelot.baby: true
+            disguisecraft.mob.ocelot.cat.*: true
             disguisecraft.mob.pig: true
             disguisecraft.mob.pig.baby: true
             disguisecraft.mob.pigzombie: true
@@ -152,6 +153,22 @@ permissions:
     disguisecraft.mob.ocelot.baby:
         default: op
         description: Can disguise as a baby ocelot.
+    disguisecraft.mob.ocelot.cat.*:
+        default: op
+        description: Can disguise as a cat of any type.
+        children:
+            disguisecraft.mob.ocelot.cat.tabby: true
+            disguisecraft.mob.ocelot.cat.tuxedo: true
+            disguisecraft.mob.ocelot.cat.siamese: true
+    disguisecraft.mob.ocelot.cat.tabby:
+        default: op
+        description: Can disguise as a tabby cat.
+    disguisecraft.mob.ocelot.cat.tuxedo:
+        default: op
+        description: Can disguise as a tuxedo cat.
+    disguisecraft.mob.ocelot.cat.siamese:
+        default: op
+        description: Can disguise as a siamese cat.
     disguisecraft.mob.pig:
         default: op
         description: Can disguise as a pig.
