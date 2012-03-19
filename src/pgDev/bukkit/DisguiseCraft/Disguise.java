@@ -108,7 +108,7 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive," +
+			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive, " +
 			"tabby, tuxedo, siamese";
 	}
 	
@@ -254,6 +254,7 @@ public class Disguise {
 	
 	public void initializeData() {
 		metadata = new DataWatcher();
+		metadata.a(0, (byte) 0);
 		metadata.a(12, 0);
 		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast) {
 			metadata.a(16, (byte) 0);
@@ -363,6 +364,14 @@ public class Disguise {
 				if (data.contains("saddled")) {
 					metadata.watch(16, (byte) 1);
 				}
+				
+				if (data.contains("crouched")) {
+					metadata.watch(0, (byte) 2);
+				} else if (data.contains("sprinting")) {
+					metadata.watch(0, (byte) 8);
+				} else if (data.contains("burning")) {
+					metadata.watch(0, (byte) 1);
+				}
 			}
 		}
 	}
@@ -424,6 +433,20 @@ public class Disguise {
 			}
 		}
 		return null;
+	}
+	
+	public void setCrouch(boolean crouched) {
+		if (crouched) {
+			if (!data.contains("crouched")) {
+				data.add("crouched");
+			}
+			metadata.watch(0, (byte) 2);
+		} else {
+			if (data.contains("crouched")) {
+				data.remove("crouched");
+			}
+			metadata.watch(0, (byte) 0);
+		}
 	}
 	
 	// Packet creation methods
@@ -630,20 +653,16 @@ public class Disguise {
 		return new Packet35EntityHeadRotation(entityID, DisguiseCraft.degreeToByte(loc.getYaw()));
 	}
 	
-	public Packet18ArmAnimation getAnimationPacket(int animation) {
-		/* Reference:
-		 * 0 	No animation
-		 * 1 	Swing arm
-		 * 2 	Damage animation
-		 * 3 	Leave bed
-		 * 5 	Eat food
-		 * 102 	(unknown)
-		 * 104 	Crouch
-		 * 105 	Uncrouch 
-		 */
+	public Packet18ArmAnimation getAnimationPacket(PlayerAnimationType animation) {
 		Packet18ArmAnimation packet = new Packet18ArmAnimation();
 		packet.a = entityID;
-		packet.b = animation;
+		if (animation == PlayerAnimationType.ARM_SWING) {
+			packet.b = 1;
+		}
 		return packet;
+	}
+	
+	public Packet40EntityMetadata getMetadataPacket() {
+		return new Packet40EntityMetadata(entityID, metadata);
 	}
 }

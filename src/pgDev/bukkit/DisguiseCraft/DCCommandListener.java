@@ -41,6 +41,16 @@ public class DCCommandListener implements CommandExecutor {
 			for (int i=0; args.length > i; i++) {
 				if (args[i].equalsIgnoreCase("cat")) {
 					args[i] = "ocelot";
+				} else if (args[i].equalsIgnoreCase("snowgolem")) {
+					args[i] = "snowman";
+				} else if (args[i].equalsIgnoreCase("angry")) {
+					args[i] = "aggressive";
+				} else if (args[i].equalsIgnoreCase("pigman")) {
+					args[i] = "pigzombie";
+				} else if (args[i].equalsIgnoreCase("mooshroom")) {
+					args[i] = "mushroomcow";
+				} else if (args[i].equalsIgnoreCase("dog")) {
+					args[i] = "wolf";
 				}
 			}
 		}
