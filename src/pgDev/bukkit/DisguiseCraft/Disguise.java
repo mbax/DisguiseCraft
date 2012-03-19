@@ -108,7 +108,7 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive" +
+			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive," +
 			"tabby, tuxedo, siamese";
 	}
 	
@@ -255,12 +255,13 @@ public class Disguise {
 	public void initializeData() {
 		metadata = new DataWatcher();
 		metadata.a(12, 0);
-		if (mob == MobType.Sheep) {
+		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast) {
 			metadata.a(16, (byte) 0);
 		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
 			metadata.a(16, (byte) 3);
 		}
-		if (mob == MobType.Creeper) {
+		
+		if (mob == MobType.Creeper || mob == MobType.Enderman) {
 			metadata.a(17, (byte) 0);
 		}
 		if (mob == MobType.Ocelot) {
@@ -332,10 +333,16 @@ public class Disguise {
 						metadata.watch(16, (byte) 1);
 					}
 				} else if (data.contains("aggressive")) {
-					try {
-						metadata.a(16, (byte) 2);
-					} catch (IllegalArgumentException e) {
-						metadata.watch(16, (byte) 2);
+					if (mob == MobType.Wolf) {
+						try {
+							metadata.a(16, (byte) 2);
+						} catch (IllegalArgumentException e) {
+							metadata.watch(16, (byte) 2);
+						}
+					} else if (mob == MobType.Ghast) {
+						metadata.watch(16, (byte) 1);
+					} else if (mob == MobType.Enderman) {
+						metadata.watch(17, (byte) 1);
 					}
 				} else if (data.contains("tamed")) {
 					try {
@@ -351,6 +358,10 @@ public class Disguise {
 					metadata.watch(18, (byte) 1);
 				} else if (data.contains("siamese")) {
 					metadata.watch(18, (byte) 3);
+				}
+				
+				if (data.contains("saddled")) {
+					metadata.watch(16, (byte) 1);
 				}
 			}
 		}
@@ -619,12 +630,20 @@ public class Disguise {
 		return new Packet35EntityHeadRotation(entityID, DisguiseCraft.degreeToByte(loc.getYaw()));
 	}
 	
-	public Packet18ArmAnimation getAnimationPacket(PlayerAnimationType animation) {
+	public Packet18ArmAnimation getAnimationPacket(int animation) {
+		/* Reference:
+		 * 0 	No animation
+		 * 1 	Swing arm
+		 * 2 	Damage animation
+		 * 3 	Leave bed
+		 * 5 	Eat food
+		 * 102 	(unknown)
+		 * 104 	Crouch
+		 * 105 	Uncrouch 
+		 */
 		Packet18ArmAnimation packet = new Packet18ArmAnimation();
 		packet.a = entityID;
-		if (animation == PlayerAnimationType.ARM_SWING) {
-			packet.b = 1;
-		}
+		packet.b = animation;
 		return packet;
 	}
 }

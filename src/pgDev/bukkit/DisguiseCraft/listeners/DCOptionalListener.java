@@ -4,6 +4,7 @@ import org.bukkit.event.*;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
@@ -38,7 +39,23 @@ public class DCOptionalListener implements Listener {
 			if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
 				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
 				if (disguise.isPlayer()) {
-					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getAnimationPacket(event.getAnimationType()));
+					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getAnimationPacket(1));
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onSneak(PlayerToggleSneakEvent event) {
+		if (!event.isCancelled()) {
+			if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
+				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
+				if (disguise.isPlayer()) {
+					if (event.isSneaking()) {
+						plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getAnimationPacket(104));
+					} else {
+						plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getAnimationPacket(105));
+					}
 				}
 			}
 		}

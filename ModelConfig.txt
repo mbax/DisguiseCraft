@@ -7,4 +7,5 @@
 #	to increase efficiency:
 #		-Player held item changing
 #		-Player arm-swing animation
+#		-Player sneak animation
 optionals=true

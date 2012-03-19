@@ -148,6 +148,7 @@ public class DCConfig {
     		out.write("#	to increase efficiency:\r\n");
     		out.write("#		-Player held item changing\r\n");
     		out.write("#		-Player arm-swing animation\r\n");
+    		out.write("#		-Player sneak animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
     		out.close();
     	} catch (Exception e) {
