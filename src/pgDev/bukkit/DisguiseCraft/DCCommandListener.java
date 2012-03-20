@@ -36,6 +36,11 @@ public class DCCommandListener implements CommandExecutor {
 			}
 		}
 		
+		// Pass the event
+		DCCommandEvent cEv = new DCCommandEvent(sender, player, label, args);
+		plugin.getServer().getPluginManager().callEvent(cEv);
+		if (cEv.isCancelled()) return true;
+		
 		// Some conveniences
 		if (args.length != 0) {
 			for (int i=0; args.length > i; i++) {
@@ -560,6 +565,8 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
+			} else if (args[0].equalsIgnoreCase("hold")) {
+				// Continue here!
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
 					if (args.length > 1) {

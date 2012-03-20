@@ -372,6 +372,15 @@ public class Disguise {
 				} else if (data.contains("burning")) {
 					metadata.watch(0, (byte) 1);
 				}
+				
+				Byte held = getHolding();
+				if (held != null) {
+					try {
+						metadata.a(16, held.byteValue());
+					} catch (IllegalArgumentException e) {
+						metadata.watch(16, held.byteValue());
+					}
+				}
 			}
 		}
 	}
@@ -435,6 +444,10 @@ public class Disguise {
 		return null;
 	}
 	
+	/**
+	 * Set whether or not the disguise is crouching
+	 * @param crouched True to make it crouch, False for standing
+	 */
 	public void setCrouch(boolean crouched) {
 		if (crouched) {
 			if (!data.contains("crouched")) {
@@ -447,6 +460,23 @@ public class Disguise {
 			}
 			metadata.watch(0, (byte) 0);
 		}
+	}
+	
+	/**
+	 * Gets the block ID this disguise is holding (according to the metadata)
+	 * @return The block ID of the held block (null if not holding anything)
+	 */
+	public Byte getHolding() {
+		for (String one : data) {
+			if (one.startsWith("holding")) {
+				String[] parts = one.split(":");
+				try {
+					return (byte) Byte.valueOf(parts[1]);
+				} catch (NumberFormatException e) {
+				}
+			}
+		}
+		return null;
 	}
 	
 	// Packet creation methods
