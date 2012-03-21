@@ -109,7 +109,7 @@ public class Disguise {
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
 			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive, " +
-			"tabby, tuxedo, siamese";
+			"tabby, tuxedo, siamese, burning";
 	}
 	
 	// Individual disguise stuff
@@ -256,7 +256,7 @@ public class Disguise {
 		metadata = new DataWatcher();
 		metadata.a(0, (byte) 0);
 		metadata.a(12, 0);
-		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast) {
+		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast || mob == MobType.Enderman) {
 			metadata.a(16, (byte) 0);
 		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
 			metadata.a(16, (byte) 3);
@@ -375,11 +375,7 @@ public class Disguise {
 				
 				Byte held = getHolding();
 				if (held != null) {
-					try {
-						metadata.a(16, held.byteValue());
-					} catch (IllegalArgumentException e) {
-						metadata.watch(16, held.byteValue());
-					}
+					metadata.watch(16, held.byteValue());
 				}
 			}
 		}
@@ -467,12 +463,15 @@ public class Disguise {
 	 * @return The block ID of the held block (null if not holding anything)
 	 */
 	public Byte getHolding() {
-		for (String one : data) {
-			if (one.startsWith("holding")) {
-				String[] parts = one.split(":");
-				try {
-					return (byte) Byte.valueOf(parts[1]);
-				} catch (NumberFormatException e) {
+		if (data != null) {
+			for (String one : data) {
+				if (one.startsWith("holding")) {
+					String[] parts = one.split(":");
+					try {
+						return Byte.valueOf(parts[1]);
+					} catch (NumberFormatException e) {
+						System.out.println("DisguiseCraft could not parse the byte of an Enderman holding block!");
+					}
 				}
 			}
 		}

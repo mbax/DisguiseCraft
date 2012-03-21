@@ -31,11 +31,15 @@ permissions:
         description: Can use any DisguiseCraft functionality.
         children:
             disguisecraft.seer: true
+            disguisecraft.burning: true
             disguisecraft.player: true
             disguisecraft.mob.*: true
     disguisecraft.seer:
         default: false
         description: Can see through disguises.
+    disguisecraft.burning:
+        default: op
+        description: Can have a burning disguise.
     disguisecraft.player:
         default: op
         description: Can disguise as another player.
@@ -53,6 +57,7 @@ permissions:
             disguisecraft.mob.creeper.charged: true
             disguisecraft.mob.enderdragon: true
             disguisecraft.mob.enderman: true
+            disguisecraft.mob.enderman.hold:
             disguisecraft.mob.ghast: true
             disguisecraft.mob.giant: true
             disguisecraft.mob.irongolem: true
@@ -113,6 +118,9 @@ permissions:
     disguisecraft.mob.enderman:
         default: op
         description: Can disguise as a enderman.
+    disguisecraft.mob.enderman.hold:
+        default: op
+        description: Can hold blocks as an enderman.
     disguisecraft.mob.ghast:
         default: op
         description: Can disguise as a ghast.

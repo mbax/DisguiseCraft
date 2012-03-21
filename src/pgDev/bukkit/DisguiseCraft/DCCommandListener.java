@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -56,6 +57,8 @@ public class DCCommandListener implements CommandExecutor {
 					args[i] = "mushroomcow";
 				} else if (args[i].equalsIgnoreCase("dog")) {
 					args[i] = "wolf";
+				} else if (args[i].equalsIgnoreCase("burn")) {
+					args[i] = "burning";
 				}
 			}
 		}
@@ -565,8 +568,121 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
+			} else if (args[0].equalsIgnoreCase("burning")) {
+				if (args.length > 1) { // New disguise
+					MobType type = MobType.fromString(args[1]);
+					if (type == null) {
+						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
+					} else {
+						if (isConsole || plugin.hasPermissions(player, "disguisecraft.burning")) {
+							if (plugin.disguiseDB.containsKey(player.getName())) {
+								Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+								disguise.setMob(type).setSingleData("burning");
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.changeDisguise(player, disguise);
+							} else {
+								Disguise disguise = new Disguise(plugin.getNextAvailableID(), "burning", type);
+								
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.disguisePlayer(player, disguise);
+							}
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as a Burning " + plugin.disguiseDB.get(player.getName()).mob.name());
+							if (isConsole) {
+								sender.sendMessage(player.getName() + " was disguised as a Burning " + plugin.disguiseDB.get(player.getName()).mob.name());
+							}
+						} else {
+							player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a Burning " + type.name());
+						}
+					}
+				} else { // Current mob
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+						if (disguise.data != null && disguise.data.contains("burning")) {
+							sender.sendMessage(ChatColor.RED + "Already burning.");
+						} else {
+							if (disguise.isPlayer()) {
+								sender.sendMessage(ChatColor.RED + "Player disguises can't be set to burn");
+							} else {
+								disguise.addSingleData("burning");
+								
+								// Check for permissions
+								if (isConsole || plugin.hasPermissions(player, "disguisecraft.burning")) {
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									if (disguise.isPlayer()) {
+										plugin.sendPacketToWorld(player.getWorld(), disguise.getMetadataPacket());
+									} else {
+										plugin.changeDisguise(player, disguise);
+									}
+									player.sendMessage(ChatColor.GOLD + "Your disguise is now burning");
+									if (isConsole) {
+										sender.sendMessage(player.getName() + "'s disguise is now burning");
+									}
+								} else {
+									player.sendMessage(ChatColor.RED + "You do not have the permissions to have a burning disguise");
+								}
+							}
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
+					}
+				}
 			} else if (args[0].equalsIgnoreCase("hold")) {
-				// Continue here!
+				if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob.enderman.hold")) {
+					if (args.length > 1) {
+						String specification = remainingWords(args, 1);
+						Material type = Material.matchMaterial(specification);
+						if (type == null) {
+							sender.sendMessage(ChatColor.RED + "The block you specified could not be found");
+						} else {
+							if (type.isBlock()) {
+								if (plugin.disguiseDB.containsKey(player.getName())) {
+									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+									if (disguise.mob != null && disguise.mob == MobType.Enderman) {
+										Byte currentHold = disguise.getHolding();
+										if (currentHold != null) {
+											disguise.data.remove("holding:" + currentHold);
+										}
+										disguise.addSingleData("holding:" + type.getId());
+										
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) return true;
+										
+										plugin.changeDisguise(player, disguise);
+										player.sendMessage(ChatColor.GOLD + "Your disguise is now holding: " + type.toString());
+										if (isConsole) {
+											sender.sendMessage(player.getName() + "'s disguise is now holding: " + type.toString());
+										}
+									} else {
+										sender.sendMessage(ChatColor.RED + "Only Enderman disguises can hold blocks");
+									}
+								} else {
+									sender.sendMessage(ChatColor.RED + "You must first be disguised");
+								}
+							} else {
+								sender.sendMessage(ChatColor.RED + "Only blocks can be held");
+							}
+						}
+					} else {
+						sender.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " hold <block/id>");
+					}
+				} else {
+					player.sendMessage(ChatColor.RED + "You do not have the permissions to hold blocks with your disguise");
+				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
 					if (args.length > 1) {
@@ -580,7 +696,7 @@ public class DCCommandListener implements CommandExecutor {
 									return true;
 								}
 								
-								disguise.setSingleData(args[1]).setMob(null);
+								disguise.setMob(null).setSingleData(args[1]);
 								
 								// Pass the event
 								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
@@ -620,7 +736,7 @@ public class DCCommandListener implements CommandExecutor {
 					if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
 						if (plugin.disguiseDB.containsKey(player.getName())) {
 							Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-							disguise.setData(null).setMob(type);
+							disguise.setMob(type).setData(null);
 							
 							// Pass the event
 							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
@@ -669,4 +785,13 @@ public class DCCommandListener implements CommandExecutor {
 		}
 		return true;
 	}
+	
+	// List Words After Specified Index
+    public static String remainingWords(String[] wordArray, int startWord) {
+    	String remaining = "";
+    	for (int i=startWord; i<wordArray.length; i++) {
+    		remaining = remaining.trim() + " " + wordArray[i];
+    	}
+    	return remaining.trim();
+    }
 }
