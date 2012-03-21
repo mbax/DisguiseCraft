@@ -57,7 +57,7 @@ permissions:
             disguisecraft.mob.creeper.charged: true
             disguisecraft.mob.enderdragon: true
             disguisecraft.mob.enderman: true
-            disguisecraft.mob.enderman.hold:
+            disguisecraft.mob.enderman.hold: true
             disguisecraft.mob.ghast: true
             disguisecraft.mob.giant: true
             disguisecraft.mob.irongolem: true
