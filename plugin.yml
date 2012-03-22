@@ -70,6 +70,7 @@ permissions:
             disguisecraft.mob.ocelot.cat.*: true
             disguisecraft.mob.pig: true
             disguisecraft.mob.pig.baby: true
+            disguisecraft.mob.pig.saddled: true
             disguisecraft.mob.pigzombie: true
             disguisecraft.mob.sheep: true
             disguisecraft.mob.sheep.baby: true
@@ -183,6 +184,9 @@ permissions:
     disguisecraft.mob.pig.baby:
         default: op
         description: Can disguise as a baby pig.
+    disguisecraft.mob.pig.saddled:
+        default: op
+        description: Can disguise as a saddled pig.
     disguisecraft.mob.pigzombie:
         default: op
         description: Can disguise as a zombie pigman.

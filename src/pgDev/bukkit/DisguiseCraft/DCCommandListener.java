@@ -59,6 +59,8 @@ public class DCCommandListener implements CommandExecutor {
 					args[i] = "wolf";
 				} else if (args[i].equalsIgnoreCase("burn")) {
 					args[i] = "burning";
+				} else if (args[i].equalsIgnoreCase("saddle")) {
+					args[i] = "saddled";
 				}
 			}
 		}
@@ -632,6 +634,81 @@ public class DCCommandListener implements CommandExecutor {
 									}
 								} else {
 									player.sendMessage(ChatColor.RED + "You do not have the permissions to have a burning disguise");
+								}
+							}
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
+					}
+				}
+			} else if (args[0].equalsIgnoreCase("saddled")) {
+				if (args.length > 1) { // New disguise
+					MobType type = MobType.fromString(args[1]);
+					if (type == null) {
+						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
+					} else {
+						if (type == MobType.Pig) {
+							if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase() + ".saddled")) {
+								if (plugin.disguiseDB.containsKey(player.getName())) {
+									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+									disguise.setMob(type).setSingleData("saddled");
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.changeDisguise(player, disguise);
+								} else {
+									Disguise disguise = new Disguise(plugin.getNextAvailableID(), "saddled", type);
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									plugin.disguisePlayer(player, disguise);
+								}
+								player.sendMessage(ChatColor.GOLD + "You have been disguised as a Saddled " + plugin.disguiseDB.get(player.getName()).mob.name());
+								if (isConsole) {
+									sender.sendMessage(player.getName() + " was disguised as a Saddled " + plugin.disguiseDB.get(player.getName()).mob.name());
+								}
+							} else {
+								player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a Saddled " + type.name());
+							}
+						} else {
+							sender.sendMessage(ChatColor.RED + "A " + type.name() + " cannot be saddled.");
+						}
+					}
+				} else { // Current mob
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+						if (disguise.data != null && disguise.data.contains("saddled")) {
+							sender.sendMessage(ChatColor.RED + "Already saddled.");
+						} else {
+							if (disguise.isPlayer()) {
+								sender.sendMessage(ChatColor.RED + "Player disguises cannot be saddled.");
+							} else {
+								if (disguise.mob == MobType.Pig) {
+									disguise.addSingleData("saddled");
+									
+									// Check for permissions
+									if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".saddled")) {
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) return true;
+										
+										plugin.changeDisguise(player, disguise);
+										player.sendMessage(ChatColor.GOLD + "You have been disguised as a Saddled " + disguise.mob.name());
+										if (isConsole) {
+											sender.sendMessage(player.getName() + " was disguised as a Saddled " + disguise.mob.name());
+										}
+									} else {
+										player.sendMessage(ChatColor.RED + "You do not have the permissions to disguise as a Saddled " + disguise.mob.name());
+									}
+								} else {
+									sender.sendMessage(ChatColor.RED + "A " + disguise.mob.name() + " cannot be saddled.");
 								}
 							}
 						}

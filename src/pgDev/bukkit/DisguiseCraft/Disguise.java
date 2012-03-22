@@ -109,7 +109,7 @@ public class Disguise {
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
 			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive, " +
-			"tabby, tuxedo, siamese, burning";
+			"tabby, tuxedo, siamese, burning, saddled";
 	}
 	
 	// Individual disguise stuff
