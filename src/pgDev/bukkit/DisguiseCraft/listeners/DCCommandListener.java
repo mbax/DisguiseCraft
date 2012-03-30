@@ -1,4 +1,4 @@
-package pgDev.bukkit.DisguiseCraft;
+package pgDev.bukkit.DisguiseCraft.listeners;
 
 import java.util.Arrays;
 
@@ -11,6 +11,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
 
+import pgDev.bukkit.DisguiseCraft.Disguise;
+import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
 import pgDev.bukkit.DisguiseCraft.api.*;
 

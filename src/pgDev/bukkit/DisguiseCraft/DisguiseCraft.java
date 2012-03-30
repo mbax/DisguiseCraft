@@ -21,7 +21,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
-import pgDev.bukkit.DisguiseCraft.debug.DebugPacketOutput;
+import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 
@@ -42,15 +42,12 @@ public class DisguiseCraft extends JavaPlugin {
     // Permissions support
     static PermissionHandler Permissions;
     
-    boolean debug = false;
-    
     // Listeners
     DCMainListener mainListener = new DCMainListener(this);
     DCOptionalListener optionalListener = new DCOptionalListener(this);
     
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
-    public HashMap<String, String> disguisedentID = new HashMap<String, String>();
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
     
     // Custom display nick saving
@@ -87,15 +84,6 @@ public class DisguiseCraft extends JavaPlugin {
         } catch (Exception e) {
         	System.out.println("Could not load DisguiseCraft configuration! " + e);
         }
-		
-		// If we are debugging show packet output for disguised players using spout.
-		if (debug) {
-			if (spoutEnabled()) {
-				new DebugPacketOutput(this);
-			} else {
-				System.out.println("DisguiseCraft's debug mode requires Spout.");
-			}
-		}
 		
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
@@ -175,7 +163,6 @@ public class DisguiseCraft extends JavaPlugin {
     		player.setDisplayName(disguise.data.getFirst());
     	}
     	disguiseDB.put(player.getName(), disguise);
-    	disguisedentID.put(Integer.toString(disguise.entityID), "true");
     	sendDisguise(player, null);
     }
     
@@ -197,7 +184,6 @@ public class DisguiseCraft extends JavaPlugin {
     		sendUnDisguise(player, null);
     		Disguise disguise = disguiseDB.get(name);
     		disguiseDB.remove(name);
-    		disguisedentID.remove(Integer.toString(disguise.entityID));
     	}
     }
     

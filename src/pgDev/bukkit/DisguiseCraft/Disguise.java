@@ -125,7 +125,7 @@ public class Disguise {
 	 * The type of mob this disguise is. (null if not a mob)
 	 */
 	public MobType mob; // null if player
-	DataWatcher metadata;
+	public DataWatcher metadata;
 	/*
 	private double lastVectorX;
 	private double lastVectorY;
@@ -392,7 +392,7 @@ public class Disguise {
 	/**
 	 * See if the disguises match
 	 * @param other The disguise to compare with
-	 * @return
+	 * @return True if the disguises contain identical values
 	 */
 	public boolean equals(Disguise other) {
 		return (entityID == other.entityID && data.equals(other.data) && mob == other.mob);
