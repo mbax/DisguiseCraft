@@ -109,7 +109,7 @@ public class Disguise {
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
 			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive, " +
-			"tabby, tuxedo, siamese, burning, saddled";
+			"tabby, tuxedo, siamese, burning, saddled, librarian, priest, blacksmith, butcher";
 	}
 	
 	// Individual disguise stuff
@@ -260,6 +260,8 @@ public class Disguise {
 			metadata.a(16, (byte) 0);
 		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
 			metadata.a(16, (byte) 3);
+		} else if (mob == MobType.Villager) {
+			metadata.a(16, 0);
 		}
 		
 		if (mob == MobType.Creeper || mob == MobType.Enderman) {
@@ -376,6 +378,18 @@ public class Disguise {
 				Byte held = getHolding();
 				if (held != null) {
 					metadata.watch(16, held.byteValue());
+				}
+				
+				if (data.contains("farmer")) {
+					metadata.watch(16, 0);
+				} else if (data.contains("librarian")) {
+					metadata.watch(16, 1);
+				} else if (data.contains("priest")) {
+					metadata.watch(16, 2);
+				} else if (data.contains("blacksmith")) {
+					metadata.watch(16, 3);
+				} else if (data.contains("butcher")) {
+					metadata.watch(16, 4);
 				}
 			}
 		}

@@ -84,6 +84,7 @@ permissions:
             disguisecraft.mob.squid: true
             disguisecraft.mob.villager: true
             disguisecraft.mob.villager.baby: true
+            disguisecraft.mob.villager.occupation.*: true
             disguisecraft.mob.wolf: true
             disguisecraft.mob.wolf.baby: true
             disguisecraft.mob.wolf.tamed: true
@@ -308,6 +309,26 @@ permissions:
     disguisecraft.mob.villager.baby:
         default: op
         description: Can disguise as a baby villager.
+    disguisecraft.mob.villager.occupation.*:
+        default: op
+        description: Can disguise as a villager of any occupation.
+        children:
+            disguisecraft.mob.villager.occupation.librarian: true
+            disguisecraft.mob.villager.occupation.priest: true
+            disguisecraft.mob.villager.occupation.blacksmith: true
+            disguisecraft.mob.villager.occupation.butcher: true
+    disguisecraft.mob.villager.occupation.librarian: true
+        default: op
+        description: Can disguise as a librarian villager.
+    disguisecraft.mob.villager.occupation.priest:
+        default: op
+        description: Can disguise as a priest villager.
+    disguisecraft.mob.villager.occupation.blacksmith:
+        default: op
+        description: Can disguise as a blacksmith villager.
+    disguisecraft.mob.villager.occupation.butcher:
+        default: op
+        description: Can disguise as a butcher villager.
     disguisecraft.mob.wolf:
         default: op
         description: Can disguise as a wolf.
