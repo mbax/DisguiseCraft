@@ -24,6 +24,12 @@ public class DCCommandListener implements CommandExecutor {
 	}
 	
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		// Quick Output
+		if (args.length != 0 && args[0].equalsIgnoreCase("subtypes")) {
+			sender.sendMessage(ChatColor.DARK_GREEN + "Available subtypes: " + ChatColor.GREEN + MobType.subTypes);
+			return true;
+		}
+		
 		// Differentiate console input
 		boolean isConsole = false;
 		Player player = null;
@@ -74,8 +80,7 @@ public class DCCommandListener implements CommandExecutor {
 					sender.sendMessage("Usage: /" + label + " " + player.getName() + " [subtype] <mob/playername>");
 					String types = MobType.values().toString();
 					sender.sendMessage("Available types: " + types.substring(1, types.length() - 1));
-					String subTypes = MobType.subTypes.toString();
-					sender.sendMessage("Available subtypes: " + subTypes.substring(1, subTypes.length() - 1));
+					sender.sendMessage("For a list of subtypes: /d subtypes");
 				} else { // Player output
 					player.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " [subtype] <mob/playername>");
 					String types = "";
@@ -91,7 +96,7 @@ public class DCCommandListener implements CommandExecutor {
 					if (!types.equals("")) {
 						player.sendMessage(ChatColor.DARK_GREEN + "Available types: " + ChatColor.GREEN + types);
 					}
-					player.sendMessage(ChatColor.DARK_GREEN + "Available subtypes: " + ChatColor.GREEN + MobType.subTypes);
+					player.sendMessage(ChatColor.DARK_GREEN + "For a list of subtypes: " + ChatColor.GREEN + "/d subtypes");
 				}
 			} else if (args[0].equalsIgnoreCase("baby")) {
 				if (args.length > 1) { // New disguise
