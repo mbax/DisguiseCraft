@@ -143,10 +143,15 @@ public class DisguiseCraft extends JavaPlugin {
     public DisguiseCraftAPI api = new DisguiseCraftAPI(this);
     /**
      * Get the DisguiseCraft API
-     * @return The API
+     * @return The API (null if it was not found)
      */
     public static DisguiseCraftAPI getAPI() {
-    	return ((DisguiseCraft) Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft")).api;
+    	try {
+    		return ((DisguiseCraft) Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft")).api;
+    	} catch (Exception e) {
+    		System.out.println("The DisguiseCraft API could not be obtained!");
+    		return null;
+    	}
     }
     
     // Important Disguise Methods
@@ -182,7 +187,6 @@ public class DisguiseCraft extends JavaPlugin {
 	    		player.setDisplayName(name);
 	    	}
     		sendUnDisguise(player, null);
-    		Disguise disguise = disguiseDB.get(name);
     		disguiseDB.remove(name);
     	}
     }
