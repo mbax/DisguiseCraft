@@ -7,7 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.inventory.ItemStack;
 
 import net.minecraft.server.DataWatcher;
@@ -696,12 +695,13 @@ public class Disguise {
 		return new Packet35EntityHeadRotation(entityID, DisguiseCraft.degreeToByte(loc.getYaw()));
 	}
 	
-	public Packet18ArmAnimation getAnimationPacket(PlayerAnimationType animation) {
+	public Packet18ArmAnimation getAnimationPacket(int animation) {
+		// 1 - Swing arm
+		// 2 Damage animation
+		// 5 Eat food
 		Packet18ArmAnimation packet = new Packet18ArmAnimation();
 		packet.a = entityID;
-		if (animation == PlayerAnimationType.ARM_SWING) {
-			packet.b = 1;
-		}
+		packet.b = (byte) animation;
 		return packet;
 	}
 	

@@ -2,10 +2,12 @@ package pgDev.bukkit.DisguiseCraft;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.jar.JarFile;
 
 import net.minecraft.server.Packet;
 
@@ -22,6 +24,7 @@ import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
+import pgDev.bukkit.DisguiseCraft.listeners.DCCustomListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 
@@ -45,16 +48,21 @@ public class DisguiseCraft extends JavaPlugin {
     // Listeners
     DCMainListener mainListener = new DCMainListener(this);
     DCOptionalListener optionalListener = new DCOptionalListener(this);
+    DCCustomListener customListener = new DCCustomListener(this);
     
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
+    public ConcurrentHashMap<Integer, String> disguiseIDs = new ConcurrentHashMap<Integer, String>();
     
     // Custom display nick saving
     public HashMap<String, String> customNick = new HashMap<String, String>();
     
     // Plugin Configuration
     public DCConfig pluginSettings;
+    
+    // Custom CraftBukkit
+    public boolean cbDC = false;
     
 	public void onEnable() {
 		// Check for the plugin directory (create if it does not exist)
@@ -90,6 +98,29 @@ public class DisguiseCraft extends JavaPlugin {
 		pm.registerEvents(mainListener, this);
 		if (pluginSettings.optionalListeners) {
 			pm.registerEvents(optionalListener, this);
+		}
+		
+		// Check for a custom CraftBukkit
+		for (File file : (new File(".")).listFiles()) {
+			if (file.getName().toLowerCase().startsWith("craft") && file.getName().toLowerCase().endsWith(".jar")) {
+				JarFile craftJar;
+				try {
+					craftJar = new JarFile(file);
+					if (craftJar.getJarEntry("CBDC.txt") != null) {
+						cbDC = true;
+					}
+					break;
+				} catch (IOException e) {
+					e.printStackTrace();
+					System.out.println("DisguiseCraft could not check the CraftBukkit jar for disguise PVP compatibility!");
+				}
+			}
+		}
+		if (cbDC) {
+			pm.registerEvents(customListener, this);
+			System.out.println("A DisguiseCraft modified CraftBukkit jar was found. Disguise PVP has been activated.");
+		} else {
+			System.out.println("The CraftBukkit jar has not been modified to support disguise PVP. To learn about how to activate DisguiseCraft PVP, check the BukkitDev project description.");
 		}
 		
 		// Toss over the command events
@@ -168,13 +199,13 @@ public class DisguiseCraft extends JavaPlugin {
     		player.setDisplayName(disguise.data.getFirst());
     	}
     	disguiseDB.put(player.getName(), disguise);
+    	disguiseIDs.put(disguise.entityID, player.getName());
     	sendDisguise(player, null);
     }
     
     public void changeDisguise(Player player, Disguise newDisguise) {
     	unDisguisePlayer(player);
     	disguisePlayer(player, newDisguise);
-    	//(new Timer()).schedule(new DisguiseChangeTask(this, player, newDisguise), 500);
     }
     
     public void unDisguisePlayer(Player player) {
@@ -187,6 +218,7 @@ public class DisguiseCraft extends JavaPlugin {
 	    		player.setDisplayName(name);
 	    	}
     		sendUnDisguise(player, null);
+    		disguiseIDs.remove(disguiseDB.get(player.getName()).entityID);
     		disguiseDB.remove(name);
     	}
     }
@@ -348,5 +380,13 @@ public class DisguiseCraft extends JavaPlugin {
 				}
 			}
 		}
+    }
+    
+    public Player getPlayerFromDisguiseID(int id) {
+    	if (disguiseIDs.containsKey(id)) {
+    		return getServer().getPlayer(disguiseIDs.get(id));
+    	} else {
+    		return null;
+    	}
     }
 }
