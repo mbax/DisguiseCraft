@@ -1,7 +1,5 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
-import net.minecraft.server.Packet18ArmAnimation;
-
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,12 +22,6 @@ public class DCCustomListener implements Listener {
 			if (attacked != null) {
 				// Do the attack
 				((CraftPlayer) event.getPlayer()).getHandle().attack(((CraftPlayer) attacked).getHandle());
-				
-				// Send the damage animation
-				Packet18ArmAnimation packet = new Packet18ArmAnimation();
-				packet.a = event.getTarget();
-				packet.b = (byte) 2;
-				plugin.sendPacketToWorld(event.getPlayer().getWorld(), packet);
 			}
 		}
 	}

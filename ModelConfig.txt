@@ -8,4 +8,5 @@
 #		-Player held item changing
 #		-Player arm-swing animation
 #		-Player sneak animation
+#		-Disguise damage animation
 optionals=true

@@ -149,6 +149,7 @@ public class DCConfig {
     		out.write("#		-Player held item changing\r\n");
     		out.write("#		-Player arm-swing animation\r\n");
     		out.write("#		-Player sneak animation\r\n");
+    		out.write("#		-Disguise damage animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
     		out.close();
     	} catch (Exception e) {

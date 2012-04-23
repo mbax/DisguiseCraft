@@ -1,6 +1,10 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
+import net.minecraft.server.Packet18ArmAnimation;
+
+import org.bukkit.entity.Player;
 import org.bukkit.event.*;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -53,6 +57,22 @@ public class DCOptionalListener implements Listener {
 				if (disguise.isPlayer()) {
 					disguise.setCrouch(event.isSneaking());
 					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getMetadataPacket());
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onDamage(EntityDamageEvent event) {
+		if (!event.isCancelled()) {
+			if (event.getEntity() instanceof Player) {
+				Player player = (Player) event.getEntity();
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					// Send the damage animation
+					Packet18ArmAnimation packet = new Packet18ArmAnimation();
+					packet.a = plugin.disguiseDB.get(player.getName()).entityID;
+					packet.b = (byte) 2;
+					plugin.sendPacketToWorld(player.getWorld(), packet);
 				}
 			}
 		}
