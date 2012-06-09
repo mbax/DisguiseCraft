@@ -97,6 +97,36 @@ public class DCCommandListener implements CommandExecutor {
 						player.sendMessage(ChatColor.DARK_GREEN + "Available types: " + ChatColor.GREEN + types);
 					}
 					player.sendMessage(ChatColor.DARK_GREEN + "For a list of subtypes: " + ChatColor.GREEN + "/d subtypes");
+					
+					// Tell of current disguise
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName());
+						if (disguise.isPlayer()) {
+							player.sendMessage(ChatColor.GOLD + "You are currently disguised as " + ChatColor.DARK_RED + disguise.data.getFirst() + ".");
+						} else {
+							String subs = ".";
+							if (disguise.data != null) {
+								if (disguise.data.size() == 1) {
+									subs = " with the following subtype: " + ChatColor.DARK_RED + disguise.data.getFirst();
+								} else {
+									for (String sub : disguise.data) {
+										if (subs.equals(".")) {
+											subs = " with the following subtypes: " + ChatColor.DARK_RED + sub;
+										} else {
+											subs = subs + ChatColor.GOLD + ", " + ChatColor.DARK_RED + sub;
+										}
+									}
+								}
+							}
+							
+							if (beginsWithVowel(disguise.mob.name())) {
+								player.sendMessage(ChatColor.GOLD + "You are currently disguised as an " + ChatColor.DARK_RED + disguise.mob.name() + ChatColor.GOLD + subs);
+							} else {
+								player.sendMessage(ChatColor.GOLD + "You are currently disguised as a " + ChatColor.DARK_RED + disguise.mob.name() + ChatColor.GOLD + subs);
+							}
+							
+						}
+					}
 				}
 			} else if (args[0].equalsIgnoreCase("baby")) {
 				if (args.length > 1) { // New disguise
@@ -926,12 +956,24 @@ public class DCCommandListener implements CommandExecutor {
 							
 							plugin.disguisePlayer(player, disguise);
 						}
-						player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + type.name());
+						if (beginsWithVowel(type.name())) {
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as an " + type.name());
+						} else {
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as a " + type.name());
+						}
 						if (isConsole) {
-							sender.sendMessage(player.getName() + " was disguised as a " + type.name());
+							if (beginsWithVowel(type.name())) {
+								sender.sendMessage(player.getName() + " was disguised as n " + type.name());
+							} else {
+								sender.sendMessage(player.getName() + " was disguised as a " + type.name());
+							}
 						}
 					} else {
-						player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a " + type.name());
+						if (beginsWithVowel(type.name())) {
+							player.sendMessage(ChatColor.RED + "You do not have permission to disguise as an " + type.name());
+						} else {
+							player.sendMessage(ChatColor.RED + "You do not have permission to disguise as a " + type.name());
+						}
 					}
 				}
 			}
@@ -965,5 +1007,11 @@ public class DCCommandListener implements CommandExecutor {
     		remaining = remaining.trim() + " " + wordArray[i];
     	}
     	return remaining.trim();
+    }
+    
+    // First letter vowel?
+    public static boolean beginsWithVowel(String s) {
+    	s = s.toLowerCase();
+    	return (s.startsWith ("a") || s.startsWith ("e") || s.startsWith ("i") || s.startsWith ("o") || s.startsWith ("u"));
     }
 }
