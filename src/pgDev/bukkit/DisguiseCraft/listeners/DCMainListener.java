@@ -5,10 +5,14 @@ import net.minecraft.server.Packet;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
+import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.player.*;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
+import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
@@ -53,6 +57,9 @@ public class DCMainListener implements Listener {
 	
 	@EventHandler
 	public void onPlayerWorldChange(PlayerChangedWorldEvent event) {
+		// World Change is like a join
+		plugin.showWorldDisguises(event.getPlayer());
+		
 		// Handle disguise wearer going through a portal
 		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
 			Player disguisee = event.getPlayer();
@@ -72,43 +79,46 @@ public class DCMainListener implements Listener {
 				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket, killListPacket);
 			}
 			
-			// Show the disguise to the people in the new world
-			if (disguise.isPlayer()) {
-				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePlayerPacket, reviveListPacket);
-			} else {
-				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePacket);
-			}
-			
-			/*
-			// Permissions check
-			if ((disguise.isPlayer() && !plugin.hasPermissions(disguisee, "disguisecraft.player"))
-					|| (Arrays.asList(disguise.data.split(",")).contains("baby") && !plugin.hasPermissions(disguisee, "disguisecraft.mob." + disguise.mob.name().toLowerCase() + ".baby"))
-					|| (disguise.data == null && !plugin.hasPermissions(disguisee, "disguisecraft.mob." + disguise.mob.name().toLowerCase()))) {
+			if (!disguise.hasPermission(disguisee)) {
 				// Pass the event
 				PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(disguisee);
 				plugin.getServer().getPluginManager().callEvent(ev);
 				if (!ev.isCancelled()) {
 					plugin.unDisguisePlayer(disguisee);
 					disguisee.sendMessage(ChatColor.RED + "You've been undisguised because you do not have permissions to wear that disguise in this world.");
-				} else {
-					// Show the disguise to the people in the new world
-					if (reviveListPacket == null) {
-						(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 600);
-					} else {
-						(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
+					return;
+				}
+			}
+			
+			// Show the disguise to the people in the new world
+			if (disguise.isPlayer()) {
+				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePlayerPacket, reviveListPacket);
+			} else {
+				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePacket);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onTarget(EntityTargetEvent event) {
+		if (!event.isCancelled()) {
+			if (event instanceof EntityTargetLivingEntityEvent) {
+				EntityTargetLivingEntityEvent ev = (EntityTargetLivingEntityEvent) event;
+				if (ev.getTarget() instanceof Player) {
+					Player player = (Player) ev.getTarget();
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						if (plugin.hasPermissions(player, "disguisecraft.notarget")) {
+							if (plugin.hasPermissions(player, "disguisecraft.notarget.strict")) {
+								ev.setCancelled(true);
+							} else {
+								if (!plugin.disguiseDB.get(player.getName()).isPlayer() && (ev.getReason() == TargetReason.CLOSEST_PLAYER || ev.getReason() == TargetReason.RANDOM_TARGET)) {
+									ev.setCancelled(true);
+								}
+							}
+						}
 					}
 				}
-			} else {
-				// Show the disguise to the people in the new world
-				if (reviveListPacket == null) {
-					(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket), 600);
-				} else {
-					(new Timer()).schedule(new WorldDisguiseTask(plugin, disguisee.getWorld(), disguisee, revivePacket, reviveListPacket), 600);
-				}
-			}*/
+			}
 		}
-		
-		// World Change is like a join
-		plugin.showWorldDisguises(event.getPlayer());
 	}
 }

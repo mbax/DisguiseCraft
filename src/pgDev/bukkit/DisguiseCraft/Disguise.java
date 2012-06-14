@@ -3,6 +3,7 @@ package pgDev.bukkit.DisguiseCraft;
 import java.lang.reflect.Field;
 import java.util.LinkedList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -489,6 +490,68 @@ public class Disguise {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Checks if specified player has the permissions needed to wear this disguise
+	 * @param player The player to check the permissions of
+	 * @return Whether or not he has the permissions (true if yes)
+	 */
+	public boolean hasPermission(Player player) {
+		DisguiseCraft plugin = (DisguiseCraft) Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft");
+		if (data != null && data.contains("burning") && !plugin.hasPermissions(player, "disguisecraft.burning")) {
+			return false;
+		}
+		if (isPlayer()) { // Check Player
+			if (!plugin.hasPermissions(player, "disguisecraft.player")) {
+				return false;
+			}
+		} else { // Check Mob
+			if (!plugin.hasPermissions(player, "disguisecraft.mob." + mob.name().toLowerCase())) {
+				return false;
+			}
+			if (data != null) {
+				for (String dat : data) { // Check Subtypes
+					if (dat.equalsIgnoreCase("crouched")) { // Ignore crouching
+						continue;
+					}
+					if (dat.startsWith("holding")) { // Check Holding Block
+						if (!plugin.hasPermissions(player, "disguisecraft.mob.enderman.hold")) {
+							return false;
+						}
+						continue;
+					}
+					if (getSize() != null && dat.equals(getSize())) { // Check Size
+						if (!plugin.hasPermissions(player, "disguisecraft.mob." + mob.name().toLowerCase() + ".size." + dat)) {
+							return false;
+						}
+						continue;
+					}
+					if (getColor() != null && dat.equals(getColor())) { // Check Color
+						if (!plugin.hasPermissions(player, "disguisecraft.mob." + mob.name().toLowerCase() + ".color." + dat)) {
+							return false;
+						}
+						continue;
+					}
+					if (dat.equalsIgnoreCase("tabby") || dat.equalsIgnoreCase("tuxedo") || dat.equalsIgnoreCase("siamese")) { // Check Cat
+						if (!plugin.hasPermissions(player, "disguisecraft.mob." + mob.name().toLowerCase() + ".cat." + dat)) {
+							return false;
+						}
+						continue;
+					}
+					if (dat.equalsIgnoreCase("librarian") || dat.equalsIgnoreCase("priest") || dat.equalsIgnoreCase("blacksmith") || dat.equalsIgnoreCase("butcher")) { // Check Occupation
+						if (!plugin.hasPermissions(player, "disguisecraft.mob." + mob.name().toLowerCase() + ".occupation." + dat)) {
+							return false;
+						}
+						continue;
+					}
+					if (!plugin.hasPermissions(player, "disguisecraft.mob." + mob.name().toLowerCase() + "." + dat)) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
 	}
 	
 	// Packet creation methods
