@@ -128,6 +128,18 @@ public class DCCommandListener implements CommandExecutor {
 						}
 					}
 				}
+			} else if (args[0].equalsIgnoreCase("nopickup") || args[0].equalsIgnoreCase("np")) {
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					Disguise disguise = plugin.disguiseDB.get(player.getName());
+					if (disguise.data != null && disguise.data.remove("nopickup")) {
+						sender.sendMessage(ChatColor.GOLD + "Item pickup enabled");
+					} else {
+						disguise.addSingleData("nopickup");
+						sender.sendMessage(ChatColor.GOLD + "Item pickup disabled");
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "Must first be disguised.");
+				}
 			} else if (args[0].equalsIgnoreCase("baby")) {
 				if (args.length > 1) { // New disguise
 					MobType type = MobType.fromString(args[1]);

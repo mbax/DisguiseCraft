@@ -2,12 +2,10 @@ package pgDev.bukkit.DisguiseCraft;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.jar.JarFile;
 
 import net.minecraft.server.Packet;
 

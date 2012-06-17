@@ -6,7 +6,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.player.*;
 
@@ -102,21 +101,30 @@ public class DCMainListener implements Listener {
 	@EventHandler
 	public void onTarget(EntityTargetEvent event) {
 		if (!event.isCancelled()) {
-			if (event instanceof EntityTargetLivingEntityEvent) {
-				EntityTargetLivingEntityEvent ev = (EntityTargetLivingEntityEvent) event;
-				if (ev.getTarget() instanceof Player) {
-					Player player = (Player) ev.getTarget();
-					if (plugin.disguiseDB.containsKey(player.getName())) {
-						if (plugin.hasPermissions(player, "disguisecraft.notarget")) {
-							if (plugin.hasPermissions(player, "disguisecraft.notarget.strict")) {
-								ev.setCancelled(true);
-							} else {
-								if (!plugin.disguiseDB.get(player.getName()).isPlayer() && (ev.getReason() == TargetReason.CLOSEST_PLAYER || ev.getReason() == TargetReason.RANDOM_TARGET)) {
-									ev.setCancelled(true);
-								}
+			if (event.getTarget() instanceof Player) {
+				Player player = (Player) event.getTarget();
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					if (plugin.hasPermissions(player, "disguisecraft.notarget")) {
+						if (plugin.hasPermissions(player, "disguisecraft.notarget.strict")) {
+							event.setCancelled(true);
+						} else {
+							if (!plugin.disguiseDB.get(player.getName()).isPlayer() && (event.getReason() == TargetReason.CLOSEST_PLAYER || event.getReason() == TargetReason.RANDOM_TARGET)) {
+								event.setCancelled(true);
 							}
 						}
 					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPickup(PlayerPickupItemEvent event) {
+		if (!event.isCancelled()) {
+			if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
+				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
+				if (disguise.data != null && disguise.data.contains("nopickup")) {
+					event.setCancelled(true);
 				}
 			}
 		}
