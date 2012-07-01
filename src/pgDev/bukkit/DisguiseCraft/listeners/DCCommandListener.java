@@ -990,22 +990,45 @@ public class DCCommandListener implements CommandExecutor {
 				}
 			}
 		} else if (label.toLowerCase().startsWith("u")) {
-			if (plugin.disguiseDB.containsKey(player.getName())) {
-				// Pass the event
-				PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player);
-				plugin.getServer().getPluginManager().callEvent(ev);
-				if (ev.isCancelled()) return true;
-				
-				plugin.unDisguisePlayer(player);
-				player.sendMessage(ChatColor.GOLD + "You were undisguised.");
-				if (isConsole) {
-					sender.sendMessage(player.getName() + " was undisguised.");
+			if (!isConsole && args.length > 0) {
+				if ((player = plugin.getServer().getPlayer(args[0])) == null) {
+					sender.sendMessage(ChatColor.RED + "The given player could not be found.");
+				} else {
+					Player commander = (Player) sender;
+					if (plugin.hasPermissions(commander, "disguisecraft.other.undisguise")) {
+						if (plugin.disguiseDB.containsKey(player.getName())) {
+							// Pass the event
+							PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player);
+							plugin.getServer().getPluginManager().callEvent(ev);
+							if (ev.isCancelled()) return true;
+							
+							plugin.unDisguisePlayer(player);
+							player.sendMessage(ChatColor.GOLD + "You were undisguised by " + commander.getName());
+						} else {
+							sender.sendMessage(ChatColor.RED + player.getName() + " is not disguised.");
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "You do not have the permission to undisguise other players.");
+					}
 				}
 			} else {
-				if (isConsole) {
-					sender.sendMessage(player.getName() + " is not disguised.");
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					// Pass the event
+					PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player);
+					plugin.getServer().getPluginManager().callEvent(ev);
+					if (ev.isCancelled()) return true;
+					
+					plugin.unDisguisePlayer(player);
+					player.sendMessage(ChatColor.GOLD + "You were undisguised.");
+					if (isConsole) {
+						sender.sendMessage(player.getName() + " was undisguised.");
+					}
 				} else {
-					player.sendMessage(ChatColor.RED + "You are not disguised.");
+					if (isConsole) {
+						sender.sendMessage(player.getName() + " is not disguised.");
+					} else {
+						player.sendMessage(ChatColor.RED + "You are not disguised.");
+					}
 				}
 			}
 		}
