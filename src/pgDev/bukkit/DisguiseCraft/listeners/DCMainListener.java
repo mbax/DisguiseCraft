@@ -1,8 +1,11 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
+import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -12,6 +15,7 @@ import org.bukkit.event.player.*;
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
+import pgDev.bukkit.DisguiseCraft.injection.DCNetServerHandler;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
@@ -30,13 +34,23 @@ public class DCMainListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		
+		// Injection
+		if (plugin.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
+			EntityPlayer entity = ((CraftPlayer)player).getHandle();
+			entity.netServerHandler.disconnected = true;
+			NetServerHandler handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+			entity.server.networkListenThread.a(handler);
+		}
+		
 		// Show disguises to newly joined players
-		plugin.showWorldDisguises(event.getPlayer());
+		plugin.showWorldDisguises(player);
 		
 		// If he was a disguise-quitter, tell him
-		if (plugin.disguiseQuitters.contains(event.getPlayer().getName())) {
+		if (plugin.disguiseQuitters.contains(player.getName())) {
 			event.getPlayer().sendMessage(ChatColor.RED + "You were undisguised because you left the server.");
-			plugin.disguiseQuitters.remove(event.getPlayer().getName());
+			plugin.disguiseQuitters.remove(player.getName());
 		}
 	}
 	

@@ -97,34 +97,8 @@ public class DisguiseCraft extends JavaPlugin {
 		if (pluginSettings.optionalListeners) {
 			pm.registerEvents(optionalListener, this);
 		}
-		
-		// Check for a custom CraftBukkit
-		try {
-			Class.forName("org.bukkit.event.player.PlayerInvalidInteractEvent");
-			cbDC = true;
-		} catch (ClassNotFoundException e) {
-		}
-		/* Old method of detection
-		for (File file : (new File(".")).listFiles()) {
-			if (file.getName().toLowerCase().startsWith("craft") && file.getName().toLowerCase().endsWith(".jar")) {
-				JarFile craftJar;
-				try {
-					craftJar = new JarFile(file);
-					if (craftJar.getJarEntry("CBDC.txt") != null) {
-						cbDC = true;
-					}
-					break;
-				} catch (IOException e) {
-					e.printStackTrace();
-					System.out.println("DisguiseCraft could not check the CraftBukkit jar for disguise PVP compatibility!");
-				}
-			}
-		}*/
-		if (cbDC) {
+		if (pluginSettings.disguisePVP) {
 			pm.registerEvents(customListener, this);
-			System.out.println("A DisguiseCraft modified CraftBukkit jar was found. Disguise PVP has been activated.");
-		} else {
-			System.out.println("The CraftBukkit jar has not been modified to support disguise PVP. To learn about how to activate DisguiseCraft PVP, check the BukkitDev project description.");
 		}
 		
 		// Toss over the command events

@@ -4,9 +4,9 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerInvalidInteractEvent;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
+import pgDev.bukkit.DisguiseCraft.injection.PlayerInvalidInteractEvent;
 
 public class DCCustomListener implements Listener {
 	final DisguiseCraft plugin;

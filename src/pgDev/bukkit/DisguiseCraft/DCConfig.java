@@ -16,7 +16,8 @@ public class DCConfig {
 	public boolean upToDate = true;
 	
 	// List of Config Options
-	boolean optionalListeners;
+	public boolean optionalListeners;
+	public boolean disguisePVP;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -24,6 +25,7 @@ public class DCConfig {
         
         // Grab values here.
         optionalListeners = getBoolean("optionals", true);
+        disguisePVP = getBoolean("disguisePVP", true);
 	}
 	
 	// Value obtaining functions down below
@@ -151,6 +153,14 @@ public class DCConfig {
     		out.write("#		-Player sneak animation\r\n");
     		out.write("#		-Disguise damage animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
+    		out.write("#\r\n");
+    		out.write("# Disguise PVP\r\n");
+    		out.write("#	In order for players to be able to attack those who\r\n");
+    		out.write("#	are disguised, DisguiseCraft must utilize its own\r\n");
+    		out.write("#	proxy form of the NetServerHandler class. This means\r\n");
+    		out.write("#	that if you are having compatibility issues, it\r\n");
+    		out.write("#	would be best if you disbled this.\r\n");
+    		out.write("disguisePVP=" + disguisePVP + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		System.out.println(e);

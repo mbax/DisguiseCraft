@@ -10,3 +10,11 @@
 #		-Player sneak animation
 #		-Disguise damage animation
 optionals=true
+
+# Disguise PVP
+#	In order for players to be able to attack those who
+#	are disguised, DisguiseCraft must utilize its own
+#	proxy form of the NetServerHandler class. This means
+#	that if you are having compatibility issues, it
+#	would be best if you disbled this.
+disguisePVP=true
