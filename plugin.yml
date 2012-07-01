@@ -30,6 +30,7 @@ permissions:
         default: false
         description: Can use any DisguiseCraft functionality.
         children:
+            disguisecraft.other.*:true
             disguisecraft.seer: true
             disguisecraft.notarget: true
             disguisecraft.notarget.strict: true
