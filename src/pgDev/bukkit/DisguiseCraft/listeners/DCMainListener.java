@@ -42,10 +42,10 @@ public class DCMainListener implements Listener {
 			EntityPlayer entity = ((CraftPlayer)player).getHandle();
 			entity.netServerHandler.disconnected = true;
 			NetServerHandler handler;
-			if (plugin.getServer().getPluginManager().getPlugin("SpoutPlugin") == null) {
-				handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
-			} else {
+			if (plugin.spoutEnabled()) {
 				handler = new DCSpoutNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+			} else {
+				handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
 			}
 			entity.server.networkListenThread.a(handler);
 		}

@@ -59,9 +59,6 @@ public class DisguiseCraft extends JavaPlugin {
     // Plugin Configuration
     public DCConfig pluginSettings;
     
-    // Custom CraftBukkit
-    public boolean cbDC = false;
-    
 	public void onEnable() {
 		// Check for the plugin directory (create if it does not exist)
     	File pluginDir = new File(pluginMainDir);
