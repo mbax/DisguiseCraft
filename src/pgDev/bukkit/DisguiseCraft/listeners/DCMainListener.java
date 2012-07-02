@@ -11,11 +11,13 @@ import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.player.*;
+import org.getspout.spout.SpoutNetServerHandler;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
 import pgDev.bukkit.DisguiseCraft.injection.DCNetServerHandler;
+import pgDev.bukkit.DisguiseCraft.injection.DCSpoutNetServerHandler;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
@@ -40,7 +42,12 @@ public class DCMainListener implements Listener {
 		if (plugin.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
 			EntityPlayer entity = ((CraftPlayer)player).getHandle();
 			entity.netServerHandler.disconnected = true;
-			NetServerHandler handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+			NetServerHandler handler;
+			if (entity.netServerHandler instanceof SpoutNetServerHandler) {
+				handler = new DCSpoutNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+			} else {
+				handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+			}
 			entity.server.networkListenThread.a(handler);
 		}
 		
