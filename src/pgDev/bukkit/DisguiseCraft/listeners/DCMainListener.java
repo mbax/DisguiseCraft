@@ -47,6 +47,7 @@ public class DCMainListener implements Listener {
 			} else {
 				handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
 			}
+			handler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
 			entity.server.networkListenThread.a(handler);
 		}
 		
