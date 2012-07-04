@@ -15,7 +15,9 @@ import org.bukkit.event.player.*;
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
+import pgDev.bukkit.DisguiseCraft.injection.DCHandler;
 import pgDev.bukkit.DisguiseCraft.injection.DCNetServerHandler;
+import pgDev.bukkit.DisguiseCraft.injection.OrebfuscatorHandleProducer;
 import pgDev.bukkit.DisguiseCraft.injection.SpoutHandleProducer;
 
 public class DCMainListener implements Listener {
@@ -40,15 +42,24 @@ public class DCMainListener implements Listener {
 		// Injection
 		if (plugin.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
 			EntityPlayer entity = ((CraftPlayer)player).getHandle();
-			entity.netServerHandler.disconnected = true;
-			NetServerHandler handler;
-			if (plugin.spoutEnabled()) {
-				handler = SpoutHandleProducer.getHandle(entity.server, entity.netServerHandler.networkManager, entity);
-			} else {
-				handler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+			if (!(entity.netServerHandler instanceof DCHandler)) {
+				if (plugin.spoutEnabled()) { // Spout
+					entity.netServerHandler.disconnected = true;
+					NetServerHandler newHandler = SpoutHandleProducer.getHandle(entity.server, entity.netServerHandler.networkManager, entity);
+					newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
+					entity.server.networkListenThread.a(newHandler);
+				} else if (plugin.getServer().getPluginManager().getPlugin("Orebfuscator") != null) { // Orebfuscator
+					NetServerHandler newHandler = OrebfuscatorHandleProducer.getHandle(entity.server, entity.netServerHandler);
+					entity.netServerHandler = newHandler;
+					entity.netServerHandler.networkManager.a(newHandler);
+					entity.server.networkListenThread.a(newHandler);
+				} else { // DisguiseCraft
+					entity.netServerHandler.disconnected = true;
+					NetServerHandler newHandler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+					newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
+					entity.server.networkListenThread.a(newHandler);
+				}
 			}
-			handler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
-			entity.server.networkListenThread.a(handler);
 		}
 		
 		// Show disguises to newly joined players

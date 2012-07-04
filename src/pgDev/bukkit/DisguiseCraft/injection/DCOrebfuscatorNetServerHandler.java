@@ -1,20 +1,20 @@
 package pgDev.bukkit.DisguiseCraft.injection;
 
-import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.NetworkManager;
+import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet7UseEntity;
 
 import org.bukkit.craftbukkit.CraftServer;
-import org.getspout.spout.SpoutNetServerHandler;
 
-public class DCSpoutNetServerHandler extends SpoutNetServerHandler implements DCHandler {
+import lishid.orebfuscator.hook.OrebfuscatorNetServerHandler;
+
+public class DCOrebfuscatorNetServerHandler extends OrebfuscatorNetServerHandler implements DCHandler {
 	
 	private MinecraftServer minecraftServer;
 	private final CraftServer server;
 
-	public DCSpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
-		super(minecraftserver, networkmanager, entityplayer);
+	public DCOrebfuscatorNetServerHandler(MinecraftServer minecraftserver, NetServerHandler instance) {
+		super(minecraftserver, instance);
 		this.minecraftServer = minecraftserver;
 		this.server = minecraftserver.server;
 	}

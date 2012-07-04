@@ -2,6 +2,7 @@ package pgDev.bukkit.DisguiseCraft;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -25,6 +26,7 @@ import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCustomListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
+import pgDev.bukkit.DisguiseCraft.stats.Metrics;
 
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
@@ -112,6 +114,9 @@ public class DisguiseCraft extends JavaPlugin {
 		// Get permissions in the game!
         setupPermissions();
         
+        // Set up statistics!
+        setupMetrics();
+        
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
         System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
@@ -143,6 +148,25 @@ public class DisguiseCraft extends JavaPlugin {
         } else {
             return player.hasPermission(node);
         }
+    }
+    
+    // Stats
+    public void setupMetrics() {
+    	try {
+    		Metrics metrics = new Metrics(this);
+    		
+    		// Custom Graph
+    		metrics.addCustomData(new Metrics.Plotter("Total Disguises") {
+    			@Override
+    			public int getValue() {
+    				return disguiseDB.size();
+    			}
+    		});
+    		
+    		metrics.start();
+    	} catch (IOException e) {
+    		
+    	}
     }
     
     // Obtaining the API
