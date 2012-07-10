@@ -504,7 +504,7 @@ public class Disguise {
 			return false;
 		}
 		if (isPlayer()) { // Check Player
-			if (!plugin.hasPermissions(player, "disguisecraft.player")) {
+			if (!plugin.hasPermissions(player, "disguisecraft.player." + data.getFirst())) {
 				return false;
 			}
 		} else { // Check Mob

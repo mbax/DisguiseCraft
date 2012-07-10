@@ -898,8 +898,8 @@ public class DCCommandListener implements CommandExecutor {
 					}
 				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
-				if (isConsole || plugin.hasPermissions(player, "disguisecraft.player")) {
-					if (args.length > 1) {
+				if (args.length > 1) {
+					if (isConsole || plugin.hasPermissions(player, "disguisecraft.player." + args[1])) {
 						if (args[1].length() <= 16) {
 							if (plugin.disguiseDB.containsKey(player.getName())) {
 								Disguise disguise = plugin.disguiseDB.get(player.getName());
@@ -928,18 +928,18 @@ public class DCCommandListener implements CommandExecutor {
 								
 								plugin.disguisePlayer(player, disguise);
 							}
-							player.sendMessage(ChatColor.GOLD + "You have been disguised as player: " + args[1]);
+							player.sendMessage(ChatColor.GOLD + "You have been disguised as the player: " + args[1]);
 							if (isConsole) {
-								sender.sendMessage(player.getName() + " was disguised as player: " + args[1]);
+								sender.sendMessage(player.getName() + " was disguised as the player: " + args[1]);
 							}
 						} else {
 							sender.sendMessage(ChatColor.RED + "The specified player name is too long. (Must be 16 characters or less)");
 						}
 					} else {
-						sender.sendMessage(ChatColor.RED + "You must specify the player to disguise as.");
+						sender.sendMessage(ChatColor.RED + "You do not have the permission to diguise as the player: " + args[1]);
 					}
 				} else {
-					sender.sendMessage(ChatColor.RED + "You do not have the permission to diguise as another player.");
+					sender.sendMessage(ChatColor.RED + "You must specify the player to disguise as.");
 				}
 			} else {
 				MobType type = MobType.fromString(args[0]);

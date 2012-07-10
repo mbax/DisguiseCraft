@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 2.7
+version: 2.8
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
@@ -57,9 +57,9 @@ permissions:
     disguisecraft.burning:
         default: op
         description: Can have a burning disguise.
-    disguisecraft.player:
+    disguisecraft.player.*:
         default: op
-        description: Can disguise as another player.
+        description: Can disguise as any other player.
     disguisecraft.mob.*:
         default: op
         description: Can disguise as any mob.
