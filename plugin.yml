@@ -41,7 +41,11 @@ permissions:
         default: op
         description: Can use any of the disguise commands affecting others.
         children:
+            disguisecraft.other.disguise: true
             disguisecraft.other.undisguise: true
+    disguisecraft.other.disguise:
+        default: op
+        description: Can disguise other players.
     disguisecraft.other.undisguise:
         default: op
         description: Can undisguise other players.

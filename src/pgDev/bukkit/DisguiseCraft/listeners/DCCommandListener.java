@@ -80,7 +80,7 @@ public class DCCommandListener implements CommandExecutor {
 					sender.sendMessage("Usage: /" + label + " " + player.getName() + " [subtype] <mob/playername>");
 					String types = MobType.values().toString();
 					sender.sendMessage("Available types: " + types.substring(1, types.length() - 1));
-					sender.sendMessage("For a list of subtypes: /d subtypes");
+					sender.sendMessage("For a list of subtypes: /disguise subtypes");
 				} else { // Player output
 					player.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " [subtype] <mob/playername>");
 					String types = "";
@@ -96,7 +96,7 @@ public class DCCommandListener implements CommandExecutor {
 					if (!types.equals("")) {
 						player.sendMessage(ChatColor.DARK_GREEN + "Available types: " + ChatColor.GREEN + types);
 					}
-					player.sendMessage(ChatColor.DARK_GREEN + "For a list of subtypes: " + ChatColor.GREEN + "/d subtypes");
+					player.sendMessage(ChatColor.DARK_GREEN + "For a list of subtypes: " + ChatColor.GREEN + "/disguise subtypes");
 					
 					// Tell of current disguise
 					if (plugin.disguiseDB.containsKey(player.getName())) {
@@ -126,6 +126,49 @@ public class DCCommandListener implements CommandExecutor {
 							}
 							
 						}
+					}
+				}
+			} else if (args[0].equalsIgnoreCase("send") || args[0].equalsIgnoreCase("s")) {
+				if (isConsole) {
+					sender.sendMessage(ChatColor.RED + "You cannot send a disguise from the console. Just disguise the player instead.");
+				} else {
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						if (plugin.hasPermissions(player, "disguisecraft.other.disguise")) {
+							if (args.length < 2) {
+								sender.sendMessage(ChatColor.RED + "You must specify a player.");
+							} else {
+								Player receiver = plugin.getServer().getPlayer(args[1]);
+								if (receiver == null) {
+									sender.sendMessage(ChatColor.RED + "The player you specified could not be found.");
+								} else {
+									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+									disguise.entityID = plugin.getNextAvailableID();
+									
+									// Pass the event
+									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(receiver, disguise);
+									plugin.getServer().getPluginManager().callEvent(ev);
+									if (ev.isCancelled()) return true;
+									
+									if (plugin.disguiseDB.containsKey(receiver.getName())) {
+										plugin.changeDisguise(receiver, disguise);
+									} else {
+										plugin.disguisePlayer(receiver, disguise);
+									}
+									
+									if (disguise.mob == null) {
+										sender.sendMessage(ChatColor.GOLD + "You have disguised " + receiver.getName() + " as player " + disguise.data.getFirst());
+										receiver.sendMessage(ChatColor.GOLD + "You have been disguised as player " + disguise.data.getFirst() + " by " + player.getName());
+									} else {
+										sender.sendMessage(ChatColor.GOLD + "You have disguised " + receiver.getName() + " as a " + disguise.mob.name());
+										receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + disguise.mob.name() + " by " + player.getName());
+									}
+								}
+							}
+						} else {
+							sender.sendMessage(ChatColor.RED + "You do not have permission send a disguise to other players.");
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "You are not wearing a disguise to send.");
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("nopickup") || args[0].equalsIgnoreCase("np")) {
