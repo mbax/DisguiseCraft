@@ -38,6 +38,10 @@ import com.nijikokun.bukkit.Permissions.Permissions;
  * @author PG Dev Team (Devil Boy)
  */
 public class DisguiseCraft extends JavaPlugin {
+	
+	// Plugin Version
+	public String version;
+	
 	// File Locations
     static String pluginMainDir = "./plugins/DisguiseCraft";
     static String pluginConfigLocation = pluginMainDir + "/DisguiseCraft.cfg";
@@ -119,7 +123,8 @@ public class DisguiseCraft extends JavaPlugin {
         
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
-        System.out.println( pdfFile.getName() + " version " + pdfFile.getVersion() + " is enabled!" );
+        version = pdfFile.getVersion();
+        System.out.println( pdfFile.getName() + " version " + version + " is enabled!" );
 	}
 	
 	public boolean spoutEnabled() {

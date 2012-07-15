@@ -19,6 +19,7 @@ import pgDev.bukkit.DisguiseCraft.injection.DCHandler;
 import pgDev.bukkit.DisguiseCraft.injection.DCNetServerHandler;
 import pgDev.bukkit.DisguiseCraft.injection.OrebfuscatorHandleProducer;
 import pgDev.bukkit.DisguiseCraft.injection.SpoutHandleProducer;
+import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
@@ -69,6 +70,11 @@ public class DCMainListener implements Listener {
 		if (plugin.disguiseQuitters.contains(player.getName())) {
 			event.getPlayer().sendMessage(ChatColor.RED + "You were undisguised because you left the server.");
 			plugin.disguiseQuitters.remove(player.getName());
+		}
+		
+		// Updates?
+		if (plugin.pluginSettings.updateNotification && plugin.hasPermissions(player, "disguisecraft.update")) {
+			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DCUpdateNotifier(plugin, player));
 		}
 	}
 	

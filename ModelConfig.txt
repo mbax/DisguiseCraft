@@ -18,3 +18,9 @@ optionals=true
 #	that if you are having compatibility issues, it
 #	would be best if you disbled this.
 disguisePVP=true
+
+# Update Notification
+#	With this set to true, the plugin will check for
+#	and notify those who have the "disguisecraft.update"
+#	permission of plugin updates upon joining.
+updateNotification=true

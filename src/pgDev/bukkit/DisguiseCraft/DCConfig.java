@@ -18,6 +18,7 @@ public class DCConfig {
 	// List of Config Options
 	public boolean optionalListeners;
 	public boolean disguisePVP;
+	public boolean updateNotification;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -26,6 +27,7 @@ public class DCConfig {
         // Grab values here.
         optionalListeners = getBoolean("optionals", true);
         disguisePVP = getBoolean("disguisePVP", true);
+        updateNotification = getBoolean("updateNotification", true);
 	}
 	
 	// Value obtaining functions down below
@@ -161,6 +163,12 @@ public class DCConfig {
     		out.write("#	that if you are having compatibility issues, it\r\n");
     		out.write("#	would be best if you disbled this.\r\n");
     		out.write("disguisePVP=" + disguisePVP + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Update Notification\r\n");
+    		out.write("#	With this set to true, the plugin will check for\r\n");
+    		out.write("#	and notify those who have the \"disguisecraft.update\"\r\n");
+    		out.write("#	permission of plugin updates upon joining.\r\n");
+    		out.write("updateNotification=" + updateNotification + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		System.out.println(e);
