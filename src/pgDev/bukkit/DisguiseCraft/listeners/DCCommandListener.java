@@ -1,6 +1,7 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
@@ -137,30 +138,56 @@ public class DCCommandListener implements CommandExecutor {
 							if (args.length < 2) {
 								sender.sendMessage(ChatColor.RED + "You must specify a player.");
 							} else {
-								Player receiver = plugin.getServer().getPlayer(args[1]);
-								if (receiver == null) {
-									sender.sendMessage(ChatColor.RED + "The player you specified could not be found.");
-								} else {
-									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-									disguise.entityID = plugin.getNextAvailableID();
-									
-									// Pass the event
-									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(receiver, disguise);
-									plugin.getServer().getPluginManager().callEvent(ev);
-									if (ev.isCancelled()) return true;
-									
-									if (plugin.disguiseDB.containsKey(receiver.getName())) {
-										plugin.changeDisguise(receiver, disguise);
-									} else {
-										plugin.disguisePlayer(receiver, disguise);
+								if (args[1].equals("*")) {
+									for (Player receiver : plugin.getServer().getOnlinePlayers()) {
+										if (receiver == player) continue; 
+										Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+										disguise.entityID = plugin.getNextAvailableID();
+										
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(receiver, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) continue;
+										
+										if (plugin.disguiseDB.containsKey(receiver.getName())) {
+											plugin.changeDisguise(receiver, disguise);
+										} else {
+											plugin.disguisePlayer(receiver, disguise);
+										}
+										
+										if (disguise.mob == null) {
+											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as player " + ChatColor.GREEN + disguise.data.getFirst() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
+										} else {
+											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + ChatColor.GREEN + disguise.mob.name() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
+										}
 									}
-									
-									if (disguise.mob == null) {
-										sender.sendMessage(ChatColor.GOLD + "You have disguised " + receiver.getName() + " as player " + disguise.data.getFirst());
-										receiver.sendMessage(ChatColor.GOLD + "You have been disguised as player " + disguise.data.getFirst() + " by " + player.getName());
+									sender.sendMessage(ChatColor.GOLD + "Your disguise has been sent");
+								} else {
+									Player receiver = plugin.getServer().getPlayer(args[1]);
+									if (receiver == null) {
+										sender.sendMessage(ChatColor.RED + "The player you specified could not be found.");
 									} else {
-										sender.sendMessage(ChatColor.GOLD + "You have disguised " + receiver.getName() + " as a " + disguise.mob.name());
-										receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + disguise.mob.name() + " by " + player.getName());
+										Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+										disguise.entityID = plugin.getNextAvailableID();
+										
+										// Pass the event
+										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(receiver, disguise);
+										plugin.getServer().getPluginManager().callEvent(ev);
+										if (ev.isCancelled()) return true;
+										
+										if (plugin.disguiseDB.containsKey(receiver.getName())) {
+											plugin.changeDisguise(receiver, disguise);
+										} else {
+											plugin.disguisePlayer(receiver, disguise);
+										}
+										
+										if (disguise.mob == null) {
+											sender.sendMessage(ChatColor.GOLD + "You have disguised " + ChatColor.DARK_GREEN + receiver.getName() + ChatColor.GOLD + " as player " + ChatColor.GREEN + disguise.data.getFirst());
+											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as player " + ChatColor.GREEN + disguise.data.getFirst() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
+										} else {
+											sender.sendMessage(ChatColor.GOLD + "You have disguised " + ChatColor.DARK_GREEN + receiver.getName() + ChatColor.GOLD + " as a " + ChatColor.GREEN + disguise.mob.name());
+											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + ChatColor.GREEN + disguise.mob.name() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
+										}
 									}
 								}
 							}
@@ -1034,25 +1061,57 @@ public class DCCommandListener implements CommandExecutor {
 			}
 		} else if (label.toLowerCase().startsWith("u")) {
 			if (!isConsole && args.length > 0) {
-				if ((player = plugin.getServer().getPlayer(args[0])) == null) {
-					sender.sendMessage(ChatColor.RED + "The given player could not be found.");
-				} else {
-					Player commander = (Player) sender;
-					if (plugin.hasPermissions(commander, "disguisecraft.other.undisguise")) {
-						if (plugin.disguiseDB.containsKey(player.getName())) {
-							// Pass the event
-							PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(player);
-							plugin.getServer().getPluginManager().callEvent(ev);
-							if (ev.isCancelled()) return true;
-							
-							plugin.unDisguisePlayer(player);
-							player.sendMessage(ChatColor.GOLD + "You were undisguised by " + commander.getName());
+				if (plugin.hasPermissions(player, "disguisecraft.other.undisguise")) {
+					if (args[0].equals("*")) {
+						LinkedList<String> undisguisedPlayers = new LinkedList<String>();
+						for (Player currentPlayer : plugin.getServer().getOnlinePlayers()) {
+							if (currentPlayer == player) continue;
+							if (plugin.disguiseDB.containsKey(currentPlayer.getName())) {
+								// Pass the event
+								PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(currentPlayer);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) continue;
+								
+								plugin.unDisguisePlayer(currentPlayer);
+								undisguisedPlayers.add(currentPlayer.getName());
+								currentPlayer.sendMessage(ChatColor.GOLD + "You were undisguised by " + ChatColor.DARK_GREEN + player.getName());
+							}
+						}
+						
+						if (undisguisedPlayers.size() == 0) {
+							sender.sendMessage(ChatColor.RED + "There was no one to undisguise.");
 						} else {
-							sender.sendMessage(ChatColor.RED + player.getName() + " is not disguised.");
+							String playerNames = "";
+							for (String name : undisguisedPlayers) {
+								if (playerNames.equals("")) {
+									playerNames = ChatColor.DARK_GREEN + name;
+								} else {
+									playerNames = playerNames + ChatColor.GOLD + ", " + ChatColor.DARK_GREEN + name;
+								}
+							}
+							sender.sendMessage(ChatColor.GOLD + "You have undisguised: " + ChatColor.DARK_GREEN + playerNames);
 						}
 					} else {
-						sender.sendMessage(ChatColor.RED + "You do not have the permission to undisguise other players.");
+						Player toUndisguise;
+						if ((toUndisguise = plugin.getServer().getPlayer(args[0])) == null) {
+							sender.sendMessage(ChatColor.RED + "The given player could not be found.");
+						} else {
+							if (plugin.disguiseDB.containsKey(toUndisguise.getName())) {
+								// Pass the event
+								PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(toUndisguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								plugin.unDisguisePlayer(toUndisguise);
+								sender.sendMessage(ChatColor.GOLD + "You have undisguised " + toUndisguise.getName());
+								toUndisguise.sendMessage(ChatColor.GOLD + "You were undisguised by " + player.getName());
+							} else {
+								sender.sendMessage(ChatColor.RED + player.getName() + " is not disguised.");
+							}
+						}
 					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "You do not have the permission to undisguise other players.");
 				}
 			} else {
 				if (plugin.disguiseDB.containsKey(player.getName())) {
