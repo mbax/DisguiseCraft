@@ -1,16 +1,7 @@
 package pgDev.bukkit.DisguiseCraft.injection;
 
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.INetworkManager;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.NetworkManager;
-import net.minecraft.server.Packet7UseEntity;
-
-import org.bukkit.craftbukkit.CraftServer;
-import org.getspout.spout.SpoutNetServerHandler;
-
-public class DCSpoutNetServerHandler extends SpoutNetServerHandler implements DCHandler {
-	
+public class DCSpoutNetServerHandler implements DCHandler {
+	/*
 	private MinecraftServer minecraftServer;
 	private final CraftServer server;
 
@@ -30,5 +21,5 @@ public class DCSpoutNetServerHandler extends SpoutNetServerHandler implements DC
         	PlayerInvalidInteractEvent event = new PlayerInvalidInteractEvent((org.bukkit.entity.Player) this.getPlayer(), packet7useentity.target, packet7useentity.action);
             this.server.getPluginManager().callEvent(event);
         }
-    }
+    }*/
 }

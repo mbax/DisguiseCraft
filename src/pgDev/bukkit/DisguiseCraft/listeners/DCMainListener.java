@@ -18,7 +18,6 @@ import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
 import pgDev.bukkit.DisguiseCraft.injection.DCHandler;
 import pgDev.bukkit.DisguiseCraft.injection.DCNetServerHandler;
 import pgDev.bukkit.DisguiseCraft.injection.OrebfuscatorHandleProducer;
-import pgDev.bukkit.DisguiseCraft.injection.SpoutHandleProducer;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
 public class DCMainListener implements Listener {
@@ -45,10 +44,11 @@ public class DCMainListener implements Listener {
 			EntityPlayer entity = ((CraftPlayer)player).getHandle();
 			if (!(entity.netServerHandler instanceof DCHandler)) {
 				NetServerHandler newHandler;
-				if (plugin.spoutEnabled()) { // Spout
+				/*if (plugin.spoutEnabled()) { // Spout
 					entity.netServerHandler.disconnected = true;
 					newHandler = SpoutHandleProducer.getHandle(entity.server, entity.netServerHandler.networkManager, entity);
-				} else if (plugin.getServer().getPluginManager().getPlugin("Orebfuscator") != null) { // Orebfuscator
+				} else*/
+				if (plugin.getServer().getPluginManager().getPlugin("Orebfuscator") != null) { // Orebfuscator
 					newHandler = OrebfuscatorHandleProducer.getHandle(entity.server, entity.netServerHandler);
 					entity.netServerHandler.networkManager.a(newHandler);
 				} else { // DisguiseCraft
