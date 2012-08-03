@@ -577,7 +577,7 @@ public class Disguise {
 			packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
 			packet.h = packet.f;
 			try {
-				Field metadataField = packet.getClass().getDeclaredField("i");
+				Field metadataField = packet.getClass().getDeclaredField("s");
 				metadataField.setAccessible(true);
 				metadataField.set(packet, metadata);
 			} catch (Exception e) {
@@ -636,8 +636,15 @@ public class Disguise {
 				packet = new Packet5EntityEquipment();
 				packet.a = entityID;
 				packet.b = slot;
-				packet.c = -1;
-				packet.d = 0;
+				
+				try{
+					Field itemField = packet.getClass().getDeclaredField("c");
+					itemField.setAccessible(true);
+					itemField.set(packet, null);
+				} catch (Exception e) {
+					System.out.println("DisguiseCraft was unable to set the item type for a player disguise!");
+					e.printStackTrace();
+				}
 			} else {
 				packet = new Packet5EntityEquipment(entityID, slot, ((CraftItemStack) item).getHandle());
 			}

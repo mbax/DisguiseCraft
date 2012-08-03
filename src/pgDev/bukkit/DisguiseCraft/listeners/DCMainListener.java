@@ -44,22 +44,20 @@ public class DCMainListener implements Listener {
 		if (plugin.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
 			EntityPlayer entity = ((CraftPlayer)player).getHandle();
 			if (!(entity.netServerHandler instanceof DCHandler)) {
+				NetServerHandler newHandler;
 				if (plugin.spoutEnabled()) { // Spout
 					entity.netServerHandler.disconnected = true;
-					NetServerHandler newHandler = SpoutHandleProducer.getHandle(entity.server, entity.netServerHandler.networkManager, entity);
-					newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
-					entity.server.networkListenThread.a(newHandler);
+					newHandler = SpoutHandleProducer.getHandle(entity.server, entity.netServerHandler.networkManager, entity);
 				} else if (plugin.getServer().getPluginManager().getPlugin("Orebfuscator") != null) { // Orebfuscator
-					NetServerHandler newHandler = OrebfuscatorHandleProducer.getHandle(entity.server, entity.netServerHandler);
-					entity.netServerHandler = newHandler;
+					newHandler = OrebfuscatorHandleProducer.getHandle(entity.server, entity.netServerHandler);
 					entity.netServerHandler.networkManager.a(newHandler);
-					entity.server.networkListenThread.a(newHandler);
 				} else { // DisguiseCraft
 					entity.netServerHandler.disconnected = true;
-					NetServerHandler newHandler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
-					newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
-					entity.server.networkListenThread.a(newHandler);
+					newHandler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
 				}
+				newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
+				entity.netServerHandler = newHandler;
+				entity.server.ac().a(newHandler);
 			}
 		}
 		

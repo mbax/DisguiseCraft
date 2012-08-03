@@ -1,6 +1,7 @@
 package pgDev.bukkit.DisguiseCraft.injection;
 
 import net.minecraft.server.EntityPlayer;
+import net.minecraft.server.INetworkManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.NetworkManager;
 import net.minecraft.server.Packet7UseEntity;
@@ -13,8 +14,8 @@ public class DCSpoutNetServerHandler extends SpoutNetServerHandler implements DC
 	private MinecraftServer minecraftServer;
 	private final CraftServer server;
 
-	public DCSpoutNetServerHandler(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer) {
-		super(minecraftserver, networkmanager, entityplayer);
+	public DCSpoutNetServerHandler(MinecraftServer minecraftserver, INetworkManager networkmanager, EntityPlayer entityplayer) {
+		super(minecraftserver, (NetworkManager) networkmanager, entityplayer);
 		this.minecraftServer = minecraftserver;
 		this.server = minecraftserver.server;
 	}
