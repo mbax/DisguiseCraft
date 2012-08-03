@@ -619,6 +619,14 @@ public class Disguise {
 	        packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
 	        packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
 	        packet.h = item;
+	        try {
+				Field metadataField = packet.getClass().getDeclaredField("i");
+				metadataField.setAccessible(true);
+				metadataField.set(packet, metadata);
+			} catch (Exception e) {
+				System.out.println("DisguiseCraft was unable to set the metadata for a player disguise!");
+				e.printStackTrace();
+			}
 	        return packet;
 		} else {
 			return null;
