@@ -6,7 +6,7 @@ import net.minecraft.server.Packet7UseEntity;
 
 import org.bukkit.craftbukkit.CraftServer;
 
-import lishid.orebfuscator.hook.OrebfuscatorNetServerHandler;
+import com.lishid.orebfuscator.hook.OrebfuscatorNetServerHandler;
 
 public class DCOrebfuscatorNetServerHandler extends OrebfuscatorNetServerHandler implements DCHandler {
 	
