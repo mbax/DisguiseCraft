@@ -1,6 +1,6 @@
 name: DisguiseCraft
 main: pgDev.bukkit.DisguiseCraft.DisguiseCraft
-version: 3.2
+version: 3.3
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
@@ -8,21 +8,11 @@ description: Turn into any mob you want!
 commands:
    disguise:
       description: Set a disguise.
-      usage: /<command>
-   d:
-      description: Set a disguise.
-      usage: /<command>
-   dis:
-      description: Set a disguise.
+      aliases: [d, dc, dis]
       usage: /<command>
    undisguise:
       description: Remove a disguise.
-      usage: /<command>
-   u:
-      description: Remove a disguise.
-      usage: /<command>
-   undis:
-      description: Remove a disguise.
+      aliases: [u, ud, undis]
       usage: /<command>
 
 permissions:
@@ -65,6 +55,9 @@ permissions:
     disguisecraft.burning:
         default: op
         description: Can have a burning disguise.
+    disguisecraft.drop:
+        default: op
+        description: Can drop their disguise.
     disguisecraft.player.*:
         default: op
         description: Can disguise as any other player.

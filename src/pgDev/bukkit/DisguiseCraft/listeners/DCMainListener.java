@@ -50,10 +50,10 @@ public class DCMainListener implements Listener {
 				} else*/
 				if (plugin.getServer().getPluginManager().getPlugin("Orebfuscator") != null) { // Orebfuscator
 					newHandler = OrebfuscatorHandleProducer.getHandle(entity.server, entity.netServerHandler);
-					entity.netServerHandler.networkManager.a(newHandler);
 				} else { // DisguiseCraft
 					entity.netServerHandler.disconnected = true;
 					newHandler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
+					entity.netServerHandler.networkManager.a(newHandler);
 				}
 				newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
 				entity.netServerHandler = newHandler;

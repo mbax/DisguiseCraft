@@ -58,6 +58,7 @@ public class DisguiseCraft extends JavaPlugin {
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
     public ConcurrentHashMap<Integer, String> disguiseIDs = new ConcurrentHashMap<Integer, String>();
+    public ConcurrentHashMap<Integer, DroppedDisguise> droppedDisguises = new ConcurrentHashMap<Integer, DroppedDisguise>();
     
     // Custom display nick saving
     public HashMap<String, String> customNick = new HashMap<String, String>();
@@ -106,7 +107,7 @@ public class DisguiseCraft extends JavaPlugin {
 		
 		// Toss over the command events
 		DCCommandListener commandListener = new DCCommandListener(this);
-		String[] commandList = {"disguise", "d", "dis", "undisguise", "u", "undis"};
+		String[] commandList = {"disguise", "undisguise"};
         for (String command : commandList) {
         	try {
         		this.getCommand(command).setExecutor(commandListener);
@@ -227,6 +228,38 @@ public class DisguiseCraft extends JavaPlugin {
     	}
     }
     
+    public void dropDisguise(Player player) {
+    	String name = player.getName();
+    	if (disguiseDB.containsKey(name)) {
+    		// Database Handling
+    		if (customNick.containsKey(name)) {
+	    		player.setDisplayName(customNick.get(name));
+	    		customNick.remove(name);
+	    	} else {
+	    		player.setDisplayName(name);
+	    	}
+    		
+    		// Client Handling
+    		DroppedDisguise disguise = new DroppedDisguise(disguiseDB.get(name), name, player.getLocation());
+    		Packet packet = disguise.getPlayerInfoPacket(player, false);
+    		if (packet == null) {
+    			undisguiseToWorld(player.getWorld(), player);
+    		} else {
+    			undisguiseToWorld(player.getWorld(), player, packet);
+    		}
+    		if (disguise.isPlayer()) {
+    			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getPlayerSpawnPacket((short) player.getItemInHand().getTypeId()));
+    		} else {
+    			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket());
+    		}
+    		
+    		// More Database Handling
+    		disguiseIDs.remove(disguise.entityID);
+    		disguiseDB.remove(name);
+    		droppedDisguises.put(disguise.entityID, disguise);
+    	}
+    }
+    
     public void halfUndisguiseAllToPlayer(Player observer) {
     	World world = observer.getWorld();
     	for (String name : disguiseDB.keySet()) {
@@ -311,6 +344,23 @@ public class DisguiseCraft extends JavaPlugin {
     	if (disguiseDB.containsKey(disguised.getName())) {
     		Disguise disguise = disguiseDB.get(disguised.getName());
     		MovementValues movement = disguise.getMovement(to);
+    		
+    		// Temporary Fix
+    		Packet movePacket;
+    		Packet lookPacket = disguise.getHeadRotatePacket(to);
+    		if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
+				movePacket = disguise.getEntityLookPacket(to);
+			} else {
+				movePacket = disguise.getEntityTeleportPacket(to);
+			}
+    		if (observer == null) {
+				sendPacketToWorld(disguised.getWorld(), movePacket, lookPacket);
+			} else {
+				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(movePacket);
+				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(lookPacket);
+			}
+    		
+    		/* Removed temporarily
     		if (movement.x < -128 || movement.x > 128 || movement.y < -128 || movement.y > 128 || movement.z < -128 || movement.z > 128) { // That's like a teleport right there!
     			Packet packet = disguise.getEntityTeleportPacket(to);
     			if (observer == null) {
@@ -339,7 +389,7 @@ public class DisguiseCraft extends JavaPlugin {
     					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
     				}
     			}
-    		}
+    		}*/
     	}
     }
     

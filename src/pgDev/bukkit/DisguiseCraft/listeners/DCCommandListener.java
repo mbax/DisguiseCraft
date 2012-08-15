@@ -967,6 +967,20 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
+			} else if (args[0].equalsIgnoreCase("drop")) {
+				if (isConsole || plugin.hasPermissions(player, "disguisecraft.drop")) {
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						plugin.dropDisguise(player);
+						player.sendMessage(ChatColor.GOLD + "Your disguise has been dropped");
+						if (isConsole) {
+							sender.sendMessage(player.getName() + "'s disguise was dropped");
+						}
+					} else {
+						sender.sendMessage(ChatColor.RED + "There is no disguise being worn");
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "You don't have permission to drop your disguise");
+				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (args.length > 1) {
 					if (isConsole || plugin.hasPermissions(player, "disguisecraft.player." + args[1])) {
