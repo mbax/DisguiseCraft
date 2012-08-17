@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import net.minecraft.server.Packet;
 
@@ -45,6 +47,9 @@ public class DisguiseCraft extends JavaPlugin {
 	// File Locations
     static String pluginMainDir = "./plugins/DisguiseCraft";
     static String pluginConfigLocation = pluginMainDir + "/DisguiseCraft.cfg";
+    
+    // Bukkit Logger (Console Output)
+    public static Logger logger;
 	
     // Permissions support
     static PermissionHandler Permissions;
@@ -67,12 +72,15 @@ public class DisguiseCraft extends JavaPlugin {
     public DCConfig pluginSettings;
     
 	public void onEnable() {
+		// Obtain logger
+		logger = getLogger();
+		
 		// Check for the plugin directory (create if it does not exist)
     	File pluginDir = new File(pluginMainDir);
 		if(!pluginDir.exists()) {
 			boolean dirCreation = pluginDir.mkdirs();
 			if (dirCreation) {
-				System.out.println("New DisguiseCraft directory created!");
+				logger.log(Level.INFO, "New directory created!");
 			}
 		}
 		
@@ -84,15 +92,15 @@ public class DisguiseCraft extends JavaPlugin {
         		pluginSettings = new DCConfig(preSettings, this);
         		if (!pluginSettings.upToDate) {
         			pluginSettings.createConfig();
-        			System.out.println("DisguiseCraft Configuration updated!");
+        			logger.log(Level.INFO, "Configuration updated!");
         		}
         	} else {
         		pluginSettings = new DCConfig(preSettings, this);
         		pluginSettings.createConfig();
-        		System.out.println("DisguiseCraft Configuration created!");
+        		logger.log(Level.INFO, "Configuration created!");
         	}
         } catch (Exception e) {
-        	System.out.println("Could not load DisguiseCraft configuration! " + e);
+        	logger.log(Level.WARNING, "Could not load configuration!", e);
         }
 		
 		// Register our events
@@ -112,7 +120,7 @@ public class DisguiseCraft extends JavaPlugin {
         	try {
         		this.getCommand(command).setExecutor(commandListener);
         	} catch (NullPointerException e) {
-        		System.out.println("Another plugin is using the /" + command + " command. You will need to use one of DisguiseCraft's alternate commands.");
+        		logger.log(Level.INFO, "Another plugin is using the /" + command + " command. You will need to use one of the alternate commands.");
         	}
         }
 		
@@ -125,7 +133,7 @@ public class DisguiseCraft extends JavaPlugin {
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
-        System.out.println( pdfFile.getName() + " version " + version + " is enabled!" );
+        logger.log(Level.INFO, "Version " + version + " is enabled!" );
 	}
 	
 	public boolean spoutEnabled() {
@@ -133,7 +141,7 @@ public class DisguiseCraft extends JavaPlugin {
 	}
 	
 	public void onDisable() {
-		System.out.println("DisguiseCraft disabled!");
+		logger.log(Level.INFO, "Disabled!");
 	}
 	
 	// Permissions Methods
@@ -185,7 +193,7 @@ public class DisguiseCraft extends JavaPlugin {
     	try {
     		return ((DisguiseCraft) Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft")).api;
     	} catch (Exception e) {
-    		System.out.println("The DisguiseCraft API could not be obtained!");
+    		logger.log(Level.SEVERE, "The DisguiseCraft API could not be obtained!");
     		return null;
     	}
     }

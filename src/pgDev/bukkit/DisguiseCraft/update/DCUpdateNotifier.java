@@ -1,5 +1,7 @@
 package pgDev.bukkit.DisguiseCraft.update;
 
+import java.util.logging.Level;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -23,7 +25,7 @@ public class DCUpdateNotifier  implements Runnable {
 					player.sendMessage(ChatColor.BLUE + "There is a new update for DisguiseCraft available: " + update);
 				}
 			} catch (NumberFormatException e) {
-				System.out.println("DisguiseCraft could not parse version updates.");
+				DisguiseCraft.logger.log(Level.WARNING, "Could not parse version updates.");
 			}
 		}
 	}

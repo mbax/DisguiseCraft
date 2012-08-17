@@ -2,6 +2,7 @@ package pgDev.bukkit.DisguiseCraft;
 
 import java.lang.reflect.Field;
 import java.util.LinkedList;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -485,7 +486,7 @@ public class Disguise {
 					try {
 						return Byte.valueOf(parts[1]);
 					} catch (NumberFormatException e) {
-						System.out.println("DisguiseCraft could not parse the byte of an Enderman holding block!");
+						DisguiseCraft.logger.log(Level.WARNING, "Could not parse the byte of an Enderman holding block!");
 					}
 				}
 			}
@@ -581,8 +582,7 @@ public class Disguise {
 				metadataField.setAccessible(true);
 				metadataField.set(packet, metadata);
 			} catch (Exception e) {
-				System.out.println("DisguiseCraft was unable to set the metadata for a " + mob.name() +  " disguise!");
-				e.printStackTrace();
+				DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a " + mob.name() +  " disguise!", e);
 			}
 			
 			// Ender Dragon fix
@@ -624,8 +624,7 @@ public class Disguise {
 				metadataField.setAccessible(true);
 				metadataField.set(packet, metadata);
 			} catch (Exception e) {
-				System.out.println("DisguiseCraft was unable to set the metadata for a player disguise!");
-				e.printStackTrace();
+				DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a player disguise!", e);
 			}
 	        return packet;
 		} else {
@@ -650,8 +649,7 @@ public class Disguise {
 					itemField.setAccessible(true);
 					itemField.set(packet, null);
 				} catch (Exception e) {
-					System.out.println("DisguiseCraft was unable to set the item type for a player disguise!");
-					e.printStackTrace();
+					DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the item type for a player disguise!", e);
 				}
 			} else {
 				packet = new Packet5EntityEquipment(entityID, slot, ((CraftItemStack) item).getHandle());
@@ -740,8 +738,7 @@ public class Disguise {
 			metadataField.setAccessible(true);
 			metadataField.set(packet, metadata);
 		} catch (Exception e) {
-			System.out.println("DisguiseCraft was unable to set the metadata for a " + mob.name() +  " disguise!");
-			e.printStackTrace();
+			DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a " + mob.name() +  " disguise!", e);
 		}
 		return packet;
 	}

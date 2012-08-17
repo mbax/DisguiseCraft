@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class DCConfig {
 	private Properties properties;
@@ -171,8 +172,7 @@ public class DCConfig {
     		out.write("updateNotification=" + updateNotification + "\r\n");
     		out.close();
     	} catch (Exception e) {
-    		System.out.println(e);
-    		// Not sure what to do? O.o
+    		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);
     	}
     }
 }

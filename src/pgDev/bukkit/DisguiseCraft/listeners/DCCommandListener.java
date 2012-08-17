@@ -38,7 +38,7 @@ public class DCCommandListener implements CommandExecutor {
 			player = (Player) sender;
 		} else {
 			if (args.length == 0 || (player = plugin.getServer().getPlayer(args[0])) == null) {
-				System.out.println("Because you are using the console, you must specify a player as your first argyment.");
+				sender.sendMessage("Because you are using the console, you must specify a player as your first argyment.");
 				return true;
 			} else {
 				isConsole = true;

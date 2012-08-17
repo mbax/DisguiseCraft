@@ -2,6 +2,9 @@ package pgDev.bukkit.DisguiseCraft.update;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.logging.Level;
+
+import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
 
 public class DCUpdateChecker {
@@ -29,8 +32,7 @@ public class DCUpdateChecker {
 			String[] files = importantLine.split("R: ");
 			return files[1].trim();
 		} catch (Exception e) {
-			System.out.println("Error checking for DisguiseCraft updates: " + e);
-			e.printStackTrace();
+			DisguiseCraft.logger.log(Level.WARNING , "Error checking for updates", e);
 		}
 		return "Error during check!";
 	}
