@@ -574,24 +574,21 @@ public class Disguise {
 			packet.c = (int) x;
 			packet.d = (int) y;
 			packet.e = (int) z;
-			packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
-			packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
-			packet.h = packet.f;
+			packet.i = DisguiseCraft.degreeToByte(loc.getYaw());
+			packet.j = DisguiseCraft.degreeToByte(loc.getPitch());
+			if (mob == MobType.EnderDragon) { // Ender Dragon fix
+				packet.i = (byte) (packet.i - 128);
+			}
+			if (mob == MobType.Chicken) { // Chicken fix
+				packet.j = (byte) (packet.j * -1);
+			}
+			packet.k = packet.i;
 			try {
 				Field metadataField = packet.getClass().getDeclaredField("s");
 				metadataField.setAccessible(true);
 				metadataField.set(packet, metadata);
 			} catch (Exception e) {
 				DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a " + mob.name() +  " disguise!", e);
-			}
-			
-			// Ender Dragon fix
-			if (mob == MobType.EnderDragon) {
-				packet.f = (byte) (packet.f - 128);
-			}
-			// Chicken fix
-			if (mob == MobType.Chicken) {
-				packet.g = (byte) (packet.g * -1);
 			}
 			return packet;
 		} else {

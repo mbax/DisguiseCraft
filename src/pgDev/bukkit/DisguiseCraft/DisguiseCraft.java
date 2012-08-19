@@ -133,7 +133,7 @@ public class DisguiseCraft extends JavaPlugin {
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
-        logger.log(Level.INFO, "Version " + version + " is enabled!" );
+        logger.log(Level.INFO, "Version " + version + " is enabled!");
 	}
 	
 	public boolean spoutEnabled() {
