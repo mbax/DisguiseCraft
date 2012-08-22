@@ -109,9 +109,9 @@ public class Disguise {
 		 */
 		public static String subTypes = "player, baby, black, blue, brown, cyan, " +
 			"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
-			"silver, white, yellow, sheared, charged, tiny, small, big, tamed, aggressive, " +
-			"tabby, tuxedo, siamese, burning, saddled, librarian, priest, blacksmith, butcher, " +
-			"nopickup";
+			"silver, white, yellow, sheared, charged, tiny, small, big, bigger, massive, godzilla, " +
+			"tamed, aggressive, tabby, tuxedo, siamese, burning, saddled, " +
+			"librarian, priest, blacksmith, butcher, nopickup";
 	}
 	
 	// Individual disguise stuff
@@ -323,12 +323,22 @@ public class Disguise {
 					metadata.watch(17, (byte) 1);
 				}
 				
-				if (data.contains("tiny")) {
-					metadata.watch(16, (byte) 1);
-				} else if (data.contains("small")) {
-					metadata.watch(16, (byte) 2);
-				} else if (data.contains("big")) {
-					metadata.watch(16, (byte) 4);
+				try {
+					if (data.contains("tiny")) {
+						metadata.watch(16, (byte) 1);
+					} else if (data.contains("small")) {
+						metadata.watch(16, (byte) 2);
+					} else if (data.contains("big")) {
+						metadata.watch(16, (byte) 4);
+					} else if (data.contains("bigger")) {
+						metadata.watch(16, (byte) DisguiseCraft.pluginSettings.biggerCube);
+					} else if (data.contains("massive")) {
+						metadata.watch(16, (byte) DisguiseCraft.pluginSettings.massiveCube);
+					} else if (data.contains("godzilla")) {
+						metadata.watch(16, (byte) DisguiseCraft.pluginSettings.godzillaCube);
+					}
+				} catch (Exception e) {
+					DisguiseCraft.logger.log(Level.WARNING, "Bad cube size values in configuration!", e);
 				}
 				
 				if (data.contains("sitting")) {

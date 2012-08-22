@@ -69,7 +69,7 @@ public class DisguiseCraft extends JavaPlugin {
     public HashMap<String, String> customNick = new HashMap<String, String>();
     
     // Plugin Configuration
-    public DCConfig pluginSettings;
+    static public DCConfig pluginSettings;
     
 	public void onEnable() {
 		// Obtain logger

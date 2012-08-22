@@ -160,6 +160,9 @@ permissions:
             disguisecraft.mob.magmacube.size.tiny: true
             disguisecraft.mob.magmacube.size.small: true
             disguisecraft.mob.magmacube.size.big: true
+            disguisecraft.mob.magmacube.size.bigger: true
+            disguisecraft.mob.magmacube.size.massive: true
+            disguisecraft.mob.magmacube.size.godzilla: true
     disguisecraft.mob.magmacube.size.tiny:
         default: op
         description: Can disguise as a magmacube of size tiny.
@@ -169,6 +172,15 @@ permissions:
     disguisecraft.mob.magmacube.size.big:
         default: op
         description: Can disguise as a magmacube of size big.
+    disguisecraft.mob.magmacube.size.bigger:
+        default: op
+        description: Can disguise as a magmacube of size bigger.
+    disguisecraft.mob.magmacube.size.massive:
+        default: op
+        description: Can disguise as a magmacube of size massive.
+    disguisecraft.mob.magmacube.size.godzilla:
+        default: op
+        description: Can disguise as a magmacube of size godzilla.
     disguisecraft.mob.mushroomcow:
         default: op
         description: Can disguise as a mooshroom.
@@ -303,15 +315,27 @@ permissions:
             disguisecraft.mob.slime.size.tiny: true
             disguisecraft.mob.slime.size.small: true
             disguisecraft.mob.slime.size.big: true
+            disguisecraft.mob.slime.size.bigger: true
+            disguisecraft.mob.slime.size.massive: true
+            disguisecraft.mob.slime.size.godzilla: true
     disguisecraft.mob.slime.size.tiny:
         default: op
-        description: Can disguise as a slime of any size tiny.
+        description: Can disguise as a slime of size tiny.
     disguisecraft.mob.slime.size.small:
         default: op
-        description: Can disguise as a slime of any size small.
+        description: Can disguise as a slime of size small.
     disguisecraft.mob.slime.size.big:
         default: op
-        description: Can disguise as a slime of any size big.
+        description: Can disguise as a slime of size big.
+    disguisecraft.mob.slime.size.bigger:
+        default: op
+        description: Can disguise as a slime of size bigger.
+    disguisecraft.mob.slime.size.massive:
+        default: op
+        description: Can disguise as a slime of size massive.
+    disguisecraft.mob.slime.size.godzilla:
+        default: op
+        description: Can disguise as a slime of size godzilla.
     disguisecraft.mob.snowman:
         default: op
         description: Can disguise as a snow golem.

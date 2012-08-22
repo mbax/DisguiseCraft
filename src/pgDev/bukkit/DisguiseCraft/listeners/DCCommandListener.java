@@ -444,7 +444,8 @@ public class DCCommandListener implements CommandExecutor {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
 				}
-			} else if (args[0].equalsIgnoreCase("tiny") || args[0].equalsIgnoreCase("small") || args[0].equalsIgnoreCase("big")) {
+			} else if (args[0].equalsIgnoreCase("tiny") || args[0].equalsIgnoreCase("small") || args[0].equalsIgnoreCase("big")
+					|| args[0].equalsIgnoreCase("bigger") || args[0].equalsIgnoreCase("massive") || args[0].equalsIgnoreCase("godzilla")) {
 				if (args.length > 1) { // New disguise
 					MobType type = MobType.fromString(args[1]);
 					if (type == null) {

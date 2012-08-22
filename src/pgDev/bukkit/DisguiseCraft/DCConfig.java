@@ -20,6 +20,9 @@ public class DCConfig {
 	public boolean optionalListeners;
 	public boolean disguisePVP;
 	public boolean updateNotification;
+	public int biggerCube;
+	public int massiveCube;
+	public int godzillaCube;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -29,6 +32,9 @@ public class DCConfig {
         optionalListeners = getBoolean("optionals", true);
         disguisePVP = getBoolean("disguisePVP", true);
         updateNotification = getBoolean("updateNotification", true);
+        biggerCube = getInt("bigger", 20);
+        massiveCube = getInt("massive", 50);
+        godzillaCube = getInt("godzilla", 100);
 	}
 	
 	// Value obtaining functions down below
@@ -170,6 +176,17 @@ public class DCConfig {
     		out.write("#	and notify those who have the \"disguisecraft.update\"\r\n");
     		out.write("#	permission of plugin updates upon joining.\r\n");
     		out.write("updateNotification=" + updateNotification + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Unnatural Slime/MagmaCube Sizes\r\n");
+    		out.write("#	Here you can set the size for the extra slime\r\n");
+    		out.write("#	subtypes given. You can choose any number between\r\n");
+    		out.write("#	-128 and 127, but beware that negative slime\r\n");
+    		out.write("#	size values will result in upside-down slimes.\r\n");
+    		out.write("#	These slime properties will also apply\r\n");
+    		out.write("#	to magma cubes.\r\n");
+    		out.write("bigger=" + biggerCube + "\r\n");
+    		out.write("massive=" + massiveCube + "\r\n");
+    		out.write("godzilla=" + godzillaCube + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);

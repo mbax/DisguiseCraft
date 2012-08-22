@@ -40,7 +40,7 @@ public class DCMainListener implements Listener {
 		Player player = event.getPlayer();
 		
 		// Injection
-		if (plugin.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
+		if (DisguiseCraft.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
 			EntityPlayer entity = ((CraftPlayer)player).getHandle();
 			if (!(entity.netServerHandler instanceof DCHandler)) {
 				NetServerHandler newHandler;
@@ -71,7 +71,7 @@ public class DCMainListener implements Listener {
 		}
 		
 		// Updates?
-		if (plugin.pluginSettings.updateNotification && plugin.hasPermissions(player, "disguisecraft.update")) {
+		if (DisguiseCraft.pluginSettings.updateNotification && plugin.hasPermissions(player, "disguisecraft.update")) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DCUpdateNotifier(plugin, player));
 		}
 	}

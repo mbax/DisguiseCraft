@@ -24,3 +24,14 @@ disguisePVP=true
 #	and notify those who have the "disguisecraft.update"
 #	permission of plugin updates upon joining.
 updateNotification=true
+
+# Unnatural Slime/MagmaCube Sizes
+#	Here you can set the size for the extra slime
+#	subtypes given. You can choose any number between
+#	-128 and 127, but beware that negative slime
+#	size values will result in upside-down slimes.
+#	These slime properties will also apply
+#	to magma cubes.
+bigger=20
+massive=50
+godzilla=100
