@@ -1,11 +1,8 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
-import net.minecraft.server.EntityPlayer;
-import net.minecraft.server.NetServerHandler;
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -15,9 +12,6 @@ import org.bukkit.event.player.*;
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
-import pgDev.bukkit.DisguiseCraft.injection.DCHandler;
-import pgDev.bukkit.DisguiseCraft.injection.DCNetServerHandler;
-import pgDev.bukkit.DisguiseCraft.injection.OrebfuscatorHandleProducer;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
 public class DCMainListener implements Listener {
@@ -38,28 +32,6 @@ public class DCMainListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		
-		// Injection
-		if (DisguiseCraft.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
-			EntityPlayer entity = ((CraftPlayer)player).getHandle();
-			if (!(entity.netServerHandler instanceof DCHandler)) {
-				NetServerHandler newHandler;
-				/*if (plugin.spoutEnabled()) { // Spout
-					entity.netServerHandler.disconnected = true;
-					newHandler = SpoutHandleProducer.getHandle(entity.server, entity.netServerHandler.networkManager, entity);
-				} else*/
-				if (plugin.getServer().getPluginManager().getPlugin("Orebfuscator") != null) { // Orebfuscator
-					newHandler = OrebfuscatorHandleProducer.getHandle(entity.server, entity.netServerHandler);
-				} else { // DisguiseCraft
-					entity.netServerHandler.disconnected = true;
-					newHandler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
-					entity.netServerHandler.networkManager.a(newHandler);
-				}
-				newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
-				entity.netServerHandler = newHandler;
-				entity.server.ac().a(newHandler);
-			}
-		}
 		
 		// Show disguises to newly joined players
 		plugin.showWorldDisguises(player);

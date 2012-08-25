@@ -1,6 +1,12 @@
 package pgDev.bukkit.DisguiseCraft.injection;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.logging.Level;
+
 import org.bukkit.craftbukkit.CraftServer;
+
+import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
 import net.minecraft.server.EntityPlayer;
 import net.minecraft.server.INetworkManager;
@@ -17,6 +23,20 @@ public class DCNetServerHandler extends NetServerHandler {
 		super(minecraftserver, networkmanager, entityplayer);
 		this.minecraftServer = minecraftserver;
 		this.server = minecraftserver.server;
+	}
+	
+	public void copyFields(NetServerHandler from, String... excludes) {
+		for (Field f : from.getClass().getDeclaredFields()) {
+			if (excludes != null && Arrays.asList(excludes).contains(f.getName())) continue;
+			try {
+				f.setAccessible(true);
+				f.set(this, f.get(from));
+			} catch (IllegalArgumentException e) {
+				DisguiseCraft.logger.log(Level.WARNING, "A DCNSH instance could not set the field: " + f.getName(), e);
+			} catch (IllegalAccessException e) {
+				DisguiseCraft.logger.log(Level.WARNING, "A DCNSH instance could not access the field:" + f.getName(), e);
+			}
+		}
 	}
 	
 	@Override
