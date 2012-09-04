@@ -275,6 +275,23 @@ public class Disguise {
 	}
 	
 	public void handleData() {
+		// Index 0
+		byte firstIndex = 0;
+		if (data.contains("burning")) {
+			firstIndex = (byte) (firstIndex | 0x01);
+		}
+		if (data.contains("crouched")) {
+			firstIndex = (byte) (firstIndex | 0x02);
+		}
+		if (data.contains("riding")) {
+			firstIndex = (byte) (firstIndex | 0x04);
+		}
+		if (data.contains("sprinting")) {
+			firstIndex = (byte) (firstIndex | 0x08);
+		}
+		metadata.watch(0, firstIndex);
+		
+		// The other indexes
 		if (mob != null) {
 			if (data != null) {
 				if (data.contains("baby")) {
@@ -377,14 +394,6 @@ public class Disguise {
 				
 				if (data.contains("saddled")) {
 					metadata.watch(16, (byte) 1);
-				}
-				
-				if (data.contains("crouched")) {
-					metadata.watch(0, (byte) 2);
-				} else if (data.contains("sprinting")) {
-					metadata.watch(0, (byte) 8);
-				} else if (data.contains("burning")) {
-					metadata.watch(0, (byte) 1);
 				}
 				
 				Byte held = getHolding();
