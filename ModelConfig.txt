@@ -9,6 +9,7 @@
 #		-Player arm-swing animation
 #		-Player sneak animation
 #		-Disguise damage animation
+#		-Disguise death animation
 optionals=true
 
 # Disguise PVP

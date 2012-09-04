@@ -1,13 +1,13 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
-import net.minecraft.server.Packet18ArmAnimation;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -69,12 +69,30 @@ public class DCOptionalListener implements Listener {
 				Player player = (Player) event.getEntity();
 				if (plugin.disguiseDB.containsKey(player.getName())) {
 					// Send the damage animation
-					Packet18ArmAnimation packet = new Packet18ArmAnimation();
-					packet.a = plugin.disguiseDB.get(player.getName()).entityID;
-					packet.b = (byte) 2;
-					plugin.sendPacketToWorld(player.getWorld(), packet);
+					plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).getAnimationPacket(2));
 				}
 			}
+		}
+	}
+	
+	@EventHandler
+	public void onDeath(EntityDeathEvent event) {
+		if (event.getEntity() instanceof Player) {
+			Player player = (Player) event.getEntity();
+			if (plugin.disguiseDB.containsKey(player.getName())) {
+				// Send death packet
+				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).getStatusPacket(3));
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onRespawn(PlayerRespawnEvent event) {
+		Player player = event.getPlayer();
+		if (plugin.disguiseDB.containsKey(player.getName())) {
+			// Respawn disguise
+			plugin.sendUnDisguise(player, null);
+			plugin.sendDisguise(player, null);
 		}
 	}
 }

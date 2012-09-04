@@ -161,6 +161,7 @@ public class DCConfig {
     		out.write("#		-Player arm-swing animation\r\n");
     		out.write("#		-Player sneak animation\r\n");
     		out.write("#		-Disguise damage animation\r\n");
+    		out.write("#		-Disguise death animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
     		out.write("#\r\n");
     		out.write("# Disguise PVP\r\n");

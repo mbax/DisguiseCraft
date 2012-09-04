@@ -731,30 +731,26 @@ public class DCCommandListener implements CommandExecutor {
 						if (disguise.data != null && disguise.data.contains("burning")) {
 							sender.sendMessage(ChatColor.RED + "Already burning.");
 						} else {
-							if (disguise.isPlayer()) {
-								sender.sendMessage(ChatColor.RED + "Player disguises can't be set to burn");
-							} else {
+							// Check for permissions
+							if (isConsole || plugin.hasPermissions(player, "disguisecraft.burning")) {
 								disguise.addSingleData("burning");
 								
-								// Check for permissions
-								if (isConsole || plugin.hasPermissions(player, "disguisecraft.burning")) {
-									// Pass the event
-									PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
-									plugin.getServer().getPluginManager().callEvent(ev);
-									if (ev.isCancelled()) return true;
-									
-									if (disguise.isPlayer()) {
-										plugin.sendPacketToWorld(player.getWorld(), disguise.getMetadataPacket());
-									} else {
-										plugin.changeDisguise(player, disguise);
-									}
-									player.sendMessage(ChatColor.GOLD + "Your disguise is now burning");
-									if (isConsole) {
-										sender.sendMessage(player.getName() + "'s disguise is now burning");
-									}
+								// Pass the event
+								PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
+								plugin.getServer().getPluginManager().callEvent(ev);
+								if (ev.isCancelled()) return true;
+								
+								if (disguise.isPlayer()) {
+									plugin.sendPacketToWorld(player.getWorld(), disguise.getMetadataPacket());
 								} else {
-									player.sendMessage(ChatColor.RED + "You do not have the permissions to have a burning disguise");
+									plugin.changeDisguise(player, disguise);
 								}
+								player.sendMessage(ChatColor.GOLD + "Your disguise is now burning");
+								if (isConsole) {
+									sender.sendMessage(player.getName() + "'s disguise is now burning");
+								}
+							} else {
+								player.sendMessage(ChatColor.RED + "You do not have the permissions to have a burning disguise");
 							}
 						}
 					} else {

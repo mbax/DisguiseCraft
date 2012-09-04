@@ -22,6 +22,7 @@ import net.minecraft.server.Packet32EntityLook;
 import net.minecraft.server.Packet33RelEntityMoveLook;
 import net.minecraft.server.Packet34EntityTeleport;
 import net.minecraft.server.Packet35EntityHeadRotation;
+import net.minecraft.server.Packet38EntityStatus;
 import net.minecraft.server.Packet40EntityMetadata;
 import net.minecraft.server.Packet5EntityEquipment;
 
@@ -275,25 +276,25 @@ public class Disguise {
 	}
 	
 	public void handleData() {
-		// Index 0
-		byte firstIndex = 0;
-		if (data.contains("burning")) {
-			firstIndex = (byte) (firstIndex | 0x01);
-		}
-		if (data.contains("crouched")) {
-			firstIndex = (byte) (firstIndex | 0x02);
-		}
-		if (data.contains("riding")) {
-			firstIndex = (byte) (firstIndex | 0x04);
-		}
-		if (data.contains("sprinting")) {
-			firstIndex = (byte) (firstIndex | 0x08);
-		}
-		metadata.watch(0, firstIndex);
-		
-		// The other indexes
-		if (mob != null) {
-			if (data != null) {
+		if (data != null) {
+			// Index 0
+			byte firstIndex = 0;
+			if (data.contains("burning")) {
+				firstIndex = (byte) (firstIndex | 0x01);
+			}
+			if (data.contains("crouched")) {
+				firstIndex = (byte) (firstIndex | 0x02);
+			}
+			if (data.contains("riding")) {
+				firstIndex = (byte) (firstIndex | 0x04);
+			}
+			if (data.contains("sprinting")) {
+				firstIndex = (byte) (firstIndex | 0x08);
+			}
+			metadata.watch(0, firstIndex);
+			
+			// The other indexes
+			if (mob != null) {
 				if (data.contains("baby")) {
 					metadata.watch(12, -23999);
 				} else {
@@ -484,13 +485,27 @@ public class Disguise {
 			if (!data.contains("crouched")) {
 				data.add("crouched");
 			}
-			metadata.watch(0, (byte) 2);
 		} else {
 			if (data.contains("crouched")) {
 				data.remove("crouched");
 			}
-			metadata.watch(0, (byte) 0);
 		}
+		
+		// Index 0
+		byte firstIndex = 0;
+		if (data.contains("burning")) {
+			firstIndex = (byte) (firstIndex | 0x01);
+		}
+		if (data.contains("crouched")) {
+			firstIndex = (byte) (firstIndex | 0x02);
+		}
+		if (data.contains("riding")) {
+			firstIndex = (byte) (firstIndex | 0x04);
+		}
+		if (data.contains("sprinting")) {
+			firstIndex = (byte) (firstIndex | 0x08);
+		}
+		metadata.watch(0, firstIndex);
 	}
 	
 	/**
@@ -799,5 +814,15 @@ public class Disguise {
 	
 	public Packet40EntityMetadata getMetadataPacket() {
 		return new Packet40EntityMetadata(entityID, metadata);
+	}
+	
+	public Packet38EntityStatus getStatusPacket(int status) {
+		// 2 - entity hurt
+		// 3 - entity dead
+		// 6 - wolf taming
+		// 7 - wolf tamed
+		// 8 - wolf shaking water
+		// 10 - sheep eating grass
+		return new Packet38EntityStatus(entityID, (byte) status);
 	}
 }
