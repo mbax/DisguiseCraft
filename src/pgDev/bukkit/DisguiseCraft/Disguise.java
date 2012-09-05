@@ -548,7 +548,7 @@ public class Disguise {
 			}
 			if (data != null) {
 				for (String dat : data) { // Check Subtypes
-					if (dat.equalsIgnoreCase("crouched")) { // Ignore crouching
+					if (dat.equalsIgnoreCase("crouched") || dat.equalsIgnoreCase("riding") || dat.equalsIgnoreCase("sprinting")) { // Ignore some statuses
 						continue;
 					}
 					if (dat.startsWith("holding")) { // Check Holding Block

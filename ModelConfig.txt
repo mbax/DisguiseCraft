@@ -36,3 +36,8 @@ updateNotification=true
 bigger=20
 massive=50
 godzilla=100
+
+# Undisguise on Quit
+#	With this set to true, any disguise player
+#	who leaves the server will be undisguised.
+quitUndisguise=true

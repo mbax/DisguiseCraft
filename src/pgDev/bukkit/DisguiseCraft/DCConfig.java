@@ -23,6 +23,7 @@ public class DCConfig {
 	public int biggerCube;
 	public int massiveCube;
 	public int godzillaCube;
+	public boolean quitUndisguise;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -35,6 +36,7 @@ public class DCConfig {
         biggerCube = getInt("bigger", 20);
         massiveCube = getInt("massive", 50);
         godzillaCube = getInt("godzilla", 100);
+        quitUndisguise = getBoolean("quitUndisguise", true);
 	}
 	
 	// Value obtaining functions down below
@@ -188,6 +190,11 @@ public class DCConfig {
     		out.write("bigger=" + biggerCube + "\r\n");
     		out.write("massive=" + massiveCube + "\r\n");
     		out.write("godzilla=" + godzillaCube + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Undisguise on Quit\r\n");
+    		out.write("#	With this set to true, any disguise player\r\n");
+    		out.write("#	who leaves the server will be undisguised.\r\n");
+    		out.write("quitUndisguise=" + quitUndisguise + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);

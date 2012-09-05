@@ -42,6 +42,22 @@ public class DCMainListener implements Listener {
 			plugin.disguiseQuitters.remove(player.getName());
 		}
 		
+		// Has a disguise?
+		if (plugin.disguiseDB.containsKey(player.getName())) {
+			Disguise disguise = plugin.disguiseDB.get(player.getName());
+			if (disguise.hasPermission(player)) {
+				plugin.sendDisguise(player, null);
+				if (disguise.isPlayer()) {
+					player.sendMessage(ChatColor.GOLD + "You were redisguised as player: " + disguise.data.getFirst());
+				} else {
+					player.sendMessage(ChatColor.GOLD + "You were redisguised as a " + ChatColor.DARK_GREEN + disguise.mob.name());
+				}
+			} else {
+				plugin.disguiseDB.remove(player.getName());
+				player.sendMessage(ChatColor.RED + "You do not have the permissions required to wear your disguise in this world.");
+			}
+		}
+		
 		// Updates?
 		if (DisguiseCraft.pluginSettings.updateNotification && plugin.hasPermissions(player, "disguisecraft.update")) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DCUpdateNotifier(plugin, player));
@@ -54,8 +70,12 @@ public class DCMainListener implements Listener {
 		
 		// Undisguise them because they left
 		if (plugin.disguiseDB.containsKey(player.getName())) {
-			plugin.unDisguisePlayer(player);
-			plugin.disguiseQuitters.add(player.getName());
+			if (DisguiseCraft.pluginSettings.quitUndisguise) {
+				plugin.unDisguisePlayer(player);
+				plugin.disguiseQuitters.add(player.getName());
+			} else {
+				plugin.sendUnDisguise(player, null);
+			}
 		}
 		
 		// Undisguise others
