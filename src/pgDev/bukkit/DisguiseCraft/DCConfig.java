@@ -19,6 +19,7 @@ public class DCConfig {
 	// List of Config Options
 	public boolean optionalListeners;
 	public boolean disguisePVP;
+	public int overrideDelay;
 	public boolean updateNotification;
 	public int biggerCube;
 	public int massiveCube;
@@ -32,6 +33,7 @@ public class DCConfig {
         // Grab values here.
         optionalListeners = getBoolean("optionals", true);
         disguisePVP = getBoolean("disguisePVP", true);
+        overrideDelay = getInt("overrideDelay", 5);
         updateNotification = getBoolean("updateNotification", true);
         biggerCube = getInt("bigger", 20);
         massiveCube = getInt("massive", 50);
@@ -171,8 +173,11 @@ public class DCConfig {
     		out.write("#	are disguised, DisguiseCraft must utilize its own\r\n");
     		out.write("#	proxy form of the NetServerHandler class. This means\r\n");
     		out.write("#	that if you are having compatibility issues, it\r\n");
-    		out.write("#	would be best if you disbled this.\r\n");
+    		out.write("#	would be best if you disabled this.\r\n");
+    		out.write("#	The delay is the number of ticks DisguiseCraft\r\n");
+    		out.write("#	will wait before injecting its proxy.\r\n");
     		out.write("disguisePVP=" + disguisePVP + "\r\n");
+    		out.write("overrideDelay=" + overrideDelay + "\r\n");
     		out.write("\r\n");
     		out.write("# Update Notification\r\n");
     		out.write("#	With this set to true, the plugin will check for\r\n");

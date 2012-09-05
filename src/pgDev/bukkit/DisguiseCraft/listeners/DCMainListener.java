@@ -3,6 +3,8 @@ package pgDev.bukkit.DisguiseCraft.listeners;
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -11,7 +13,10 @@ import org.bukkit.event.player.*;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
+import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
+import pgDev.bukkit.DisguiseCraft.injection.DCNSHOverrideTask;
+import pgDev.bukkit.DisguiseCraft.injection.PlayerInvalidInteractEvent;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
 public class DCMainListener implements Listener {
@@ -32,6 +37,11 @@ public class DCMainListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		
+		// Injection
+		if (DisguiseCraft.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DCNSHOverrideTask(player), DisguiseCraft.pluginSettings.overrideDelay);
+		}
 		
 		// Show disguises to newly joined players
 		plugin.showWorldDisguises(player);
@@ -61,6 +71,27 @@ public class DCMainListener implements Listener {
 		// Updates?
 		if (DisguiseCraft.pluginSettings.updateNotification && plugin.hasPermissions(player, "disguisecraft.update")) {
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DCUpdateNotifier(plugin, player));
+		}
+	}
+	
+	@EventHandler
+	public void onDisguiseHit(PlayerInvalidInteractEvent event) {
+		if (event.getAction()) {
+			Player attacked = plugin.getPlayerFromDisguiseID(event.getTarget());
+			if (attacked != null) {
+				// Do the attack
+				((CraftPlayer) event.getPlayer()).getHandle().attack(((CraftPlayer) attacked).getHandle());
+			}
+		} else {
+			if (event.getPlayer().getItemInHand().getType() == Material.SHEARS) {
+				Player clicked = plugin.getPlayerFromDisguiseID(event.getTarget());
+				if (clicked != null) {
+					Disguise disguise = plugin.disguiseDB.get(clicked.getName());
+					if (disguise.mob != null && disguise.mob == MobType.MushroomCow) {
+						((CraftPlayer) event.getPlayer()).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket(clicked.getLocation()));
+					}
+				}
+			}
 		}
 	}
 	

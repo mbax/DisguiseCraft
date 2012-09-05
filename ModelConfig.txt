@@ -17,8 +17,11 @@ optionals=true
 #	are disguised, DisguiseCraft must utilize its own
 #	proxy form of the NetServerHandler class. This means
 #	that if you are having compatibility issues, it
-#	would be best if you disbled this.
+#	would be best if you disabled this.
+#	The delay is the number of ticks DisguiseCraft
+#	will wait before injecting its proxy.
 disguisePVP=true
+overrideDelay=5
 
 # Update Notification
 #	With this set to true, the plugin will check for

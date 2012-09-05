@@ -25,7 +25,6 @@ import org.bukkit.util.Vector;
 
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
-import pgDev.bukkit.DisguiseCraft.listeners.DCCustomListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics;
@@ -57,7 +56,6 @@ public class DisguiseCraft extends JavaPlugin {
     // Listeners
     DCMainListener mainListener = new DCMainListener(this);
     DCOptionalListener optionalListener = new DCOptionalListener(this);
-    DCCustomListener customListener = new DCCustomListener(this);
     
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
@@ -108,9 +106,6 @@ public class DisguiseCraft extends JavaPlugin {
 		pm.registerEvents(mainListener, this);
 		if (pluginSettings.optionalListeners) {
 			pm.registerEvents(optionalListener, this);
-		}
-		if (pluginSettings.disguisePVP) {
-			pm.registerEvents(customListener, this);
 		}
 		
 		// Toss over the command events
