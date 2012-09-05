@@ -631,7 +631,7 @@ public class Disguise {
 	}
 	
 	public Packet20NamedEntitySpawn getPlayerSpawnPacket(Location loc, short item) {
-		if (mob == null && !data.equals("$")) {
+		if (mob == null && data != null) {
 			Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn();
 	        packet.a = entityID;
 	        packet.b = data.getFirst();
@@ -762,16 +762,7 @@ public class Disguise {
 	}
 	
 	public Packet40EntityMetadata getEntityMetadataPacket() {
-		Packet40EntityMetadata packet = new Packet40EntityMetadata();
-		packet.a = entityID;
-		try {
-			Field metadataField = packet.getClass().getDeclaredField("b");
-			metadataField.setAccessible(true);
-			metadataField.set(packet, metadata);
-		} catch (Exception e) {
-			DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a " + mob.name() +  " disguise!", e);
-		}
-		return packet;
+		return new Packet40EntityMetadata(entityID, metadata);
 	}
 	
 	public Packet201PlayerInfo getPlayerInfoPacket(Player player, boolean show) {
