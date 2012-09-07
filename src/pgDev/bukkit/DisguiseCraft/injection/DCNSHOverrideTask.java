@@ -26,6 +26,7 @@ public class DCNSHOverrideTask implements Runnable {
 					entity.netServerHandler.disconnected = true;
 					newHandler = new DCNetServerHandler(entity.server, entity.netServerHandler.networkManager, entity);
 					((DCNetServerHandler) newHandler).copyFields(entity.netServerHandler, "disconnected");
+					newHandler.a(entity.locX, entity.locY, entity.locZ, entity.yaw, entity.pitch);
 					entity.netServerHandler.networkManager.a(newHandler);
 					entity.server.ac().a(newHandler);
 				}
