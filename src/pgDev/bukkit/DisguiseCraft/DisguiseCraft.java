@@ -27,6 +27,8 @@ import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
+import pgDev.bukkit.DisguiseCraft.listeners.movement.DCMovementAsyncListener;
+import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerMoveListener;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics;
 
 import com.nijiko.permissions.PermissionHandler;
@@ -54,8 +56,10 @@ public class DisguiseCraft extends JavaPlugin {
     static PermissionHandler Permissions;
     
     // Listeners
-    DCMainListener mainListener = new DCMainListener(this);
-    DCOptionalListener optionalListener = new DCOptionalListener(this);
+    DCMainListener mainListener;
+    DCPlayerMoveListener moveListener;
+    DCMovementAsyncListener  asyncMoveListener; // Not a real listener XD
+    DCOptionalListener optionalListener;
     
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
@@ -103,9 +107,14 @@ public class DisguiseCraft extends JavaPlugin {
 		
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
-		pm.registerEvents(mainListener, this);
+		pm.registerEvents(mainListener  = new DCMainListener(this), this);
+		if (pluginSettings.movementUpdateThreading) {
+			getServer().getScheduler().scheduleAsyncRepeatingTask(this, asyncMoveListener = new DCMovementAsyncListener(this), pluginSettings.movementUpdateFrequency, pluginSettings.movementUpdateFrequency);
+		} else {
+			pm.registerEvents(moveListener = new DCPlayerMoveListener(this), this);
+		}
 		if (pluginSettings.optionalListeners) {
-			pm.registerEvents(optionalListener, this);
+			pm.registerEvents(optionalListener = new DCOptionalListener(this), this);
 		}
 		
 		// Toss over the command events

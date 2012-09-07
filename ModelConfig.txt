@@ -55,3 +55,14 @@ quitUndisguise=true
 #	disguise movements handled in the less
 #	bandwidth-intensive manner.
 bandwidthReduction=false
+
+# Disguise Movement Update Threading
+#	Typically, DisguiseCraft uses the PlayerMoveEvent
+#	in order to track disguises. However, this has
+#	proven to cause lag on servers with large
+#	numbers of disguised players. Use this option
+#	to place updates into another thread. You can
+#	also set the frequency (in ticks) that it updates
+#	the player disguise position.
+movementUpdateThreading=false
+movementUpdateFrequency=4

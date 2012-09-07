@@ -26,14 +26,6 @@ public class DCMainListener implements Listener {
 		this.plugin = plugin;
 	}
 	
-	@EventHandler
-	public void onPlayerMove(PlayerMoveEvent event) {
-		// Track player movements in order to synchronize their disguise
-		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
-			plugin.sendMovement(event.getPlayer(), null, event.getPlayer().getVelocity(), event.getTo());
-		}
-	}
-	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();

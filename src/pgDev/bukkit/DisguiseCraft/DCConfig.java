@@ -26,6 +26,8 @@ public class DCConfig {
 	public int godzillaCube;
 	public boolean quitUndisguise;
 	public boolean bandwidthReduction;
+	public boolean movementUpdateThreading;
+	public int movementUpdateFrequency;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -41,6 +43,8 @@ public class DCConfig {
         godzillaCube = getInt("godzilla", 100);
         quitUndisguise = getBoolean("quitUndisguise", true);
         bandwidthReduction = getBoolean("bandwidthReduction", false);
+        movementUpdateThreading = getBoolean("movementUpdateThreading", false);
+        movementUpdateFrequency = getInt("movementUpdateFrequency", 4);
 	}
 	
 	// Value obtaining functions down below
@@ -213,6 +217,17 @@ public class DCConfig {
     		out.write("#	disguise movements handled in the less\r\n");
     		out.write("#	bandwidth-intensive manner.\r\n");
     		out.write("bandwidthReduction=" + bandwidthReduction + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Disguise Movement Update Threading\r\n");
+    		out.write("#	Typically, DisguiseCraft uses the PlayerMoveEvent\r\n");
+    		out.write("#	in order to track disguises. However, this has\r\n");
+    		out.write("#	proven to cause lag on servers with large\r\n");
+    		out.write("#	numbers of disguised players. Use this option\r\n");
+    		out.write("#	to place updates into another thread. You can\r\n");
+    		out.write("#	also set the frequency (in ticks) that it updates\r\n");
+    		out.write("#	the player disguise position.\r\n");
+    		out.write("movementUpdateThreading=" + movementUpdateThreading + "\r\n");
+    		out.write("movementUpdateFrequency=" + movementUpdateFrequency + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);
