@@ -25,6 +25,7 @@ public class DCConfig {
 	public int massiveCube;
 	public int godzillaCube;
 	public boolean quitUndisguise;
+	public boolean bandwidthReduction;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -39,6 +40,7 @@ public class DCConfig {
         massiveCube = getInt("massive", 50);
         godzillaCube = getInt("godzilla", 100);
         quitUndisguise = getBoolean("quitUndisguise", true);
+        bandwidthReduction = getBoolean("bandwidthReduction", false);
 	}
 	
 	// Value obtaining functions down below
@@ -200,6 +202,17 @@ public class DCConfig {
     		out.write("#	With this set to true, any disguise player\r\n");
     		out.write("#	who leaves the server will be undisguised.\r\n");
     		out.write("quitUndisguise=" + quitUndisguise + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Bandwidth Reduction\r\n");
+    		out.write("#	To keep disguises perfectly in-sync with\r\n");
+    		out.write("#	the wearer, DisguiseCraft uses the entity\r\n");
+    		out.write("#	teleportation packet instead of the \r\n");
+    		out.write("#	smaller relative motion packets that\r\n");
+    		out.write("#	the Vanilla MineCraft server uses.\r\n");
+    		out.write("#	Set this to true if you wish to have\r\n");
+    		out.write("#	disguise movements handled in the less\r\n");
+    		out.write("#	bandwidth-intensive manner.\r\n");
+    		out.write("bandwidthReduction=" + bandwidthReduction + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);

@@ -44,3 +44,14 @@ godzilla=100
 #	With this set to true, any disguise player
 #	who leaves the server will be undisguised.
 quitUndisguise=true
+
+# Bandwidth Reduction
+#	To keep disguises perfectly in-sync with
+#	the wearer, DisguiseCraft uses the entity
+#	teleportation packet instead of the 
+#	smaller relative motion packets that
+#	the Vanilla MineCraft server uses.
+#	Set this to true if you wish to have
+#	disguise movements handled in the less
+#	bandwidth-intensive manner.
+bandwidthReduction=false

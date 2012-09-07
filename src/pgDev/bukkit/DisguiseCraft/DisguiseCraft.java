@@ -247,14 +247,12 @@ public class DisguiseCraft extends JavaPlugin {
     		Packet packet = disguise.getPlayerInfoPacket(player, false);
     		if (packet == null) {
     			undisguiseToWorld(player.getWorld(), player);
+    			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket());
     		} else {
     			undisguiseToWorld(player.getWorld(), player, packet);
-    		}
-    		if (disguise.isPlayer()) {
     			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getPlayerSpawnPacket((short) player.getItemInHand().getTypeId()));
-    		} else {
-    			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket());
     		}
+    		((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getHeadRotatePacket());
     		
     		// More Database Handling
     		disguiseIDs.remove(disguise.entityID);
@@ -348,51 +346,51 @@ public class DisguiseCraft extends JavaPlugin {
     		Disguise disguise = disguiseDB.get(disguised.getName());
     		MovementValues movement = disguise.getMovement(to);
     		
-    		// Temporary Fix
-    		Packet movePacket;
-    		Packet lookPacket = disguise.getHeadRotatePacket(to);
-    		if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
-				movePacket = disguise.getEntityLookPacket(to);
-			} else {
-				movePacket = disguise.getEntityTeleportPacket(to);
-			}
-    		if (observer == null) {
-				sendPacketToWorld(disguised.getWorld(), movePacket, lookPacket);
-			} else {
-				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(movePacket);
-				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(lookPacket);
-			}
-    		
-    		/* Removed temporarily
-    		if (movement.x < -128 || movement.x > 128 || movement.y < -128 || movement.y > 128 || movement.z < -128 || movement.z > 128) { // That's like a teleport right there!
-    			Packet packet = disguise.getEntityTeleportPacket(to);
-    			if (observer == null) {
-					sendPacketToWorld(disguised.getWorld(), packet);
+    		if (pluginSettings.bandwidthReduction) {
+    			if (movement.x < -128 || movement.x > 128 || movement.y < -128 || movement.y > 128 || movement.z < -128 || movement.z > 128) { // That's like a teleport right there!
+        			Packet packet = disguise.getEntityTeleportPacket(to);
+        			if (observer == null) {
+    					sendPacketToWorld(disguised.getWorld(), packet);
+    				} else {
+    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    				}
+        		} else { // Relative movement
+        			if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
+        				//Client doesn't seem to want to register this
+        				Packet packet = disguise.getEntityLookPacket(to);
+        				Packet packet2 = disguise.getHeadRotatePacket(to);
+        				if (observer == null) {
+        					sendPacketToWorld(disguised.getWorld(), packet, packet2);
+        				} else {
+        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
+        				}
+        			} else { // Moved legs
+        				Packet packet = disguise.getEntityMoveLookPacket(to);
+        				Packet packet2 = disguise.getHeadRotatePacket(to);
+        				if (observer == null) {
+        					sendPacketToWorld(disguised.getWorld(), packet, packet2);
+        				} else {
+        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
+        				}
+        			}
+        		}
+    		} else {
+	    		Packet movePacket;
+	    		Packet lookPacket = disguise.getHeadRotatePacket(to);
+	    		if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
+					movePacket = disguise.getEntityLookPacket(to);
 				} else {
-					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+					movePacket = disguise.getEntityTeleportPacket(to);
 				}
-    		} else { // Relative movement
-    			if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
-    				//Client doesn't seem to want to register this
-    				Packet packet = disguise.getEntityLookPacket(to);
-    				Packet packet2 = disguise.getHeadRotatePacket(to);
-    				if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet, packet2);
-    				} else {
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-    				}
-    			} else { // Moved legs
-    				Packet packet = disguise.getEntityMoveLookPacket(to);
-    				Packet packet2 = disguise.getHeadRotatePacket(to);
-    				if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet, packet2);
-    				} else {
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-    				}
-    			}
-    		}*/
+	    		if (observer == null) {
+					sendPacketToWorld(disguised.getWorld(), movePacket, lookPacket);
+				} else {
+					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(movePacket);
+					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(lookPacket);
+				}
+    		}
     	}
     }
     

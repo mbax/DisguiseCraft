@@ -2,6 +2,7 @@ package pgDev.bukkit.DisguiseCraft;
 
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet24MobSpawn;
+import net.minecraft.server.Packet35EntityHeadRotation;
 
 import org.bukkit.Location;
 
@@ -40,5 +41,8 @@ public class DroppedDisguise extends Disguise {
 	
 	public Packet20NamedEntitySpawn getPlayerSpawnPacket(short item) {
 		return super.getPlayerSpawnPacket(location, item);
+	}
+	public Packet35EntityHeadRotation getHeadRotatePacket() {
+		return super.getHeadRotatePacket(location);
 	}
 }
