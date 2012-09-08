@@ -64,7 +64,7 @@ public class DisguiseCraft extends JavaPlugin {
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
-    public ConcurrentHashMap<Integer, String> disguiseIDs = new ConcurrentHashMap<Integer, String>();
+    public ConcurrentHashMap<Integer, Player> disguiseIDs = new ConcurrentHashMap<Integer, Player>();
     public ConcurrentHashMap<Integer, DroppedDisguise> droppedDisguises = new ConcurrentHashMap<Integer, DroppedDisguise>();
     
     // Custom display nick saving
@@ -216,7 +216,7 @@ public class DisguiseCraft extends JavaPlugin {
     		player.setDisplayName(disguise.data.getFirst());
     	}
     	disguiseDB.put(player.getName(), disguise);
-    	disguiseIDs.put(disguise.entityID, player.getName());
+    	disguiseIDs.put(disguise.entityID, player);
     	sendDisguise(player, null);
     }
     
@@ -444,13 +444,5 @@ public class DisguiseCraft extends JavaPlugin {
 				}
 			}
 		}
-    }
-    
-    public Player getPlayerFromDisguiseID(int id) {
-    	if (disguiseIDs.containsKey(id)) {
-    		return getServer().getPlayer(disguiseIDs.get(id));
-    	} else {
-    		return null;
-    	}
     }
 }

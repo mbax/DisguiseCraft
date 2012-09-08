@@ -48,6 +48,7 @@ public class DCMainListener implements Listener {
 		if (plugin.disguiseDB.containsKey(player.getName())) {
 			Disguise disguise = plugin.disguiseDB.get(player.getName());
 			if (disguise.hasPermission(player)) {
+				plugin.disguiseIDs.put(disguise.entityID, player);
 				plugin.sendDisguise(player, null);
 				if (disguise.isPlayer()) {
 					player.sendMessage(ChatColor.GOLD + "You were redisguised as player: " + disguise.data.getFirst());
@@ -68,19 +69,16 @@ public class DCMainListener implements Listener {
 	
 	@EventHandler
 	public void onDisguiseHit(PlayerInvalidInteractEvent event) {
-		if (event.getAction()) {
-			Player attacked = plugin.getPlayerFromDisguiseID(event.getTarget());
-			if (attacked != null) {
+		if (plugin.disguiseIDs.containsKey(event.getTarget())) {
+			Player attacked = plugin.disguiseIDs.get(event.getTarget());
+			if (event.getAction()) {
 				// Do the attack
 				((CraftPlayer) event.getPlayer()).getHandle().attack(((CraftPlayer) attacked).getHandle());
-			}
-		} else {
-			if (event.getPlayer().getItemInHand().getType() == Material.SHEARS) {
-				Player clicked = plugin.getPlayerFromDisguiseID(event.getTarget());
-				if (clicked != null) {
-					Disguise disguise = plugin.disguiseDB.get(clicked.getName());
+			} else {
+				if (event.getPlayer().getItemInHand().getType() == Material.SHEARS) {
+					Disguise disguise = plugin.disguiseDB.get(attacked.getName());
 					if (disguise.mob != null && disguise.mob == MobType.MushroomCow) {
-						((CraftPlayer) event.getPlayer()).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket(clicked.getLocation()));
+						((CraftPlayer) event.getPlayer()).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket(attacked.getLocation()));
 					}
 				}
 			}
@@ -93,6 +91,7 @@ public class DCMainListener implements Listener {
 		
 		// Undisguise them because they left
 		if (plugin.disguiseDB.containsKey(player.getName())) {
+			plugin.disguiseIDs.remove(plugin.disguiseDB.get(player.getName()).entityID);
 			if (DisguiseCraft.pluginSettings.quitUndisguise) {
 				plugin.unDisguisePlayer(player);
 				plugin.disguiseQuitters.add(player.getName());
