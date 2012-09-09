@@ -140,10 +140,6 @@ public class DisguiseCraft extends JavaPlugin {
         logger.log(Level.INFO, "Version " + version + " is enabled!");
 	}
 	
-	public boolean spoutEnabled() {
-		return (this.getServer().getPluginManager().getPlugin("Spout") != null);
-	}
-	
 	public void onDisable() {
 		logger.log(Level.INFO, "Disabled!");
 	}
