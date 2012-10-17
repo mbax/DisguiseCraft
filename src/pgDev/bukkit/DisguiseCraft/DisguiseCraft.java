@@ -27,10 +27,13 @@ import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
+import pgDev.bukkit.DisguiseCraft.listeners.DCPacketListener;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCMovementAsyncListener;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerMoveListener;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 
@@ -55,10 +58,14 @@ public class DisguiseCraft extends JavaPlugin {
     // Permissions support
     static PermissionHandler Permissions;
     
+    // Protocol Hooks
+    public static ProtocolManager protocolManager;
+    
     // Listeners
     DCMainListener mainListener;
     DCPlayerMoveListener moveListener;
-    DCMovementAsyncListener  asyncMoveListener; // Not a real listener XD
+    DCMovementAsyncListener asyncMoveListener; // Not a real listener XD
+    DCPacketListener packetListener; // Also not a real listener o.o
     DCOptionalListener optionalListener;
     
     // Disguise database
@@ -134,6 +141,13 @@ public class DisguiseCraft extends JavaPlugin {
         // Set up statistics!
         setupMetrics();
         
+        // Set up the protocol hook!
+        if (pluginSettings.disguisePVP) {
+        	if (!setupProtocol()) {
+        		logger.log(Level.WARNING, "You have \"disguisePVP\" enabled in the configuration, but do not have the ProtocolLib plugin installed! Players wearing disguises can not be attacked by melee!");
+        	}
+        }
+        
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
@@ -180,6 +194,19 @@ public class DisguiseCraft extends JavaPlugin {
     		metrics.start();
     	} catch (IOException e) {
     		
+    	}
+    }
+    
+    // Protocol Library
+    public boolean setupProtocol() {
+    	Plugin protocolLib = this.getServer().getPluginManager().getPlugin("ProtocolLib");
+    	
+    	if (protocolLib == null) {
+    		return false;
+    	} else {
+    		protocolManager = ProtocolLibrary.getProtocolManager();
+    		packetListener = new DCPacketListener(this);
+    		return true;
     	}
     }
     

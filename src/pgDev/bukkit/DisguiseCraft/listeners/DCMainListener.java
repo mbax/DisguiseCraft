@@ -15,8 +15,6 @@ import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
-import pgDev.bukkit.DisguiseCraft.injection.DCNSHOverrideTask;
-import pgDev.bukkit.DisguiseCraft.injection.PlayerInvalidInteractEvent;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
 public class DCMainListener implements Listener {
@@ -29,11 +27,6 @@ public class DCMainListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		
-		// Injection
-		if (DisguiseCraft.pluginSettings.disguisePVP && player instanceof CraftPlayer) {
-			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new DCNSHOverrideTask(player), DisguiseCraft.pluginSettings.overrideDelay);
-		}
 		
 		// Show disguises to newly joined players
 		plugin.showWorldDisguises(player);

@@ -19,7 +19,6 @@ public class DCConfig {
 	// List of Config Options
 	public boolean optionalListeners;
 	public boolean disguisePVP;
-	public int overrideDelay;
 	public boolean updateNotification;
 	public int biggerCube;
 	public int massiveCube;
@@ -36,7 +35,6 @@ public class DCConfig {
         // Grab values here.
         optionalListeners = getBoolean("optionals", true);
         disguisePVP = getBoolean("disguisePVP", true);
-        overrideDelay = getInt("overrideDelay", 5);
         updateNotification = getBoolean("updateNotification", true);
         biggerCube = getInt("bigger", 20);
         massiveCube = getInt("massive", 50);
@@ -164,6 +162,13 @@ public class DCConfig {
     		out.write("# DisguiseCraft Configuration\r\n");
     		out.write("#\r\n");
     		out.write("\r\n");
+    		out.write("# Disguise PVP\r\n");
+    		out.write("#	In order for players to be able to attack those who\r\n");
+    		out.write("#	are disguised, you must have the ProtocolLib plugin\r\n");
+    		out.write("#	installed on your server:\r\n");
+    		out.write("#		http://dev.bukkit.org/server-mods/protocollib/\r\n");
+    		out.write("disguisePVP=" + disguisePVP + "\r\n");
+    		out.write("\r\n");
     		out.write("# Efficiency Booster\r\n");
     		out.write("#	With this false, the following features are disabled\r\n");
     		out.write("#	to increase efficiency:\r\n");
@@ -173,17 +178,6 @@ public class DCConfig {
     		out.write("#		-Disguise damage animation\r\n");
     		out.write("#		-Disguise death animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
-    		out.write("#\r\n");
-    		out.write("# Disguise PVP\r\n");
-    		out.write("#	In order for players to be able to attack those who\r\n");
-    		out.write("#	are disguised, DisguiseCraft must utilize its own\r\n");
-    		out.write("#	proxy form of the NetServerHandler class. This means\r\n");
-    		out.write("#	that if you are having compatibility issues, it\r\n");
-    		out.write("#	would be best if you disabled this.\r\n");
-    		out.write("#	The delay is the number of ticks DisguiseCraft\r\n");
-    		out.write("#	will wait before injecting its proxy.\r\n");
-    		out.write("disguisePVP=" + disguisePVP + "\r\n");
-    		out.write("overrideDelay=" + overrideDelay + "\r\n");
     		out.write("\r\n");
     		out.write("# Update Notification\r\n");
     		out.write("#	With this set to true, the plugin will check for\r\n");

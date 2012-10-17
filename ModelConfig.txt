@@ -2,6 +2,13 @@
 # DisguiseCraft Configuration
 #
 
+# Disguise PVP
+#	In order for players to be able to attack those who
+#	are disguised, you must have the ProtocolLib plugin
+#	installed on your server:
+#		http://dev.bukkit.org/server-mods/protocollib/
+disguisePVP=true
+
 # Efficiency Booster
 #	With this false, the following features are disabled
 #	to increase efficiency:
@@ -11,17 +18,6 @@
 #		-Disguise damage animation
 #		-Disguise death animation
 optionals=true
-
-# Disguise PVP
-#	In order for players to be able to attack those who
-#	are disguised, DisguiseCraft must utilize its own
-#	proxy form of the NetServerHandler class. This means
-#	that if you are having compatibility issues, it
-#	would be best if you disabled this.
-#	The delay is the number of ticks DisguiseCraft
-#	will wait before injecting its proxy.
-disguisePVP=true
-overrideDelay=5
 
 # Update Notification
 #	With this set to true, the plugin will check for

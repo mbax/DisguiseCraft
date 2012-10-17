@@ -4,6 +4,7 @@ version: 3.6
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
+softdepend: [ProtocolLib]
 
 commands:
    disguise:

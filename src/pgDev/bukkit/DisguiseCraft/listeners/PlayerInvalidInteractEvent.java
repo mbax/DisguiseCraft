@@ -1,4 +1,4 @@
-package pgDev.bukkit.DisguiseCraft.injection;
+package pgDev.bukkit.DisguiseCraft.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
