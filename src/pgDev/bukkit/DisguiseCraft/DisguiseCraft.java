@@ -31,6 +31,7 @@ import pgDev.bukkit.DisguiseCraft.listeners.DCPacketListener;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCMovementAsyncListener;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerMoveListener;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics;
+import pgDev.bukkit.DisguiseCraft.stats.Metrics.Graph;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
@@ -183,14 +184,17 @@ public class DisguiseCraft extends JavaPlugin {
     	try {
     		Metrics metrics = new Metrics(this);
     		
-    		// Custom Graphs
-    		metrics.addCustomData(new Metrics.Plotter("Total Disguises") {
+    		// Total Disguises Graph
+    		Graph disguiseGraph = metrics.createGraph("Default");
+    		disguiseGraph.addPlotter(new Metrics.Plotter("Total Disguises") {
     			@Override
     			public int getValue() {
     				return disguiseDB.size();
     			}
     		});
-    		metrics.addCustomData(new Metrics.Plotter("Using ProtocolLib") {
+    		
+    		Graph protocolGraph = metrics.createGraph("protocolGraph");
+    		protocolGraph.addPlotter(new Metrics.Plotter("Using ProtocolLib") {
     			@Override
     			public int getValue() {
     				return 1;
