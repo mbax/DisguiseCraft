@@ -525,6 +525,11 @@ public class DCCommandListener implements CommandExecutor {
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("tamed") || args[0].equalsIgnoreCase("aggressive")) {
+				// Temporary patch
+				sender.sendMessage(ChatColor.RED + "As of 1.4.2, trying to disguise as a tamed or aggressive wolf will crash clients. This feature has been temporarily disabled.");
+				return true;
+				
+				/*
 				if (args.length > 1) { // New disguise
 					MobType type = MobType.fromString(args[1]);
 					if (type == null) {
@@ -605,7 +610,7 @@ public class DCCommandListener implements CommandExecutor {
 					} else {
 						sender.sendMessage(ChatColor.RED + "Not currently disguised. A mobtype must be given.");
 					}
-				}
+				}*/
 			} else if (args[0].equalsIgnoreCase("tabby") || args[0].equalsIgnoreCase("tuxedo") || args[0].equalsIgnoreCase("siamese")) {
 				if (args.length > 1) { // New disguise
 					MobType type = MobType.fromString(args[1]);
@@ -696,6 +701,12 @@ public class DCCommandListener implements CommandExecutor {
 					if (type == null) {
 						sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 					} else {
+						// Temporary patch
+						if (type == MobType.Zombie || type == MobType.PigZombie) {
+							sender.sendMessage(ChatColor.RED + "As of 1.4.2, setting a Zombie or PigZombie disguise to burning will crash clients. Therefore, this is temporarily blocked.");
+							return true;
+						}
+						
 						if (isConsole || (plugin.hasPermissions(player, "disguisecraft.burning") && plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase()))) {
 							if (plugin.disguiseDB.containsKey(player.getName())) {
 								Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
@@ -728,6 +739,13 @@ public class DCCommandListener implements CommandExecutor {
 				} else { // Current mob
 					if (plugin.disguiseDB.containsKey(player.getName())) {
 						Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
+						
+						// Temporary patch
+						if (disguise.mob == MobType.Zombie || disguise.mob == MobType.PigZombie) {
+							sender.sendMessage(ChatColor.RED + "As of 1.4.2, setting a Zombie or PigZombie disguise to burning will crash clients. Therefore, this is temporarily blocked.");
+							return true;
+						}
+						
 						if (disguise.data != null && disguise.data.contains("burning")) {
 							sender.sendMessage(ChatColor.RED + "Already burning.");
 						} else {

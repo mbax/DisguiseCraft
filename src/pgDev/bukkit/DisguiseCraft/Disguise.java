@@ -37,6 +37,7 @@ public class Disguise {
 	 * @author PG Dev Team (Devil Boy)
 	 */
 	public enum MobType {
+		Bat(65),
 		Blaze(61),
 		CaveSpider(59),
 		Chicken(93),
@@ -60,6 +61,8 @@ public class Disguise {
 		Spider(52),
 		Squid(94),
 		Villager(120),
+		Witch(66),
+		Wither(64),
 		Wolf(95),
 		Zombie(54);
 		
@@ -260,16 +263,24 @@ public class Disguise {
 		return this;
 	}
 	
-	public void initializeData() {
+	public void initializeData() { // everything is casted to Object because of method signature
 		metadata = new DataWatcher();
 		metadata.a(0, (Object) (byte) 0);
-		metadata.a(12, (Object) 0);
-		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast || mob == MobType.Enderman) {
+		if (mob == MobType.Zombie || mob == MobType.PigZombie) {
+			metadata.a(12, (Object) (byte) 0);
+			metadata.a(13, (Object) (byte) 0);
+			metadata.a(14, (Object) (byte) 0);
+		} else {
+			metadata.a(12, (Object) 0);
+		}
+		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast || mob == MobType.Enderman || mob == MobType.Bat) {
 			metadata.a(16, (Object) (byte) 0);
 		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
 			metadata.a(16, (Object) (byte) 3);
 		} else if (mob == MobType.Villager) {
 			metadata.a(16, (Object) 0);
+		} else if (mob == MobType.EnderDragon || mob == MobType.Wither) {
+			metadata.a(16, (Object) 100);
 		}
 		
 		if (mob == MobType.Creeper || mob == MobType.Enderman) {
@@ -277,6 +288,15 @@ public class Disguise {
 		}
 		if (mob == MobType.Ocelot) {
 			metadata.a(18, (Object) (byte) 0);
+		}
+		if (mob == MobType.Witch) {
+			metadata.a(21, (Object) (byte) 0);
+		}
+		if (mob == MobType.Wither) {
+			metadata.a(17, (Object) 0);
+			metadata.a(18, (Object) 0);
+			metadata.a(19, (Object) 0);
+			metadata.a(20, (Object) 0);
 		}
 	}
 	

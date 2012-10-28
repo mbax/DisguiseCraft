@@ -1,4 +1,0 @@
-Name - SaveGame Name - ID
-Wither - WitherBoss - 64
-Bat - Bat - 65
-Witch - Witch - 66
