@@ -138,15 +138,15 @@ public class DisguiseCraft extends JavaPlugin {
 		// Get permissions in the game!
         setupPermissions();
         
-        // Set up statistics!
-        setupMetrics();
-        
         // Set up the protocol hook!
         if (pluginSettings.disguisePVP) {
         	if (!setupProtocol()) {
         		logger.log(Level.WARNING, "You have \"disguisePVP\" enabled in the configuration, but do not have the ProtocolLib plugin installed! Players wearing disguises can not be attacked by melee!");
         	}
         }
+        
+        // Set up statistics!
+        setupMetrics();
         
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -183,11 +183,30 @@ public class DisguiseCraft extends JavaPlugin {
     	try {
     		Metrics metrics = new Metrics(this);
     		
-    		// Custom Graph
+    		// Custom Graphs
     		metrics.addCustomData(new Metrics.Plotter("Total Disguises") {
     			@Override
     			public int getValue() {
     				return disguiseDB.size();
+    			}
+    		});
+    		metrics.addCustomData(new Metrics.Plotter("Using ProtocolLib") {
+    			@Override
+    			public int getValue() {
+    				return 1;
+    			}
+    			
+    			@Override
+    			public String getColumnName() {
+    				if (protocolManager == null) {
+    					if (pluginSettings.disguisePVP) {
+    						return "should be";
+    					} else {
+    						return "no";
+    					}
+    				} else {
+    					return "yes";
+    				}
     			}
     		});
     		
