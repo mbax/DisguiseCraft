@@ -212,7 +212,7 @@ public class DCPacketGenerator {
 	}
 	
 	public Packet40EntityMetadata getEntityMetadataPacket() {
-		return new Packet40EntityMetadata(d.entityID, d.metadata);
+		return new Packet40EntityMetadata(d.entityID, d.metadata, true); // 1.4.2 update: true-same method as 1.3.2
 	}
 	
 	public Packet201PlayerInfo getPlayerInfoPacket(Player player, boolean show) {
@@ -251,10 +251,6 @@ public class DCPacketGenerator {
 		packet.a = d.entityID;
 		packet.b = (byte) animation;
 		return packet;
-	}
-	
-	public Packet40EntityMetadata getMetadataPacket() {
-		return new Packet40EntityMetadata(d.entityID, d.metadata);
 	}
 	
 	public Packet38EntityStatus getStatusPacket(int status) {

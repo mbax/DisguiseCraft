@@ -741,7 +741,7 @@ public class DCCommandListener implements CommandExecutor {
 								if (ev.isCancelled()) return true;
 								
 								if (disguise.isPlayer()) {
-									plugin.sendPacketToWorld(player.getWorld(), disguise.getMetadataPacket());
+									plugin.sendPacketToWorld(player.getWorld(), disguise.getEntityMetadataPacket());
 								} else {
 									plugin.changeDisguise(player, disguise);
 								}

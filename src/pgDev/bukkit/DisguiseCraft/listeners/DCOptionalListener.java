@@ -56,7 +56,7 @@ public class DCOptionalListener implements Listener {
 				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
 				if (disguise.isPlayer()) {
 					disguise.setCrouch(event.isSneaking());
-					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getMetadataPacket());
+					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getEntityMetadataPacket());
 				}
 			}
 		}

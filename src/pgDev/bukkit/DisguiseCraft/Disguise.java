@@ -262,21 +262,21 @@ public class Disguise {
 	
 	public void initializeData() {
 		metadata = new DataWatcher();
-		metadata.a(0, (byte) 0);
-		metadata.a(12, 0);
+		metadata.a(0, (Object) (byte) 0);
+		metadata.a(12, (Object) 0);
 		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast || mob == MobType.Enderman) {
-			metadata.a(16, (byte) 0);
+			metadata.a(16, (Object) (byte) 0);
 		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
-			metadata.a(16, (byte) 3);
+			metadata.a(16, (Object) (byte) 3);
 		} else if (mob == MobType.Villager) {
-			metadata.a(16, 0);
+			metadata.a(16, (Object) 0);
 		}
 		
 		if (mob == MobType.Creeper || mob == MobType.Enderman) {
-			metadata.a(17, (byte) 0);
+			metadata.a(17, (Object) (byte) 0);
 		}
 		if (mob == MobType.Ocelot) {
-			metadata.a(18, (byte) 0);
+			metadata.a(18, (Object) (byte) 0);
 		}
 	}
 	
@@ -642,10 +642,6 @@ public class Disguise {
 	
 	public Packet18ArmAnimation getAnimationPacket(int animation) {
 		return packetGenerator.getAnimationPacket(animation);
-	}
-	
-	public Packet40EntityMetadata getMetadataPacket() {
-		return packetGenerator.getMetadataPacket();
 	}
 	
 	public Packet38EntityStatus getStatusPacket(int status) {
