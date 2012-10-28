@@ -2,11 +2,11 @@ package pgDev.bukkit.DisguiseCraft;
 
 public class MovementValues {
 	
-	int x;
-	int y;
-	int z;
-	int yaw;
-	int pitch;
+	public int x;
+	public int y;
+	public int z;
+	public int yaw;
+	public int pitch;
 	
 	public MovementValues(int x, int y, int z, int yaw, int pitch) {
 		this.x = x;

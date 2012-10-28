@@ -39,11 +39,16 @@ public class DCPacketListener {
 			                PacketContainer packet = event.getPacket();
 			                int target = packet.getSpecificModifier(int.class).read(1);
 			                int action = packet.getSpecificModifier(int.class).read(2);
-	
-			                if (cServer.getServer().getWorldServer(cPlayer.getHandle().dimension).getEntity(target) == null) {
+			                
+			                if (packet.getEntityModifier(player.getWorld()).read(1) == null) {
 			                	PlayerInvalidInteractEvent newEvent = new PlayerInvalidInteractEvent(player, target, action);
 			                    cServer.getPluginManager().callEvent(newEvent);
 			                }
+			                /* Replaced by ProtocolLib API method
+			                if (cServer.getServer().getWorldServer(cPlayer.getHandle().dimension).getEntity(target) == null) {
+			                	PlayerInvalidInteractEvent newEvent = new PlayerInvalidInteractEvent(player, target, action);
+			                    cServer.getPluginManager().callEvent(newEvent);
+			                }*/
 			            } catch (FieldAccessException e) {
 			                DisguiseCraft.logger.log(Level.SEVERE, "Couldn't access a field in an 0x07-UseEntity packet!", e);
 			            }
