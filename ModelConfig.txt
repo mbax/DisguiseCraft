@@ -37,7 +37,7 @@ massive=50
 godzilla=100
 
 # Undisguise on Quit
-#	With this set to true, any disguise player
+#	With this set to true, any disguised player
 #	who leaves the server will be undisguised.
 quitUndisguise=true
 
@@ -62,3 +62,11 @@ bandwidthReduction=false
 #	the player disguise position.
 movementUpdateThreading=false
 movementUpdateFrequency=4
+
+# Disguise NoPickup Default
+#	With this option set to true, any disguises
+#	created will have the "nopickup" property
+#	automatically set.
+#	This means that disguised players are
+#	automatically set to not pick up items.
+nopickupDefault=false

@@ -11,6 +11,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
@@ -998,7 +999,13 @@ public class DCCommandListener implements CommandExecutor {
 				}
 			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
 				if (args.length > 1) {
-					if (isConsole || plugin.hasPermissions(player, "disguisecraft.player." + args[1])) {
+					// Dynamically add the player name as a child for the disguisecraft.player.* node
+					try {
+						plugin.getServer().getPluginManager().addPermission(new Permission("disguisecraft.player." + args[1].toLowerCase()).addParent("disguisecraft.player.*", true));
+					} catch (Exception e) {
+					}
+					
+					if (isConsole || plugin.hasPermissions(player, "disguisecraft.player." + args[1].toLowerCase())) {
 						if (args[1].length() <= 16) {
 							if (plugin.disguiseDB.containsKey(player.getName())) {
 								Disguise disguise = plugin.disguiseDB.get(player.getName());

@@ -264,6 +264,15 @@ public class Disguise {
 	}
 	
 	public void initializeData() { // everything is casted to Object because of method signature
+		// Check for NoPickup default
+		if (DisguiseCraft.pluginSettings.nopickupDefault) {
+			if (data == null) {
+				data = new LinkedList<String>();
+			}
+			data.add("nopickup");
+		}
+		
+		// Actually initialize data values
 		metadata = new DataWatcher();
 		metadata.a(0, (Object) (byte) 0);
 		if (mob == MobType.Zombie || mob == MobType.PigZombie) {

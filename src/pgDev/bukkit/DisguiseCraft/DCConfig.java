@@ -27,6 +27,7 @@ public class DCConfig {
 	public boolean bandwidthReduction;
 	public boolean movementUpdateThreading;
 	public int movementUpdateFrequency;
+	public boolean nopickupDefault;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -43,6 +44,7 @@ public class DCConfig {
         bandwidthReduction = getBoolean("bandwidthReduction", false);
         movementUpdateThreading = getBoolean("movementUpdateThreading", false);
         movementUpdateFrequency = getInt("movementUpdateFrequency", 4);
+        nopickupDefault = getBoolean("nopickupDefault", false);
 	}
 	
 	// Value obtaining functions down below
@@ -197,7 +199,7 @@ public class DCConfig {
     		out.write("godzilla=" + godzillaCube + "\r\n");
     		out.write("\r\n");
     		out.write("# Undisguise on Quit\r\n");
-    		out.write("#	With this set to true, any disguise player\r\n");
+    		out.write("#	With this set to true, any disguised player\r\n");
     		out.write("#	who leaves the server will be undisguised.\r\n");
     		out.write("quitUndisguise=" + quitUndisguise + "\r\n");
     		out.write("\r\n");
@@ -222,6 +224,14 @@ public class DCConfig {
     		out.write("#	the player disguise position.\r\n");
     		out.write("movementUpdateThreading=" + movementUpdateThreading + "\r\n");
     		out.write("movementUpdateFrequency=" + movementUpdateFrequency + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Disguise NoPickup Default\r\n");
+    		out.write("#	With this option set to true, any disguises\r\n");
+    		out.write("#	created will have the \"nopickup\" property\r\n");
+    		out.write("#	automatically set.\r\n");
+    		out.write("#	This means that disguised players are\r\n");
+    		out.write("#	automatically set to not pick up items.\r\n");
+    		out.write("nopickupDefault=" + nopickupDefault + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);

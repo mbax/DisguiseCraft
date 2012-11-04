@@ -1,5 +1,8 @@
 package pgDev.bukkit.DisguiseCraft.api;
 
+import java.util.Collection;
+import java.util.Set;
+
 import org.bukkit.entity.Player;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
@@ -33,6 +36,31 @@ public class DisguiseCraftAPI {
 	 */
 	public Disguise getDisguise(Player player) {
 		return plugin.disguiseDB.get(player.getName());
+	}
+
+	/**
+	 * Provides a set with the names of online players who are
+	 * disguised in DisguiseCraft's database
+	 * 
+	 * Changes to the database are reflected in this collection.
+	 * Do not use this collection to remove players from the
+	 * database.
+	 * @return The set of all disguised players
+	 */
+	public Collection<Player> getOnlineDisguisedPlayers() {
+		return plugin.disguiseIDs.values();
+	}
+	
+	/**
+	 * Provides a set with the names of players who are disguised
+	 * in DisguiseCraft's database, including offline players
+	 * 
+	 * Changes to the database are reflected in this set. Do not
+	 * use this set to remove players from the database.
+	 * @return The set of all disguised players
+	 */
+	public Set<String> getAllDisguisedPlayers() {
+		return plugin.disguiseDB.keySet();
 	}
 	
 	/**
