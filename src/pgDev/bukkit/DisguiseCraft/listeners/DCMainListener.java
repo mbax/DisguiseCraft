@@ -48,6 +48,9 @@ public class DCMainListener implements Listener {
 				} else {
 					player.sendMessage(ChatColor.GOLD + "You were redisguised as a " + ChatColor.DARK_GREEN + disguise.mob.name());
 				}
+				
+				// Start position updater
+				plugin.setPositionUpdater(player, disguise);
 			} else {
 				plugin.disguiseDB.remove(player.getName());
 				player.sendMessage(ChatColor.RED + "You do not have the permissions required to wear your disguise in this world.");
@@ -95,6 +98,9 @@ public class DCMainListener implements Listener {
 		
 		// Undisguise others
 		plugin.halfUndisguiseAllToPlayer(player);
+		
+		// Stop position updater
+		plugin.removePositionUpdater(player);
 	}
 	
 	@EventHandler

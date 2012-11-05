@@ -28,8 +28,8 @@ import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCPacketListener;
-import pgDev.bukkit.DisguiseCraft.listeners.movement.DCMovementAsyncListener;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerMoveListener;
+import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerPositionUpdater;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics.Graph;
 
@@ -65,8 +65,7 @@ public class DisguiseCraft extends JavaPlugin {
     // Listeners
     DCMainListener mainListener;
     DCPlayerMoveListener moveListener;
-    DCMovementAsyncListener asyncMoveListener; // Not a real listener XD
-    DCPacketListener packetListener; // Also not a real listener o.o
+    DCPacketListener packetListener; // Not a real listener o.o
     DCOptionalListener optionalListener;
     
     // Disguise database
@@ -74,6 +73,7 @@ public class DisguiseCraft extends JavaPlugin {
     public LinkedList<String> disguiseQuitters = new LinkedList<String>();
     public ConcurrentHashMap<Integer, Player> disguiseIDs = new ConcurrentHashMap<Integer, Player>();
     public ConcurrentHashMap<Integer, DroppedDisguise> droppedDisguises = new ConcurrentHashMap<Integer, DroppedDisguise>();
+    public ConcurrentHashMap<Player, Integer> positionUpdaters = new ConcurrentHashMap<Player, Integer>();
     
     // Custom display nick saving
     public HashMap<String, String> customNick = new HashMap<String, String>();
@@ -116,9 +116,7 @@ public class DisguiseCraft extends JavaPlugin {
 		// Register our events
 		PluginManager pm = getServer().getPluginManager();
 		pm.registerEvents(mainListener  = new DCMainListener(this), this);
-		if (pluginSettings.movementUpdateThreading) {
-			getServer().getScheduler().scheduleAsyncRepeatingTask(this, asyncMoveListener = new DCMovementAsyncListener(this), pluginSettings.movementUpdateFrequency, pluginSettings.movementUpdateFrequency);
-		} else {
+		if (!pluginSettings.movementUpdateThreading) {
 			pm.registerEvents(moveListener = new DCPlayerMoveListener(this), this);
 		}
 		if (pluginSettings.optionalListeners) {
@@ -264,6 +262,9 @@ public class DisguiseCraft extends JavaPlugin {
     	disguiseDB.put(player.getName(), disguise);
     	disguiseIDs.put(disguise.entityID, player);
     	sendDisguise(player, null);
+    	
+    	// Start position updater
+		setPositionUpdater(player, disguise);
     }
     
     public void changeDisguise(Player player, Disguise newDisguise) {
@@ -283,6 +284,9 @@ public class DisguiseCraft extends JavaPlugin {
     		sendUnDisguise(player, null);
     		disguiseIDs.remove(disguiseDB.get(player.getName()).entityID);
     		disguiseDB.remove(name);
+    		
+    		// Stop position updater
+    		removePositionUpdater(player);
     	}
     }
     
@@ -488,6 +492,20 @@ public class DisguiseCraft extends JavaPlugin {
 				if (disguised.getWorld() == observer.getWorld()) {
 					sendDisguise(disguised, observer);
 				}
+			}
+		}
+    }
+    
+    public void setPositionUpdater(Player player, Disguise disguise) {
+    	if (DisguiseCraft.pluginSettings.movementUpdateThreading) {
+    		positionUpdaters.put(player, getServer().getScheduler().scheduleSyncRepeatingTask(this, new DCPlayerPositionUpdater(this, player, disguise), 1, pluginSettings.movementUpdateFrequency));
+    	}
+    }
+    
+    public void removePositionUpdater(Player player) {
+    	if (DisguiseCraft.pluginSettings.movementUpdateThreading) {
+			if (positionUpdaters.containsKey(player)) {
+				getServer().getScheduler().cancelTask(positionUpdaters.get(player));
 			}
 		}
     }

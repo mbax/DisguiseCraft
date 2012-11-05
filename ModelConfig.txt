@@ -57,8 +57,8 @@ bandwidthReduction=false
 #	in order to track disguises. However, this has
 #	proven to cause lag on servers with large
 #	numbers of disguised players. Use this option
-#	to place updates into another thread. You can
-#	also set the frequency (in ticks) that it updates
+#	to place updates into separate threads. You can
+#	also set the frequency (in ticks) that they update
 #	the player disguise position.
 movementUpdateThreading=false
 movementUpdateFrequency=4

@@ -219,8 +219,8 @@ public class DCConfig {
     		out.write("#	in order to track disguises. However, this has\r\n");
     		out.write("#	proven to cause lag on servers with large\r\n");
     		out.write("#	numbers of disguised players. Use this option\r\n");
-    		out.write("#	to place updates into another thread. You can\r\n");
-    		out.write("#	also set the frequency (in ticks) that it updates\r\n");
+    		out.write("#	to place updates into separate threads. You can\r\n");
+    		out.write("#	also set the frequency (in ticks) that they update\r\n");
     		out.write("#	the player disguise position.\r\n");
     		out.write("movementUpdateThreading=" + movementUpdateThreading + "\r\n");
     		out.write("movementUpdateFrequency=" + movementUpdateFrequency + "\r\n");
