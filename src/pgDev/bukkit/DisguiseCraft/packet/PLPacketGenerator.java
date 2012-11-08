@@ -6,6 +6,7 @@ import net.minecraft.server.DataWatcher;
 import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet24MobSpawn;
+import net.minecraft.server.Packet29DestroyEntity;
 
 import org.bukkit.Location;
 
@@ -142,5 +143,16 @@ public class PLPacketGenerator extends DCPacketGenerator {
 			return null;
 		}
 	}
-
+	
+	@Override
+	public Packet29DestroyEntity getEntityDestroyPacket() {
+		PacketContainer pC = pM.createPacket(29);
+		try {
+			pC.getSpecificModifier(int.class).
+				write(0, d.entityID);
+		} catch (FieldAccessException e) {
+			DisguiseCraft.logger.log(Level.SEVERE, "PL: Unable to modify the integer for a destroy packet!", e);
+		}
+		return (Packet29DestroyEntity) pC.getHandle();
+	}
 }
