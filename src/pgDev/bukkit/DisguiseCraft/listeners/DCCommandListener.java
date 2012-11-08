@@ -80,13 +80,24 @@ public class DCCommandListener implements CommandExecutor {
 			if (args.length == 0) { // He needs help!
 				if (isConsole) { // Console output
 					sender.sendMessage("Usage: /" + label + " " + player.getName() + " [subtype] <mob/playername>");
-					String types = MobType.values().toString();
-					sender.sendMessage("Available types: " + types.substring(1, types.length() - 1));
-					sender.sendMessage("For a list of subtypes: /disguise subtypes");
+					String types = "";
+					for (MobType type : MobType.values()) {
+						if (DisguiseCraft.pluginSettings.compatibility && MobType.missingMobs.contains(type)) continue; 
+						if (types.equals("")) {
+							types = type.name();
+						} else {
+							types = types + ", " + type.name();
+						}
+					}
+					if (!types.equals("")) {
+						sender.sendMessage("Available types: " + types);
+						sender.sendMessage("For a list of subtypes: /disguise subtypes");
+					}
 				} else { // Player output
 					player.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " [subtype] <mob/playername>");
 					String types = "";
 					for (MobType type : MobType.values()) {
+						if (DisguiseCraft.pluginSettings.compatibility && MobType.missingMobs.contains(type)) continue; 
 						if (plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
 							if (types.equals("")) {
 								types = type.name();
@@ -97,8 +108,8 @@ public class DCCommandListener implements CommandExecutor {
 					}
 					if (!types.equals("")) {
 						player.sendMessage(ChatColor.DARK_GREEN + "Available types: " + ChatColor.GREEN + types);
+						player.sendMessage(ChatColor.DARK_GREEN + "For a list of subtypes: " + ChatColor.GREEN + "/disguise subtypes");
 					}
-					player.sendMessage(ChatColor.DARK_GREEN + "For a list of subtypes: " + ChatColor.GREEN + "/disguise subtypes");
 					
 					// Tell of current disguise
 					if (plugin.disguiseDB.containsKey(player.getName())) {

@@ -1,5 +1,7 @@
 package pgDev.bukkit.DisguiseCraft;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
@@ -67,9 +69,17 @@ public class Disguise {
 		Zombie(54);
 		
 		/**
+		 * Mobs that are listed in the DisguiseCraft database, but not in
+		 * the current Minecraft server version
+		 */
+		public static LinkedList<MobType> missingMobs;
+		
+		/**
 		 * The entity-type ID.
 		 */
 		public final byte id;
+		protected static HashMap<Byte, DataWatcher> modelData;
+		
 		MobType(int i) {
 			id = (byte) i;
 		}
@@ -100,10 +110,42 @@ public class Disguise {
 		public static MobType fromString(String text) {
 			for (MobType m : MobType.values()) {
 				if (text.equalsIgnoreCase(m.name())) {
-					return m;
+					if (DisguiseCraft.pluginSettings.compatibility && missingMobs.contains(m)) {
+						return null;
+					} else {
+						return m;
+					}
 				}
 			}
 			return null;
+		}
+		
+		@SuppressWarnings("rawtypes")
+		public DataWatcher newMetadata() {
+			if (DisguiseCraft.pluginSettings.compatibility && modelData.containsKey(id)) {
+				DataWatcher model = modelData.get(id);
+				DataWatcher w = new DataWatcher();
+				
+				int i = 0;
+				for (Field f : model.getClass().getDeclaredFields()) {
+					f.setAccessible(true);
+					if (i == 0 || i == 1) {
+						try {
+							f.set(w, ((HashMap) f.get(model)).clone());
+						} catch (Exception e) {
+						}
+					} else if (i == 2) {
+						try {
+							f.setBoolean(w, f.getBoolean(model));
+						} catch (Exception e) {
+						}
+					}
+					i++;
+				}
+				return w;
+			} else {
+				return null;
+			}
 		}
 		
 		/**
@@ -273,39 +315,49 @@ public class Disguise {
 		}
 		
 		// Actually initialize data values
-		metadata = new DataWatcher();
-		metadata.a(0, (Object) (byte) 0);
-		if (mob == MobType.Zombie || mob == MobType.PigZombie) {
-			metadata.a(12, (Object) (byte) 0);
-			metadata.a(13, (Object) (byte) 0);
-			metadata.a(14, (Object) (byte) 0);
+		if (DisguiseCraft.pluginSettings.compatibility && !isPlayer()) {
+			metadata = mob.newMetadata();
+			
+			if (mob == MobType.Creeper) {
+				metadata.a(12, (Object) 0);
+			}
 		} else {
-			metadata.a(12, (Object) 0);
-		}
-		if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast || mob == MobType.Enderman || mob == MobType.Bat) {
-			metadata.a(16, (Object) (byte) 0);
-		} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
-			metadata.a(16, (Object) (byte) 3);
-		} else if (mob == MobType.Villager) {
-			metadata.a(16, (Object) 0);
-		} else if (mob == MobType.EnderDragon || mob == MobType.Wither) {
-			metadata.a(16, (Object) 100);
-		}
-		
-		if (mob == MobType.Creeper || mob == MobType.Enderman) {
-			metadata.a(17, (Object) (byte) 0);
-		}
-		if (mob == MobType.Ocelot) {
-			metadata.a(18, (Object) (byte) 0);
-		}
-		if (mob == MobType.Witch) {
-			metadata.a(21, (Object) (byte) 0);
-		}
-		if (mob == MobType.Wither) {
-			metadata.a(17, (Object) 0);
-			metadata.a(18, (Object) 0);
-			metadata.a(19, (Object) 0);
-			metadata.a(20, (Object) 0);
+			metadata = new DataWatcher();
+			metadata.a(0, (Object) (byte) 0);
+			
+			if (mob == MobType.Zombie || mob == MobType.PigZombie) {
+				metadata.a(12, (Object) (byte) 0);
+				metadata.a(13, (Object) (byte) 0);
+				metadata.a(14, (Object) (byte) 0);
+			} else {
+				metadata.a(12, (Object) 0);
+			}
+			
+			if (mob == MobType.Sheep || mob == MobType.Pig || mob == MobType.Ghast || mob == MobType.Enderman || mob == MobType.Bat) {
+				metadata.a(16, (Object) (byte) 0);
+			} else if (mob == MobType.Slime || mob == MobType.MagmaCube) {
+				metadata.a(16, (Object) (byte) 3);
+			} else if (mob == MobType.Villager) {
+				metadata.a(16, (Object) 0);
+			} else if (mob == MobType.EnderDragon || mob == MobType.Wither) {
+				metadata.a(16, (Object) 100);
+			}
+			
+			if (mob == MobType.Creeper || mob == MobType.Enderman) {
+				metadata.a(17, (Object) (byte) 0);
+			}
+			if (mob == MobType.Ocelot) {
+				metadata.a(18, (Object) (byte) 0);
+			}
+			if (mob == MobType.Witch) {
+				metadata.a(21, (Object) (byte) 0);
+			}
+			if (mob == MobType.Wither) {
+				metadata.a(17, (Object) 0);
+				metadata.a(18, (Object) 0);
+				metadata.a(19, (Object) 0);
+				metadata.a(20, (Object) 0);
+			}
 		}
 	}
 	

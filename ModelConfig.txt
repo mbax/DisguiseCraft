@@ -70,3 +70,12 @@ movementUpdateFrequency=4
 #	This means that disguised players are
 #	automatically set to not pick up items.
 nopickupDefault=false
+
+# Compatibility Mode
+#	To get default metadata values for each mob and
+#	maintain resilience over multiple versions of
+#	Minecraft, DisguiseCraft uses reflection to
+#	construct dummy mobs of every type at startup.
+#	Set this to false, if you are seeing issues or
+#	server startup is slow.
+compatibility=true

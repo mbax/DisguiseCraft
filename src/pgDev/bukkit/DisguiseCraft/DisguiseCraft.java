@@ -3,6 +3,7 @@ package pgDev.bukkit.DisguiseCraft;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -10,6 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.minecraft.server.DataWatcher;
+import net.minecraft.server.Entity;
 import net.minecraft.server.Packet;
 
 import org.bukkit.Bukkit;
@@ -23,6 +26,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
+import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
@@ -146,6 +150,43 @@ public class DisguiseCraft extends JavaPlugin {
         
         // Set up statistics!
         setupMetrics();
+        
+        // Set up compatibility
+        if (pluginSettings.compatibility) {
+        	MobType.missingMobs = new LinkedList<MobType>();
+        	MobType.modelData = new HashMap<Byte, DataWatcher>();
+        	String missings = "";
+        	
+        	try {
+        		Field watcherField = net.minecraft.server.Entity.class.getDeclaredField("datawatcher");
+        		watcherField.setAccessible(true);
+				
+				for (MobType m : MobType.values()) {
+					String entPrefix = "net.minecraft.server.Entity";
+					String mobClass = entPrefix + m.name();
+					if (m == MobType.Giant) {
+        				mobClass = mobClass + "Zombie";
+        			}
+					
+	        		try {
+	        			Entity ent = (Entity) Class.forName(mobClass).getConstructor(net.minecraft.server.World.class).newInstance((Object) null);
+	        			MobType.modelData.put(m.id, (DataWatcher) watcherField.get(ent));
+	        		} catch (Exception e) {
+	        			MobType.missingMobs.add(m);
+	        			if (missings.equals("")) {
+	        				missings = m.name();
+	        			} else {
+	        				missings = missings + ", " + m.name();
+	        			}
+	        		}
+	        	}
+	        	if (!missings.equals("")) {
+	        		logger.log(Level.WARNING, "The following mobs are not present in this MineCraft version: " + missings);
+	        	}
+			} catch (Exception e) {
+				logger.log(Level.SEVERE, "Could not access datawatcher! Compatibility mode failed!");
+			}
+        }
         
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
