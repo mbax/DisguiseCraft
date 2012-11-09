@@ -118,27 +118,23 @@ public class DCPacketGenerator {
 	}
 	
 	public Packet5EntityEquipment getEquipmentChangePacket(short slot, ItemStack item) {
-		if (d.isPlayer()) {
-			Packet5EntityEquipment packet;
-			if (item == null) {
-				packet = new Packet5EntityEquipment();
-				packet.a = d.entityID;
-				packet.b = slot;
-				
-				try{
-					Field itemField = packet.getClass().getDeclaredField("c");
-					itemField.setAccessible(true);
-					itemField.set(packet, null);
-				} catch (Exception e) {
-					DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the item type for a player disguise!", e);
-				}
-			} else {
-				packet = new Packet5EntityEquipment(d.entityID, slot, ((CraftItemStack) item).getHandle());
+		Packet5EntityEquipment packet;
+		if (item == null) {
+			packet = new Packet5EntityEquipment();
+			packet.a = d.entityID;
+			packet.b = slot;
+			
+			try{
+				Field itemField = packet.getClass().getDeclaredField("c");
+				itemField.setAccessible(true);
+				itemField.set(packet, null);
+			} catch (Exception e) {
+				DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the item type for a player disguise!", e);
 			}
-			return packet;
 		} else {
-			return null;
+			packet = new Packet5EntityEquipment(d.entityID, slot, ((CraftItemStack) item).getHandle());
 		}
+		return packet;
 	}
 	
 	public Packet32EntityLook getEntityLookPacket(Location loc) {

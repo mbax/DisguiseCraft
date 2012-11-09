@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
+import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
 public class DCOptionalListener implements Listener {
@@ -25,7 +26,8 @@ public class DCOptionalListener implements Listener {
 	public void onHeldItemChange(PlayerItemHeldEvent event) {
 		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
 			Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
-			if (disguise.isPlayer()) {
+			if (disguise.isPlayer() || (disguise.mob != null &&
+					(disguise.mob == MobType.Zombie || disguise.mob == MobType.PigZombie || disguise.mob == MobType.Skeleton))) {
 				ItemStack heldItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
 				plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getEquipmentChangePacket((short) 0, heldItem));
 			}

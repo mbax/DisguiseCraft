@@ -408,13 +408,25 @@ public class DisguiseCraft extends JavaPlugin {
     			}
     		} else { // Mob Disguise
     			Packet packet = disguise.getMobSpawnPacket(disguised.getLocation());
+    			Packet packet2 = null;
+    			if (disguise.mob == MobType.Zombie || disguise.mob == MobType.PigZombie || disguise.mob == MobType.Skeleton) {
+    				packet2 = disguise.getEquipmentChangePacket((short) 0, disguised.getItemInHand());
+    			}
+    			
     			if (observer == null) {
-    				disguiseToWorld(disguised.getWorld(), disguised, packet);
+    				if (packet2 == null) {
+						disguiseToWorld(disguised.getWorld(), disguised, packet);
+					} else {
+						disguiseToWorld(disguised.getWorld(), disguised, packet, packet2);
+					}
     			} else {
     				if (!hasPermissions(observer, "disguisecraft.seer")) {
 						observer.hidePlayer(disguised);
 					}
     				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
+    				if (packet2 != null) {
+						((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
+					}
     			}
     		}
     	}
