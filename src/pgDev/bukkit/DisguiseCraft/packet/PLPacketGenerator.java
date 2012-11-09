@@ -13,6 +13,7 @@ import org.bukkit.Location;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.reflect.StructureModifier;
 
 import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
@@ -147,11 +148,21 @@ public class PLPacketGenerator extends DCPacketGenerator {
 	@Override
 	public Packet29DestroyEntity getEntityDestroyPacket() {
 		PacketContainer pC = pM.createPacket(29);
-		try {
-			pC.getSpecificModifier(int.class).
-				write(0, d.entityID);
-		} catch (FieldAccessException e) {
-			DisguiseCraft.logger.log(Level.SEVERE, "PL: Unable to modify the integer for a destroy packet!", e);
+		StructureModifier<int[]> intPos = pC.getSpecificModifier(int[].class);
+		if (intPos.size() > 0) {
+			try {
+				int[] intArray = {d.entityID};
+				intPos.write(0, intArray);
+			} catch (FieldAccessException e) {
+				DisguiseCraft.logger.log(Level.SEVERE, "PL: Unable to modify the integer array for a destroy packet!", e);
+			}
+		} else {
+			try {
+				pC.getSpecificModifier(int.class)
+					.write(0, d.entityID);
+			} catch (FieldAccessException e) {
+				DisguiseCraft.logger.log(Level.SEVERE, "PL: Unable to modify the integer for a destroy packet!", e);
+			}
 		}
 		return (Packet29DestroyEntity) pC.getHandle();
 	}
