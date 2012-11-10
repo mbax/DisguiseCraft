@@ -181,6 +181,7 @@ public class DCConfig {
     		out.write("#		-Player sneak animation\r\n");
     		out.write("#		-Disguise damage animation\r\n");
     		out.write("#		-Disguise death animation\r\n");
+    		out.write("#		-Item pickup animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
     		out.write("\r\n");
     		out.write("# Update Notification\r\n");

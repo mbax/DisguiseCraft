@@ -7,6 +7,7 @@ import net.minecraft.server.MathHelper;
 import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.Packet201PlayerInfo;
 import net.minecraft.server.Packet20NamedEntitySpawn;
+import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet24MobSpawn;
 import net.minecraft.server.Packet29DestroyEntity;
 import net.minecraft.server.Packet32EntityLook;
@@ -257,5 +258,9 @@ public class DCPacketGenerator {
 		// 8 - wolf shaking water
 		// 10 - sheep eating grass
 		return new Packet38EntityStatus(d.entityID, (byte) status);
+	}
+
+	public Packet22Collect getPickupPacket(int item) {
+		return new Packet22Collect(item, d.entityID);
 	}
 }

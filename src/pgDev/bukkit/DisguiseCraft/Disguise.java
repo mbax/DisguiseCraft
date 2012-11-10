@@ -17,6 +17,7 @@ import net.minecraft.server.DataWatcher;
 import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.Packet201PlayerInfo;
 import net.minecraft.server.Packet20NamedEntitySpawn;
+import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet24MobSpawn;
 import net.minecraft.server.Packet29DestroyEntity;
 import net.minecraft.server.Packet32EntityLook;
@@ -727,5 +728,9 @@ public class Disguise {
 	
 	public Packet38EntityStatus getStatusPacket(int status) {
 		return packetGenerator.getStatusPacket(status);
+	}
+	
+	public Packet22Collect getPickupPacket(int item) {
+		return packetGenerator.getPickupPacket(item);
 	}
 }

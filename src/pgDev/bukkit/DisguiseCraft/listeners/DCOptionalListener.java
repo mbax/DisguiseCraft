@@ -7,6 +7,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
@@ -95,6 +96,16 @@ public class DCOptionalListener implements Listener {
 			// Respawn disguise
 			plugin.sendUnDisguise(player, null);
 			plugin.sendDisguise(player, null);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onPickup(PlayerPickupItemEvent event) {
+		if (!event.isCancelled()) {
+			Player player = event.getPlayer();
+			if (plugin.disguiseDB.containsKey(player.getName())) {
+				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).getPickupPacket(event.getItem().getEntityId()));
+			}
 		}
 	}
 }

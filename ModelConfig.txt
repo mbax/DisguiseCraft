@@ -17,6 +17,7 @@ disguisePVP=true
 #		-Player sneak animation
 #		-Disguise damage animation
 #		-Disguise death animation
+#		-Item pickup animation
 optionals=true
 
 # Update Notification
