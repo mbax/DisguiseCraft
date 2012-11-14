@@ -1,10 +1,11 @@
-package pgDev.bukkit.DisguiseCraft;
+package pgDev.bukkit.DisguiseCraft.disguise;
 
-import net.minecraft.server.Packet20NamedEntitySpawn;
-import net.minecraft.server.Packet24MobSpawn;
-import net.minecraft.server.Packet35EntityHeadRotation;
+import java.util.LinkedList;
+
+import net.minecraft.server.Packet;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 /**
  * This is the class for a disguise no longer
@@ -29,20 +30,16 @@ public class DroppedDisguise extends Disguise {
 	 * @param location The location of this disguise
 	 */
 	public DroppedDisguise(Disguise disguise, String owner, Location location) {
-		super(disguise.entityID, disguise.data, disguise.mob);
+		super(disguise.entityID, disguise.data, disguise.type);
 		this.owner = owner;
 		this.location = location;
 	}
 	
-	// Packet Creation Methods
-	public Packet24MobSpawn getMobSpawnPacket() {
-		return super.getMobSpawnPacket(location);
-	}
-	
-	public Packet20NamedEntitySpawn getPlayerSpawnPacket(short item) {
-		return super.getPlayerSpawnPacket(location, item);
-	}
-	public Packet35EntityHeadRotation getHeadRotatePacket() {
-		return super.getHeadRotatePacket(location);
+	public LinkedList<Packet> getSpawnPackets(Player player) {
+		LinkedList<Packet> packets = new LinkedList<Packet>();
+		packets.add(packetGenerator.getSpawnPacket(player));
+		packets.add(packetGenerator.getEquipmentChangePacket((short) 0, player.getItemInHand()));
+		packets.addAll(packetGenerator.getArmorPackets(player));
+		return packets;
 	}
 }

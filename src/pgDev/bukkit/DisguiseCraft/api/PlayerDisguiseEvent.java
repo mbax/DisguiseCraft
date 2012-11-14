@@ -3,7 +3,7 @@ package pgDev.bukkit.DisguiseCraft.api;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 
-import pgDev.bukkit.DisguiseCraft.Disguise;
+import pgDev.bukkit.DisguiseCraft.disguise.*;
 
 /**
  * This cancellable event is called whenever a player is to be

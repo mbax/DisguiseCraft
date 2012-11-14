@@ -3,7 +3,6 @@ package pgDev.bukkit.DisguiseCraft;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -11,8 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.minecraft.server.DataWatcher;
-import net.minecraft.server.Entity;
 import net.minecraft.server.Packet;
 
 import org.bukkit.Bukkit;
@@ -26,8 +23,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
-import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
 import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
+import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
@@ -85,10 +82,14 @@ public class DisguiseCraft extends JavaPlugin {
     // Plugin Configuration
     static public DCConfig pluginSettings;
     
+    @Override
+    public void onLoad() {
+    	// Obtain logger
+    	logger = getLogger();
+    }
+    
+    @Override
 	public void onEnable() {
-		// Obtain logger
-		logger = getLogger();
-		
 		// Check for the plugin directory (create if it does not exist)
     	File pluginDir = new File(pluginMainDir);
 		if(!pluginDir.exists()) {
@@ -151,42 +152,19 @@ public class DisguiseCraft extends JavaPlugin {
         // Set up statistics!
         setupMetrics();
         
-        // Set up compatibility
-        if (pluginSettings.compatibility) {
-        	MobType.missingMobs = new LinkedList<MobType>();
-        	MobType.modelData = new HashMap<Byte, DataWatcher>();
-        	String missings = "";
-        	
-        	try {
-        		Field watcherField = net.minecraft.server.Entity.class.getDeclaredField("datawatcher");
-        		watcherField.setAccessible(true);
-				
-				for (MobType m : MobType.values()) {
-					String entPrefix = "net.minecraft.server.Entity";
-					String mobClass = entPrefix + m.name();
-					if (m == MobType.Giant) {
-        				mobClass = mobClass + "Zombie";
-        			}
-					
-	        		try {
-	        			Entity ent = (Entity) Class.forName(mobClass).getConstructor(net.minecraft.server.World.class).newInstance((Object) null);
-	        			MobType.modelData.put(m.id, (DataWatcher) watcherField.get(ent));
-	        		} catch (Exception e) {
-	        			MobType.missingMobs.add(m);
-	        			if (missings.equals("")) {
-	        				missings = m.name();
-	        			} else {
-	        				missings = missings + ", " + m.name();
-	        			}
-	        		}
-	        	}
-	        	if (!missings.equals("")) {
-	        		logger.log(Level.WARNING, "The following mobs are not present in this MineCraft version: " + missings);
-	        	}
-			} catch (Exception e) {
-				logger.log(Level.SEVERE, "Could not access datawatcher! Compatibility mode failed!");
+        // Any mobs missing?
+        String missings = "";
+        for (DisguiseType mob : DisguiseType.missingDisguises) {
+        	if (missings.equals("")) {
+				missings = mob.name();
+			} else {
+				missings = missings + ", " + mob.name();
 			}
+        	
         }
+        if (!missings.equals("")) {
+    		logger.log(Level.WARNING, "The following mobs are not present in this MineCraft version: " + missings);
+    	}
         
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
@@ -194,7 +172,23 @@ public class DisguiseCraft extends JavaPlugin {
         logger.log(Level.INFO, "Version " + version + " is enabled!");
 	}
 	
+    @Override
 	public void onDisable() {
+    	// Wipe dropped disguises
+    	for (Integer i : droppedDisguises.keySet()) {
+    		DroppedDisguise dd = droppedDisguises.get(i);
+    		sendPacketToWorld(dd.location.getWorld(), dd.packetGenerator.getEntityDestroyPacket());
+    	}
+    	
+    	// Remove disguises
+    	for (Player disguised : disguiseIDs.values()) {
+    		unDisguisePlayer(disguised);
+    	}
+    	
+    	// Wipe config
+    	pluginSettings = null;
+    	
+    	// Notify success
 		logger.log(Level.INFO, "Disabled!");
 	}
 	
@@ -294,7 +288,7 @@ public class DisguiseCraft extends JavaPlugin {
     }
     
     public void disguisePlayer(Player player, Disguise disguise) {
-    	if (disguise.isPlayer()) {
+    	if (disguise.type.isPlayer()) {
     		if (!customNick.containsKey(player.getName()) && !player.getName().equals(player.getDisplayName())) {
         		customNick.put(player.getName(), player.getDisplayName());
         	}
@@ -342,17 +336,16 @@ public class DisguiseCraft extends JavaPlugin {
 	    		player.setDisplayName(name);
 	    	}
     		
-    		// Client Handling
+    		// Observer Handling
+    		LinkedList<Packet> toObservers = new LinkedList<Packet>();
     		DroppedDisguise disguise = new DroppedDisguise(disguiseDB.get(name), name, player.getLocation());
-    		Packet packet = disguise.getPlayerInfoPacket(player, false);
-    		if (packet == null) {
-    			undisguiseToWorld(player.getWorld(), player);
-    			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket());
-    		} else {
-    			undisguiseToWorld(player.getWorld(), player, packet);
-    			((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getPlayerSpawnPacket((short) player.getItemInHand().getTypeId()));
+    		if (disguise.type.isPlayer()) {
+    			toObservers.add(disguise.packetGenerator.getPlayerInfoPacket(player, false));
     		}
-    		((CraftPlayer) player).getHandle().netServerHandler.sendPacket(disguise.getHeadRotatePacket());
+    		undisguiseToWorld(player.getWorld(), player, toObservers);
+    		
+    		// Undisguised Player Handling
+    		sendPacketsToObserver(player, disguise.getSpawnPackets(player));
     		
     		// More Database Handling
     		disguiseIDs.remove(disguise.entityID);
@@ -378,159 +371,117 @@ public class DisguiseCraft extends JavaPlugin {
     }
     
     public void sendDisguise(Player disguised, Player observer) {
-    	if (disguiseDB.containsKey(disguised.getName())) {
-    		Disguise disguise = disguiseDB.get(disguised.getName());
-    		if (disguise.mob == null) { // Non-mob disguise
-    			if (disguise.data.equals("$")) { // Invisible
-    				if (observer == null) {
-    					disguiseToWorld(disguised.getWorld(), disguised, (Packet[]) null);
-    				} else {
-    					observer.hidePlayer(disguised);
-    				}
-    			} else { // Player disguise
-    				Packet packet = disguise.getPlayerSpawnPacket(disguised.getLocation(), (short) disguised.getItemInHand().getTypeId());
-    				Packet packet2 = disguise.getPlayerInfoPacket(disguised, true);
-    				if (observer == null) {
-    					if (packet2 == null) {
-    						disguiseToWorld(disguised.getWorld(), disguised, packet);
-    					} else {
-    						disguiseToWorld(disguised.getWorld(), disguised, packet, packet2);
-    					}
-    				} else {
-    					if (!hasPermissions(observer, "disguisecraft.seer")) {
-    						observer.hidePlayer(disguised);
-    					}
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    					if (packet2 != null) {
-    						((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-    					}
-    				}
-    			}
-    		} else { // Mob Disguise
-    			Packet packet = disguise.getMobSpawnPacket(disguised.getLocation());
-    			Packet packet2 = null;
-    			if (disguise.mob == MobType.Zombie || disguise.mob == MobType.PigZombie || disguise.mob == MobType.Skeleton) {
-    				packet2 = disguise.getEquipmentChangePacket((short) 0, disguised.getItemInHand());
-    			}
-    			
-    			if (observer == null) {
-    				if (packet2 == null) {
-						disguiseToWorld(disguised.getWorld(), disguised, packet);
-					} else {
-						disguiseToWorld(disguised.getWorld(), disguised, packet, packet2);
-					}
-    			} else {
-    				if (!hasPermissions(observer, "disguisecraft.seer")) {
-						observer.hidePlayer(disguised);
-					}
-    				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    				if (packet2 != null) {
-						((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-					}
-    			}
-    		}
-    	}
+    	LinkedList<Packet> toSend = new LinkedList<Packet>();
+		Disguise disguise = disguiseDB.get(disguised.getName());
+		toSend.add(disguise.packetGenerator.getSpawnPacket(disguised));
+		if (disguise.type.isPlayer()) { // Player disguise
+			toSend.add(disguise.packetGenerator.getPlayerInfoPacket(disguised, true));
+			toSend.addAll(disguise.packetGenerator.getArmorPackets(disguised));
+		} else if (disguise.type == DisguiseType.Zombie || disguise.type == DisguiseType.PigZombie || disguise.type == DisguiseType.Skeleton) {
+			toSend.add(disguise.packetGenerator.getEquipmentChangePacket((short) 0, disguised.getItemInHand()));
+			toSend.addAll(disguise.packetGenerator.getArmorPackets(disguised));
+		}
+		if (observer == null) {
+			disguiseToWorld(disguised.getWorld(), disguised, toSend);
+		} else {
+			if (!hasPermissions(observer, "disguisecraft.seer")) {
+				observer.hidePlayer(disguised);
+			}
+			sendPacketsToObserver(observer, toSend);
+		}
     }
     
     public void sendUnDisguise(Player disguised, Player observer) {
-    	if (disguiseDB.containsKey(disguised.getName())) {
-    		Disguise disguise = disguiseDB.get(disguised.getName());
-    		Packet packet = disguise.getEntityDestroyPacket();
-    		Packet packet2 = disguise.getPlayerInfoPacket(disguised, false);
-    		if (observer == null) {
-				if (packet2 == null) {
-					undisguiseToWorld(disguised.getWorld(), disguised, packet);
-				} else {
-					undisguiseToWorld(disguised.getWorld(), disguised, packet, packet2);
-				}
-			} else {
-				if (packet2 != null) {
-					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-				}
-				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-				observer.showPlayer(disguised);
-			}
-    	}
+    	LinkedList<Packet> toSend = new LinkedList<Packet>();
+		Disguise disguise = disguiseDB.get(disguised.getName());
+		toSend.add(disguise.packetGenerator.getEntityDestroyPacket());
+		if (disguise.type.isPlayer()) {
+			toSend.add(disguise.packetGenerator.getPlayerInfoPacket(disguised, false));
+		}
+		if (observer == null) {
+			undisguiseToWorld(disguised.getWorld(), disguised, toSend);
+		} else {
+			sendPacketsToObserver(observer, toSend);
+			observer.showPlayer(disguised);
+		}
     }
     
     public void sendMovement(Player disguised, Player observer, Vector vector, Location to) {
-    	if (disguiseDB.containsKey(disguised.getName())) {
-    		Disguise disguise = disguiseDB.get(disguised.getName());
-    		MovementValues movement = disguise.getMovement(to);
-    		
-    		if (pluginSettings.bandwidthReduction) {
-    			if (movement.x < -128 || movement.x > 128 || movement.y < -128 || movement.y > 128 || movement.z < -128 || movement.z > 128) { // That's like a teleport right there!
-        			Packet packet = disguise.getEntityTeleportPacket(to);
-        			if (observer == null) {
-    					sendPacketToWorld(disguised.getWorld(), packet);
-    				} else {
-    					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-    				}
-        		} else { // Relative movement
-        			if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
-        				//Client doesn't seem to want to register this
-        				Packet packet = disguise.getEntityLookPacket(to);
-        				Packet packet2 = disguise.getHeadRotatePacket(to);
-        				if (observer == null) {
-        					sendPacketToWorld(disguised.getWorld(), packet, packet2);
-        				} else {
-        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-        				}
-        			} else { // Moved legs
-        				Packet packet = disguise.getEntityMoveLookPacket(to);
-        				Packet packet2 = disguise.getHeadRotatePacket(to);
-        				if (observer == null) {
-        					sendPacketToWorld(disguised.getWorld(), packet, packet2);
-        				} else {
-        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
-        					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet2);
-        				}
-        			}
-        		}
-    		} else {
-	    		Packet movePacket;
-	    		Packet lookPacket = disguise.getHeadRotatePacket(to);
-	    		if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
-					movePacket = disguise.getEntityLookPacket(to);
+    	LinkedList<Packet> toSend = new LinkedList<Packet>();
+		Disguise disguise = disguiseDB.get(disguised.getName());
+		MovementValues movement = disguise.packetGenerator.getMovement(to);
+		
+		if (pluginSettings.bandwidthReduction) {
+			if (movement.x < -128 || movement.x > 128 || movement.y < -128 || movement.y > 128 || movement.z < -128 || movement.z > 128) { // That's like a teleport right there!
+    			Packet packet = disguise.packetGenerator.getEntityTeleportPacket(to);
+    			if (observer == null) {
+					sendPacketToWorld(disguised.getWorld(), packet);
 				} else {
-					movePacket = disguise.getEntityTeleportPacket(to);
+					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
 				}
-	    		if (observer == null) {
-					sendPacketToWorld(disguised.getWorld(), movePacket, lookPacket);
-				} else {
-					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(movePacket);
-					((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(lookPacket);
-				}
+    		} else { // Relative movement
+    			if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
+    				//Client doesn't seem to want to register this
+    				toSend.add(disguise.packetGenerator.getEntityLookPacket(to));
+    				toSend.add(disguise.packetGenerator.getHeadRotatePacket(to));
+    			} else { // Moved legs
+    				toSend.add(disguise.packetGenerator.getEntityMoveLookPacket(to));
+    				toSend.add(disguise.packetGenerator.getHeadRotatePacket(to));
+    				
+    			}
     		}
+		} else {
+			toSend.add(disguise.packetGenerator.getHeadRotatePacket(to));
+    		if (movement.x == 0 && movement.y == 0 && movement.z == 0) { // Just looked around
+    			toSend.add(disguise.packetGenerator.getEntityLookPacket(to));
+			} else {
+				toSend.add(disguise.packetGenerator.getEntityTeleportPacket(to));
+			}
+		}
+		if (observer == null) {
+			sendPacketsToWorld(disguised.getWorld(), toSend);
+		} else {
+			sendPacketsToObserver(observer, toSend);
+		}
+    }
+    
+    public void sendPacketToWorld(World world, Packet packet) {
+    	for (Player observer : world.getPlayers()) {
+    		((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(packet);
     	}
     }
     
-    public void sendPacketToWorld(World world, Packet... packet) {
+    public void sendPacketsToWorld(World world, LinkedList<Packet> packets) {
     	for (Player observer : world.getPlayers()) {
-    		for (Packet p : packet) {
+    		for (Packet p : packets) {
     			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
     		}
     	}
     }
     
-    public void disguiseToWorld(World world, Player player, Packet... packet) {
+    public void sendPacketsToObserver(Player observer, LinkedList<Packet> packets) {
+    	for (Packet p : packets) {
+			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
+		}
+    }
+    
+    public void disguiseToWorld(World world, Player player, LinkedList<Packet> packets) {
     	for (Player observer : world.getPlayers()) {
 	    	if (observer != player) {
 	    		if (!hasPermissions(observer, "disguisecraft.seer")) {
 					observer.hidePlayer(player);
 				}
-	    		for (Packet p : packet) {
+	    		for (Packet p : packets) {
 	    			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
 	    		}
     		}
     	}
     }
     
-    public void undisguiseToWorld(World world, Player player, Packet... packet) {
+    public void undisguiseToWorld(World world, Player player, LinkedList<Packet> packets) {
     	for (Player observer : world.getPlayers()) {
     		if (observer != player) {
-	    		for (Packet p : packet) {
+	    		for (Packet p : packets) {
 	    			((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(p);
 	    		}
 				observer.showPlayer(player);

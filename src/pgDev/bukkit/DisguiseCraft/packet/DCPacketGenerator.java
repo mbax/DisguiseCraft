@@ -1,13 +1,16 @@
 package pgDev.bukkit.DisguiseCraft.packet;
 
 import java.lang.reflect.Field;
+import java.util.LinkedList;
 import java.util.logging.Level;
 
 import net.minecraft.server.MathHelper;
+import net.minecraft.server.Packet;
 import net.minecraft.server.Packet18ArmAnimation;
 import net.minecraft.server.Packet201PlayerInfo;
 import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet22Collect;
+import net.minecraft.server.Packet23VehicleSpawn;
 import net.minecraft.server.Packet24MobSpawn;
 import net.minecraft.server.Packet29DestroyEntity;
 import net.minecraft.server.Packet32EntityLook;
@@ -24,10 +27,9 @@ import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.MovementValues;
-import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
+import pgDev.bukkit.DisguiseCraft.disguise.*;
 
 public class DCPacketGenerator {
 	final Disguise d;
@@ -41,77 +43,104 @@ public class DCPacketGenerator {
 		d = disguise;
 	}
 	
-	// Packet creation methods
-	public Packet24MobSpawn getMobSpawnPacket(Location loc) {
-		if (d.mob != null) {
-			int x = MathHelper.floor(loc.getX() *32D);
-			int y = MathHelper.floor(loc.getY() *32D);
-			int z = MathHelper.floor(loc.getZ() *32D);
-			if(firstpos) {
-				encposX = x;
-				encposY = y;
-				encposZ = z;
-				firstpos = false;
-			}
-			Packet24MobSpawn packet = new Packet24MobSpawn();
-			packet.a = d.entityID;
-			packet.b = d.mob.id;
-			packet.c = (int) x;
-			packet.d = (int) y;
-			packet.e = (int) z;
-			packet.i = DisguiseCraft.degreeToByte(loc.getYaw());
-			packet.j = DisguiseCraft.degreeToByte(loc.getPitch());
-			if (d.mob == MobType.EnderDragon) { // Ender Dragon fix
-				packet.i = (byte) (packet.i - 128);
-			}
-			if (d.mob == MobType.Chicken) { // Chicken fix
-				packet.j = (byte) (packet.j * -1);
-			}
-			packet.k = packet.i;
-			try {
-				Field metadataField = packet.getClass().getDeclaredField("s");
-				metadataField.setAccessible(true);
-				metadataField.set(packet, d.metadata);
-			} catch (Exception e) {
-				DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a " + d.mob.name() +  " disguise!", e);
-			}
-			return packet;
+	// Vital packet methods
+	public Packet getSpawnPacket(Player disguisee) {
+		if (d.type.isMob()) {
+			return getMobSpawnPacket(disguisee.getLocation());
+		} else if (d.type.isPlayer()) {
+			return getPlayerSpawnPacket(disguisee.getLocation(), (short) disguisee.getItemInHand().getTypeId());
 		} else {
-			return null;
+			return getObjectSpawnPacket(disguisee.getLocation());
 		}
 	}
 	
-	public Packet20NamedEntitySpawn getPlayerSpawnPacket(Location loc, short item) {
-		if (d.mob == null && d.data != null) {
-			Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn();
-	        packet.a = d.entityID;
-	        packet.b = d.data.getFirst();
-	        int x = MathHelper.floor(loc.getX() *32D);
-			int y = MathHelper.floor(loc.getY() *32D);
-			int z = MathHelper.floor(loc.getZ() *32D);
-			if(firstpos) {
-				encposX = x;
-				encposY = y;
-				encposZ = z;
-				firstpos = false;
-			}
-	        packet.c = (int) x;
-	        packet.d = (int) y;
-	        packet.e = (int) z;
-	        packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
-	        packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
-	        packet.h = item;
-	        try {
-				Field metadataField = packet.getClass().getDeclaredField("i");
-				metadataField.setAccessible(true);
-				metadataField.set(packet, d.metadata);
-			} catch (Exception e) {
-				DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a player disguise!", e);
-			}
-	        return packet;
-		} else {
-			return null;
+	public LinkedList<Packet> getArmorPackets(Player player) {
+		LinkedList<Packet> packets = new LinkedList<Packet>();
+		ItemStack[] armor = player.getInventory().getArmorContents();
+		for (byte i=0; i < armor.length; i++) {
+			packets.add(getEquipmentChangePacket((short) (i + 1), armor[i]));
 		}
+		return packets;
+	}
+	
+	// Individual packet generation methods
+	public int[] getLocationVariables(Location loc) {
+		int x = MathHelper.floor(loc.getX() *32D);
+		int y = MathHelper.floor(loc.getY() *32D);
+		int z = MathHelper.floor(loc.getZ() *32D);
+		if(firstpos) {
+			encposX = x;
+			encposY = y;
+			encposZ = z;
+			firstpos = false;
+		}
+		return new int[] {x, y, z};
+	}
+	
+	public Packet24MobSpawn getMobSpawnPacket(Location loc) {
+		int[] locVars = getLocationVariables(loc);
+		Packet24MobSpawn packet = new Packet24MobSpawn();
+		packet.a = d.entityID;
+		packet.b = d.type.id;
+		packet.c = locVars[0];
+		packet.d = locVars[1];
+		packet.e = locVars[2];
+		packet.i = DisguiseCraft.degreeToByte(loc.getYaw());
+		packet.j = DisguiseCraft.degreeToByte(loc.getPitch());
+		if (d.type == DisguiseType.EnderDragon) { // Ender Dragon fix
+			packet.i = (byte) (packet.i - 128);
+		}
+		if (d.type == DisguiseType.Chicken) { // Chicken fix
+			packet.j = (byte) (packet.j * -1);
+		}
+		packet.k = packet.i;
+		try {
+			Field metadataField = packet.getClass().getDeclaredField("s");
+			metadataField.setAccessible(true);
+			metadataField.set(packet, d.metadata);
+		} catch (Exception e) {
+			DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a " + d.type.name() +  " disguise!", e);
+		}
+		return packet;
+	}
+	
+	public Packet20NamedEntitySpawn getPlayerSpawnPacket(Location loc, short item) {
+		int[] locVars = getLocationVariables(loc);
+		Packet20NamedEntitySpawn packet = new Packet20NamedEntitySpawn();
+        packet.a = d.entityID;
+        packet.b = d.data.getFirst();
+        packet.c = locVars[0];
+        packet.d = locVars[1];
+        packet.e = locVars[2];
+        packet.f = DisguiseCraft.degreeToByte(loc.getYaw());
+        packet.g = DisguiseCraft.degreeToByte(loc.getPitch());
+        packet.h = item;
+        try {
+			Field metadataField = packet.getClass().getDeclaredField("i");
+			metadataField.setAccessible(true);
+			metadataField.set(packet, d.metadata);
+		} catch (Exception e) {
+			DisguiseCraft.logger.log(Level.SEVERE, "Unable to set the metadata for a player disguise!", e);
+		}
+        return packet;
+	}
+	
+	public Packet23VehicleSpawn getObjectSpawnPacket(Location loc) {
+		int[] locVars = getLocationVariables(loc);
+		Packet23VehicleSpawn packet = new Packet23VehicleSpawn();
+		packet.a = d.entityID;
+		packet.b = locVars[0];
+		packet.c = locVars[1];
+		packet.d = locVars[2];
+		packet.h = d.type.id;
+		packet.e = packet.f = packet.g = 0;
+		
+		String[] blockData = d.data.getFirst().split(":");
+		packet.i = Integer.parseInt(blockData[0]);
+		if (!blockData[1].equals("0")) {
+			packet.i = packet.i | (Integer.parseInt(blockData[1]) << 0xC);
+		}
+		return packet;
 	}
 	
 	public Packet29DestroyEntity getEntityDestroyPacket() {
@@ -148,11 +177,11 @@ public class DCPacketGenerator {
 		packet.f = DisguiseCraft.degreeToByte(loc.getPitch());
 		
 		// EnderDragon specific
-		if (d.mob == MobType.EnderDragon) {
+		if (d.type == DisguiseType.EnderDragon) {
 			packet.e = (byte) (packet.e - 128);
 		}
 		// Chicken fix
-		if (d.mob == MobType.Chicken) {
+		if (d.type == DisguiseType.Chicken) {
 			packet.f = (byte) (packet.f * -1);
 		}
 		return packet;
@@ -172,11 +201,11 @@ public class DCPacketGenerator {
 		packet.f = DisguiseCraft.degreeToByte(look.getPitch());
 		
 		// EnderDragon specific
-		if (d.mob == MobType.EnderDragon) {
+		if (d.type == DisguiseType.EnderDragon) {
 			packet.e = (byte) (packet.e - 128);
 		}
 		// Chicken fix
-		if (d.mob == MobType.Chicken) {
+		if (d.type == DisguiseType.Chicken) {
 			packet.f = (byte) (packet.f * -1);
 		}
 		return packet;
@@ -198,11 +227,11 @@ public class DCPacketGenerator {
 		packet.f = DisguiseCraft.degreeToByte(loc.getPitch());
 		
 		// EnderDragon specific
-		if (d.mob == MobType.EnderDragon) {
+		if (d.type == DisguiseType.EnderDragon) {
 			packet.e = (byte) (packet.e - 128);
 		}
 		// Chicken fix
-		if (d.mob == MobType.Chicken) {
+		if (d.type == DisguiseType.Chicken) {
 			packet.f = (byte) (packet.f * -1);
 		}
 		return packet;
@@ -214,7 +243,7 @@ public class DCPacketGenerator {
 	
 	public Packet201PlayerInfo getPlayerInfoPacket(Player player, boolean show) {
 		Packet201PlayerInfo packet = null;
-		if (d.isPlayer()) {
+		if (d.type.isPlayer()) {
 			int ping;
 			if (show) {
 				ping = ((CraftPlayer) player).getHandle().ping;

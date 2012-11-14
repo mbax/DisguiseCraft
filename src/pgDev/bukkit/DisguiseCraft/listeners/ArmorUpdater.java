@@ -1,16 +1,16 @@
-package pgDev.bukkit.DisguiseCraft.listeners.movement;
+package pgDev.bukkit.DisguiseCraft.listeners;
 
 import org.bukkit.entity.Player;
 
 import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
-public class DCPlayerPositionUpdater implements Runnable {
+public class ArmorUpdater implements Runnable {
 	final DisguiseCraft plugin;
 	final Player player;
 	final Disguise disguise;
 	
-	public DCPlayerPositionUpdater(DisguiseCraft plugin, Player player, Disguise disguise) {
+	public ArmorUpdater(DisguiseCraft plugin, Player player, Disguise disguise) {
 		this.plugin = plugin;
 		this.player = player;
 		this.disguise = disguise;
@@ -18,6 +18,6 @@ public class DCPlayerPositionUpdater implements Runnable {
 
 	@Override
 	public void run() {
-		plugin.sendMovement(player, null, player.getVelocity(), player.getLocation());
+		plugin.sendPacketsToWorld(player.getWorld(), disguise.packetGenerator.getArmorPackets(player));
 	}
 }

@@ -28,7 +28,6 @@ public class DCConfig {
 	public boolean movementUpdateThreading;
 	public int movementUpdateFrequency;
 	public boolean nopickupDefault;
-	public boolean compatibility;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -46,7 +45,6 @@ public class DCConfig {
         movementUpdateThreading = getBoolean("movementUpdateThreading", false);
         movementUpdateFrequency = getInt("movementUpdateFrequency", 4);
         nopickupDefault = getBoolean("nopickupDefault", false);
-        compatibility = getBoolean("compatibility", true);
 	}
 	
 	// Value obtaining functions down below
@@ -181,6 +179,7 @@ public class DCConfig {
     		out.write("#		-Player sneak animation\r\n");
     		out.write("#		-Disguise damage animation\r\n");
     		out.write("#		-Disguise death animation\r\n");
+    		out.write("#		-Disguise armor updates\r\n");
     		out.write("#		-Item pickup animation\r\n");
     		out.write("optionals=" + optionalListeners + "\r\n");
     		out.write("\r\n");
@@ -235,15 +234,6 @@ public class DCConfig {
     		out.write("#	This means that disguised players are\r\n");
     		out.write("#	automatically set to not pick up items.\r\n");
     		out.write("nopickupDefault=" + nopickupDefault + "\r\n");
-    		out.write("\r\n");
-    		out.write("# Compatibility Mode\r\n");
-    		out.write("#	To get default metadata values for each mob and\r\n");
-    		out.write("#	maintain resilience over multiple versions of\r\n");
-    		out.write("#	Minecraft, DisguiseCraft uses reflection to\r\n");
-    		out.write("#	construct dummy mobs of every type at startup.\r\n");
-    		out.write("#	Set this to false, if you are seeing issues or\r\n");
-    		out.write("#	server startup is slow.\r\n");
-    		out.write("compatibility=" + compatibility + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);

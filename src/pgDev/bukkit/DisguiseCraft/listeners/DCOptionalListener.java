@@ -1,9 +1,11 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -12,8 +14,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
-import pgDev.bukkit.DisguiseCraft.Disguise;
-import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
+import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
 public class DCOptionalListener implements Listener {
@@ -27,10 +28,9 @@ public class DCOptionalListener implements Listener {
 	public void onHeldItemChange(PlayerItemHeldEvent event) {
 		if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
 			Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
-			if (disguise.isPlayer() || (disguise.mob != null &&
-					(disguise.mob == MobType.Zombie || disguise.mob == MobType.PigZombie || disguise.mob == MobType.Skeleton))) {
+			if (disguise.type.isPlayer() || disguise.type == DisguiseType.Zombie || disguise.type == DisguiseType.PigZombie || disguise.type == DisguiseType.Skeleton) {
 				ItemStack heldItem = event.getPlayer().getInventory().getItem(event.getNewSlot());
-				plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getEquipmentChangePacket((short) 0, heldItem));
+				plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.packetGenerator.getEquipmentChangePacket((short) 0, heldItem));
 			}
 		}
 	}
@@ -45,8 +45,8 @@ public class DCOptionalListener implements Listener {
 			
 			if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
 				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
-				if (disguise.isPlayer()) {
-					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getAnimationPacket(1));
+				if (disguise.type.isPlayer()) {
+					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.packetGenerator.getAnimationPacket(1));
 				}
 			}
 		}
@@ -57,9 +57,9 @@ public class DCOptionalListener implements Listener {
 		if (!event.isCancelled()) {
 			if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
 				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
-				if (disguise.isPlayer()) {
+				if (disguise.type.isPlayer()) {
 					disguise.setCrouch(event.isSneaking());
-					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.getEntityMetadataPacket());
+					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.packetGenerator.getEntityMetadataPacket());
 				}
 			}
 		}
@@ -72,7 +72,7 @@ public class DCOptionalListener implements Listener {
 				Player player = (Player) event.getEntity();
 				if (plugin.disguiseDB.containsKey(player.getName())) {
 					// Send the damage animation
-					plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).getAnimationPacket(2));
+					plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).packetGenerator.getAnimationPacket(2));
 				}
 			}
 		}
@@ -84,7 +84,7 @@ public class DCOptionalListener implements Listener {
 			Player player = (Player) event.getEntity();
 			if (plugin.disguiseDB.containsKey(player.getName())) {
 				// Send death packet
-				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).getStatusPacket(3));
+				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).packetGenerator.getStatusPacket(3));
 			}
 		}
 	}
@@ -104,7 +104,20 @@ public class DCOptionalListener implements Listener {
 		if (!event.isCancelled()) {
 			Player player = event.getPlayer();
 			if (plugin.disguiseDB.containsKey(player.getName())) {
-				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).getPickupPacket(event.getItem().getEntityId()));
+				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).packetGenerator.getPickupPacket(event.getItem().getEntityId()));
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onInventoryChange(InventoryClickEvent event) {
+		if (!event.isCancelled()) {
+			HumanEntity entity = event.getWhoClicked();
+			if (entity instanceof Player) {
+				Player player = (Player) entity;
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					plugin.getServer().getScheduler().runTask(plugin, new ArmorUpdater(plugin, player, plugin.disguiseDB.get(player.getName())));
+				}
 			}
 		}
 	}

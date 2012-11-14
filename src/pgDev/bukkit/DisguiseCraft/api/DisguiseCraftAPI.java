@@ -5,7 +5,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
-import pgDev.bukkit.DisguiseCraft.Disguise;
+import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 
 /**

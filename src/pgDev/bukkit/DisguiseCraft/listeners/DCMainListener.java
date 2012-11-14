@@ -1,5 +1,7 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
+import java.util.LinkedList;
+
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
@@ -11,9 +13,8 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetEvent.TargetReason;
 import org.bukkit.event.player.*;
 
-import pgDev.bukkit.DisguiseCraft.Disguise;
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
-import pgDev.bukkit.DisguiseCraft.Disguise.MobType;
+import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
@@ -43,10 +44,10 @@ public class DCMainListener implements Listener {
 			if (disguise.hasPermission(player)) {
 				plugin.disguiseIDs.put(disguise.entityID, player);
 				plugin.sendDisguise(player, null);
-				if (disguise.isPlayer()) {
+				if (disguise.type.isPlayer()) {
 					player.sendMessage(ChatColor.GOLD + "You were redisguised as player: " + disguise.data.getFirst());
 				} else {
-					player.sendMessage(ChatColor.GOLD + "You were redisguised as a " + ChatColor.DARK_GREEN + disguise.mob.name());
+					player.sendMessage(ChatColor.GOLD + "You were redisguised as a " + ChatColor.DARK_GREEN + disguise.type.name());
 				}
 				
 				// Start position updater
@@ -73,8 +74,8 @@ public class DCMainListener implements Listener {
 			} else {
 				if (event.getPlayer().getItemInHand().getType() == Material.SHEARS) {
 					Disguise disguise = plugin.disguiseDB.get(attacked.getName());
-					if (disguise.mob != null && disguise.mob == MobType.MushroomCow) {
-						((CraftPlayer) event.getPlayer()).getHandle().netServerHandler.sendPacket(disguise.getMobSpawnPacket(attacked.getLocation()));
+					if (disguise.type == DisguiseType.MushroomCow) {
+						((CraftPlayer) event.getPlayer()).getHandle().netServerHandler.sendPacket(disguise.packetGenerator.getMobSpawnPacket(attacked.getLocation()));
 					}
 				}
 			}
@@ -114,35 +115,32 @@ public class DCMainListener implements Listener {
 			Disguise disguise = plugin.disguiseDB.get(disguisee.getName());
 			
 			// Packets
-			Packet killPacket = disguise.getEntityDestroyPacket();
-    		Packet killListPacket = disguise.getPlayerInfoPacket(disguisee, false);
-    		Packet revivePacket = disguise.getMobSpawnPacket(disguisee.getLocation());
-    		Packet revivePlayerPacket = disguise.getPlayerSpawnPacket(disguisee.getLocation(), (short) disguisee.getItemInHand().getTypeId());
-			Packet reviveListPacket = disguise.getPlayerInfoPacket(disguisee, true);
+			LinkedList<Packet> killPackets = new LinkedList<Packet>();
+			LinkedList<Packet> revivePackets = new LinkedList<Packet>();
+			killPackets.add(disguise.packetGenerator.getEntityDestroyPacket());
+			revivePackets.add(disguise.packetGenerator.getSpawnPacket(disguisee));
+			if (disguise.type.isPlayer()) {
+				killPackets.add(disguise.packetGenerator.getPlayerInfoPacket(disguisee, false));
+				revivePackets.add(disguise.packetGenerator.getPlayerInfoPacket(disguisee, true));
+			}
     		
 			// Remove his disguise from the old world
-			if (killListPacket == null) {
-				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket);
-			} else {
-				plugin.undisguiseToWorld(event.getFrom(), disguisee, killPacket, killListPacket);
-			}
+			plugin.undisguiseToWorld(event.getFrom(), disguisee, killPackets);
 			
-			if (!disguise.hasPermission(disguisee)) {
+			if (disguise.hasPermission(disguisee)) {
+				// Show the disguise to the people in the new world
+				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePackets);
+			} else {
 				// Pass the event
 				PlayerUndisguiseEvent ev = new PlayerUndisguiseEvent(disguisee);
 				plugin.getServer().getPluginManager().callEvent(ev);
-				if (!ev.isCancelled()) {
+				if (ev.isCancelled()) {
+					plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePackets);
+				} else {
 					plugin.unDisguisePlayer(disguisee);
 					disguisee.sendMessage(ChatColor.RED + "You've been undisguised because you do not have permissions to wear that disguise in this world.");
 					return;
 				}
-			}
-			
-			// Show the disguise to the people in the new world
-			if (disguise.isPlayer()) {
-				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePlayerPacket, reviveListPacket);
-			} else {
-				plugin.disguiseToWorld(disguisee.getWorld(), disguisee, revivePacket);
 			}
 		}
 	}
@@ -157,7 +155,7 @@ public class DCMainListener implements Listener {
 						if (plugin.hasPermissions(player, "disguisecraft.notarget.strict")) {
 							event.setCancelled(true);
 						} else {
-							if (!plugin.disguiseDB.get(player.getName()).isPlayer() && (event.getReason() == TargetReason.CLOSEST_PLAYER || event.getReason() == TargetReason.RANDOM_TARGET)) {
+							if (!plugin.disguiseDB.get(player.getName()).type.isPlayer() && (event.getReason() == TargetReason.CLOSEST_PLAYER || event.getReason() == TargetReason.RANDOM_TARGET)) {
 								event.setCancelled(true);
 							}
 						}
