@@ -29,6 +29,7 @@ permissions:
             disguisecraft.burning: true
             disguisecraft.player: true
             disguisecraft.mob.*: true
+            disguisecraft.object.*: true
     disguisecraft.update:
         default: op
         description: Can be notified of plugin updates.
@@ -399,3 +400,41 @@ permissions:
     disguisecraft.mob.zombie:
         default: op
         description: Can disguise as a zombie.
+    disguisecraft.object.*:
+        default: op
+        description: Can disguise as any object.
+        children:
+            disguisecraft.object.vehicle.*: true
+            disguisecraft.object.block.*: true
+    disguisecraft.object.vehicle.*:
+        default: op
+        description: Can disguise as any vehicle.
+        children:
+            disguisecraft.object.vehicle.boat: true
+            disguisecraft.object.vehicle.minecart: true
+            disguisecraft.object.vehicle.poweredminecart: true
+            disguisecraft.object.vehicle.storageminecart: true
+    disguisecraft.object.vehicle.boat:
+        default: op
+        description: Can disguise as a boat.
+    disguisecraft.object.vehicle.minecart:
+        default: op
+        description: Can disguise as a minecart.
+    disguisecraft.object.vehicle.poweredminecart:
+        default: op
+        description: Can disguise as a powered minecart.
+    disguisecraft.object.vehicle.storageminecart:
+        default: op
+        description: Can disguise as a storage minecart.
+    disguisecraft.object.block.*:
+        default: op
+        description: Can disguise as any block.
+    disguisecraft.object.block.endercrystal:
+        default: op
+        description: Can disguise as an endercrystal.
+    disguisecraft.object.block.fallingblock:
+        default: op
+        description: Can disguise as a falling block.
+    disguisecraft.object.block.tntprimed:
+        default: op
+        description: Can disguise as primed TNT.

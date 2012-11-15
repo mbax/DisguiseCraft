@@ -139,7 +139,7 @@ public enum DisguiseType {
 	 * @return true if the type is of a player, false otherwise
 	 */
 	public boolean isPlayer() {
-		return this == DisguiseType.Player;
+		return this == Player;
 	}
 	
 	/**
@@ -147,7 +147,7 @@ public enum DisguiseType {
 	 * @return true if the type is of a mob, false otherwise
 	 */
 	public boolean isMob() {
-		return this != DisguiseType.Player && isSubclass(LivingEntity.class);
+		return this != Player && isSubclass(LivingEntity.class);
 	}
 	
 	/**
@@ -164,6 +164,14 @@ public enum DisguiseType {
 	 */
 	public boolean isVehicle() {
 		return this.isSubclass(Vehicle.class);
+	}
+	
+	/**
+	 * Check if this is a block.
+	 * @return true if the type is of a block, false otherwise
+	 */
+	public boolean isBlock() {
+		return 	this == EnderCrystal || this == FallingBlock || this == TNTPrimed;
 	}
 	
 	/**
@@ -228,7 +236,7 @@ public enum DisguiseType {
 	 * Just a string containing the possible subtypes. This is mainly
 	 * used for plugin help output.
 	 */
-	public static String subTypes = "player, baby, black, blue, brown, cyan, " +
+	public static String subTypes = "baby, black, blue, brown, cyan, " +
 		"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
 		"silver, white, yellow, sheared, charged, tiny, small, big, bigger, massive, godzilla, " +
 		"tamed, aggressive, tabby, tuxedo, siamese, burning, saddled, " +

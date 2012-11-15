@@ -420,6 +420,12 @@ public class DisguiseCraft extends JavaPlugin {
     public void sendMovement(Player disguised, Player observer, Vector vector, Location to) {
     	LinkedList<Packet> toSend = new LinkedList<Packet>();
 		Disguise disguise = disguiseDB.get(disguised.getName());
+		
+		// Vehicle fix
+    	if (disguise.type.isVehicle()) {
+    		to.setY(to.getY() + 0.5);
+    	}
+		
 		MovementValues movement = disguise.packetGenerator.getMovement(to);
 		
 		if (pluginSettings.bandwidthReduction) {

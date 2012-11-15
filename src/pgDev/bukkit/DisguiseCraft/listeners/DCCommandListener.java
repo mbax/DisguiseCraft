@@ -1063,7 +1063,9 @@ public class DCCommandListener implements CommandExecutor {
 					sender.sendMessage(ChatColor.RED + "That mob type was not recognized.");
 				} else {
 					// Check for permissions
-					if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
+					if (isConsole || (type.isMob() && plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase()))
+							|| (type.isVehicle() && plugin.hasPermissions(player, "disguisecraft.object.vehicle." + type.name().toLowerCase()))
+							|| (type.isBlock() && plugin.hasPermissions(player, "disguisecraft.object.block." + type.name().toLowerCase()))) {
 						if (plugin.disguiseDB.containsKey(player.getName())) {
 							Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
 							disguise.setType(type).clearData();

@@ -125,6 +125,11 @@ public class DCPacketGenerator {
 	}
 	
 	public Packet23VehicleSpawn getObjectSpawnPacket(Location loc) {
+		// Block fix
+    	if (d.type.isBlock()) {
+    		loc.setY(loc.getY() + 0.5);
+    	}
+		
 		int[] locVars = getLocationVariables(loc);
 		Packet23VehicleSpawn packet = new Packet23VehicleSpawn();
 		packet.a = d.entityID;
