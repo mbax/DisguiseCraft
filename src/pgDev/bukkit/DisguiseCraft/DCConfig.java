@@ -28,6 +28,7 @@ public class DCConfig {
 	public boolean movementUpdateThreading;
 	public int movementUpdateFrequency;
 	public boolean nopickupDefault;
+	public int attackInterval;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -45,6 +46,7 @@ public class DCConfig {
         movementUpdateThreading = getBoolean("movementUpdateThreading", false);
         movementUpdateFrequency = getInt("movementUpdateFrequency", 4);
         nopickupDefault = getBoolean("nopickupDefault", false);
+        attackInterval = getInt("attackInterval", 2);
 	}
 	
 	// Value obtaining functions down below
@@ -234,6 +236,13 @@ public class DCConfig {
     		out.write("#	This means that disguised players are\r\n");
     		out.write("#	automatically set to not pick up items.\r\n");
     		out.write("nopickupDefault=" + nopickupDefault + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Disguise Attack Process Interval\r\n");
+    		out.write("#	To greatly improve performance, DisguiseCraft\r\n");
+    		out.write("#	processes \"attacks on disguises\" in a separate\r\n");
+    		out.write("#	polling thread. This is how often (in ticks)\r\n");
+    		out.write("#	that this thread will process attacks.\r\n");
+    		out.write("attackInterval=" + attackInterval + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);

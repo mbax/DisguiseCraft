@@ -72,3 +72,10 @@ movementUpdateFrequency=4
 #	This means that disguised players are
 #	automatically set to not pick up items.
 nopickupDefault=false
+
+# Disguise Attack Process Interval
+#	To greatly improve performance, DisguiseCraft
+#	processes "attacks on disguises" in a separate
+#	polling thread. This is how often (in ticks)
+#	that this thread will process attacks.
+attackInterval=2

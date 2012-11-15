@@ -29,8 +29,10 @@ import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCPacketListener;
+import pgDev.bukkit.DisguiseCraft.listeners.attack.AttackProcessor;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerMoveListener;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerPositionUpdater;
+import pgDev.bukkit.DisguiseCraft.packet.MovementValues;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics;
 import pgDev.bukkit.DisguiseCraft.stats.Metrics.Graph;
 
@@ -81,6 +83,9 @@ public class DisguiseCraft extends JavaPlugin {
     
     // Plugin Configuration
     static public DCConfig pluginSettings;
+    
+    // Attack processor thread
+    public AttackProcessor attackProcessor = new AttackProcessor();
     
     @Override
     public void onLoad() {
@@ -166,6 +171,9 @@ public class DisguiseCraft extends JavaPlugin {
     		logger.log(Level.WARNING, "The following mobs are not present in this MineCraft version: " + missings);
     	}
         
+        // Start up attack processing thread
+        getServer().getScheduler().scheduleSyncRepeatingTask(this, attackProcessor, 1, pluginSettings.attackInterval);
+        
         // Heyo!
         PluginDescriptionFile pdfFile = this.getDescription();
         version = pdfFile.getVersion();
@@ -174,6 +182,9 @@ public class DisguiseCraft extends JavaPlugin {
 	
     @Override
 	public void onDisable() {
+    	// Stop threads
+    	getServer().getScheduler().cancelTasks(this);
+    	
     	// Wipe dropped disguises
     	for (Integer i : droppedDisguises.keySet()) {
     		DroppedDisguise dd = droppedDisguises.get(i);

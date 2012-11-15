@@ -28,7 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
-import pgDev.bukkit.DisguiseCraft.MovementValues;
 import pgDev.bukkit.DisguiseCraft.disguise.*;
 
 public class DCPacketGenerator {

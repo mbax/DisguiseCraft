@@ -5,8 +5,6 @@ import java.util.LinkedList;
 import net.minecraft.server.Packet;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.*;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -15,6 +13,7 @@ import org.bukkit.event.player.*;
 
 import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.disguise.*;
+import pgDev.bukkit.DisguiseCraft.listeners.attack.InvalidInteractHandler;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
@@ -66,20 +65,7 @@ public class DCMainListener implements Listener {
 	
 	@EventHandler
 	public void onDisguiseHit(PlayerInvalidInteractEvent event) {
-		if (plugin.disguiseIDs.containsKey(event.getTarget())) {
-			Player attacked = plugin.disguiseIDs.get(event.getTarget());
-			if (event.getAction()) {
-				// Do the attack
-				((CraftPlayer) event.getPlayer()).getHandle().attack(((CraftPlayer) attacked).getHandle());
-			} else {
-				if (event.getPlayer().getItemInHand().getType() == Material.SHEARS) {
-					Disguise disguise = plugin.disguiseDB.get(attacked.getName());
-					if (disguise.type == DisguiseType.MushroomCow) {
-						((CraftPlayer) event.getPlayer()).getHandle().netServerHandler.sendPacket(disguise.packetGenerator.getMobSpawnPacket(attacked.getLocation()));
-					}
-				}
-			}
-		}
+		new Thread(new InvalidInteractHandler(event, plugin)).start();
 	}
 	
 	@EventHandler

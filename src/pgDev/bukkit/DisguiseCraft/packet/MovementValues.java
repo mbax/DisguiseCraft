@@ -1,4 +1,4 @@
-package pgDev.bukkit.DisguiseCraft;
+package pgDev.bukkit.DisguiseCraft.packet;
 
 public class MovementValues {
 	
