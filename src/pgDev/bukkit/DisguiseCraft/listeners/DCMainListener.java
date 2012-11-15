@@ -162,10 +162,4 @@ public class DCMainListener implements Listener {
 			}
 		}
 	}
-	
-	// Just temporary
-	@EventHandler
-	public void onClick(PlayerInteractEntityEvent event) {
-		System.out.println(event.getRightClicked().getLocation());
-	}
 }
