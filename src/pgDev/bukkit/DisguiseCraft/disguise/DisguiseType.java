@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Vehicle;
 
 import net.minecraft.server.DataWatcher;
 import net.minecraft.server.Entity;
@@ -52,11 +53,15 @@ public enum DisguiseType {
 	Zombie(54),
 	
 	// Vehicles
-	Minecart(40),
-	Boat(41),
+	Boat(1),
+	Minecart(10),
+	PoweredMinecart(12),
+	StorageMinecart(11),
 	
 	//Blocks
-	FallingBlock(21);
+	EnderCrystal(51),
+	FallingBlock(70),
+	TNTPrimed(50);
 	
 	/**
 	 * Entities that are listed in the DisguiseCraft database, but not in
@@ -151,6 +156,14 @@ public enum DisguiseType {
 	 */
 	public boolean isObject() {
 		return !(isPlayer() || isMob());
+	}
+	
+	/**
+	 * Check if this is a vehicle.
+	 * @return true if the type is of a vehicle, false otherwise
+	 */
+	public boolean isVehicle() {
+		return this.isSubclass(Vehicle.class);
 	}
 	
 	/**

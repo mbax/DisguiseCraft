@@ -12,6 +12,7 @@ import net.minecraft.server.Packet20NamedEntitySpawn;
 import net.minecraft.server.Packet22Collect;
 import net.minecraft.server.Packet23VehicleSpawn;
 import net.minecraft.server.Packet24MobSpawn;
+import net.minecraft.server.Packet28EntityVelocity;
 import net.minecraft.server.Packet29DestroyEntity;
 import net.minecraft.server.Packet32EntityLook;
 import net.minecraft.server.Packet33RelEntityMoveLook;
@@ -88,8 +89,7 @@ public class DCPacketGenerator {
 		packet.j = DisguiseCraft.degreeToByte(loc.getPitch());
 		if (d.type == DisguiseType.EnderDragon) { // Ender Dragon fix
 			packet.i = (byte) (packet.i - 128);
-		}
-		if (d.type == DisguiseType.Chicken) { // Chicken fix
+		} else if (d.type == DisguiseType.Chicken) { // Chicken fix
 			packet.j = (byte) (packet.j * -1);
 		}
 		packet.k = packet.i;
@@ -175,13 +175,13 @@ public class DCPacketGenerator {
 		packet.e = DisguiseCraft.degreeToByte(loc.getYaw());
 		packet.f = DisguiseCraft.degreeToByte(loc.getPitch());
 		
-		// EnderDragon specific
-		if (d.type == DisguiseType.EnderDragon) {
+		
+		if (d.type == DisguiseType.EnderDragon) { // EnderDragon specific
 			packet.e = (byte) (packet.e - 128);
-		}
-		// Chicken fix
-		if (d.type == DisguiseType.Chicken) {
+		} else if (d.type == DisguiseType.Chicken) { // Chicken fix
 			packet.f = (byte) (packet.f * -1);
+		} else if (d.type.isVehicle()) { // Vehicle fix
+			packet.e = (byte) (packet.e - 64);
 		}
 		return packet;
 	}
@@ -199,13 +199,12 @@ public class DCPacketGenerator {
 		packet.e = DisguiseCraft.degreeToByte(look.getYaw());
 		packet.f = DisguiseCraft.degreeToByte(look.getPitch());
 		
-		// EnderDragon specific
-		if (d.type == DisguiseType.EnderDragon) {
+		if (d.type == DisguiseType.EnderDragon) { // EnderDragon specific
 			packet.e = (byte) (packet.e - 128);
-		}
-		// Chicken fix
-		if (d.type == DisguiseType.Chicken) {
+		} else if (d.type == DisguiseType.Chicken) { // Chicken fix
 			packet.f = (byte) (packet.f * -1);
+		} else if (d.type.isVehicle()) { // Vehicle fix
+			packet.e = (byte) (packet.e - 64);
 		}
 		return packet;
 	}
@@ -225,13 +224,12 @@ public class DCPacketGenerator {
 		packet.e = DisguiseCraft.degreeToByte(loc.getYaw());
 		packet.f = DisguiseCraft.degreeToByte(loc.getPitch());
 		
-		// EnderDragon specific
-		if (d.type == DisguiseType.EnderDragon) {
+		if (d.type == DisguiseType.EnderDragon) { // EnderDragon specific
 			packet.e = (byte) (packet.e - 128);
-		}
-		// Chicken fix
-		if (d.type == DisguiseType.Chicken) {
+		} else if (d.type == DisguiseType.Chicken) { // Chicken fix
 			packet.f = (byte) (packet.f * -1);
+		} else if (d.type.isVehicle()) { // Vehicle fix
+			packet.e = (byte) (packet.e - 64);
 		}
 		return packet;
 	}
@@ -290,5 +288,14 @@ public class DCPacketGenerator {
 
 	public Packet22Collect getPickupPacket(int item) {
 		return new Packet22Collect(item, d.entityID);
+	}
+	
+	public Packet28EntityVelocity getVelocityPacket(int x, int y, int z) {
+		Packet28EntityVelocity packet = new Packet28EntityVelocity();
+		packet.a = d.entityID;
+		packet.b = x;
+		packet.c = y;
+		packet.d = z;
+		return packet;
 	}
 }

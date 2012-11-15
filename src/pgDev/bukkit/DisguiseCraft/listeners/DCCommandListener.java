@@ -1007,7 +1007,7 @@ public class DCCommandListener implements CommandExecutor {
 				} else {
 					sender.sendMessage(ChatColor.RED + "You don't have permission to drop your disguise");
 				}
-			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi")) {
+			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi") && !args[0].toLowerCase().startsWith("po")) {
 				if (args.length > 1) {
 					// Dynamically add the player name as a child for the disguisecraft.player.* node
 					try {
@@ -1066,7 +1066,7 @@ public class DCCommandListener implements CommandExecutor {
 					if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
 						if (plugin.disguiseDB.containsKey(player.getName())) {
 							Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-							disguise.setType(type).setData(null);
+							disguise.setType(type).clearData();
 							
 							// Pass the event
 							PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);

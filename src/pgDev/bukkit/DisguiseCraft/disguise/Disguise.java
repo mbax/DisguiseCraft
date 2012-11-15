@@ -27,7 +27,7 @@ public class Disguise {
 	/**
 	 * The metadata contained in this disguise
 	 */
-	public LinkedList<String> data;
+	public LinkedList<String> data = new LinkedList<String>();
 	/**
 	 * The type of entity the disguise is
 	 */
@@ -58,9 +58,7 @@ public class Disguise {
 	 */
 	public Disguise(int entityID, String data, DisguiseType type) {
 		this.entityID = entityID;
-		LinkedList<String> dt = new LinkedList<String>();
-		dt.addFirst(data);
-		this.data = dt;
+		this.data.addFirst(data);
 		this.type = type;
 		
 		sharedConstruct();
@@ -73,7 +71,6 @@ public class Disguise {
 	 */
 	public Disguise(int entityID, DisguiseType type) {
 		this.entityID = entityID;
-		this.data = null;
 		this.type = type;
 		
 		sharedConstruct();
@@ -86,40 +83,43 @@ public class Disguise {
 			packetGenerator = new PLPacketGenerator(this);
 		}
 		
+		// Check for proper data
+		dataCheck();
+		
+		// Deal with data
+		if (!type.isObject()) {
+			initializeData();
+			handleData();
+		}
+	}
+	
+	protected void dataCheck() {
 		// Check for NoPickup default
 		if (DisguiseCraft.pluginSettings.nopickupDefault) {
-			if (data == null) {
-				data = new LinkedList<String>();
-			}
 			data.add("nopickup");
 		}
 		
 		// Check for player name
-		if (type.isPlayer() && data == null) {
-			data = new LinkedList<String>();
+		if (type.isPlayer() && data.isEmpty()) {
 			data.add("Glaciem");
 		}
 		
 		// Check for object data
 		if (type.isObject()) {
-			if (data == null) {
-				data = new LinkedList<String>();
+			if (data.isEmpty()) {
 				data.add("1:0");
 			} else {
 				if (!data.getFirst().matches("\\d+:\\d+")) {
 					data.addFirst("1:0");
 				}
 			}
-		} else {
-			initializeData();
-			handleData();
 		}
 	}
 	
 	/**
 	 * Set the entity ID
 	 * @param entityID The ID to set
-	 * @return The new Disguise object (for chaining)
+	 * @return The Disguise object (for chaining)
 	 */
 	public Disguise setEntityID(int entityID) {
 		this.entityID = entityID;
@@ -129,7 +129,7 @@ public class Disguise {
 	/**
 	 * Set the metadata
 	 * @param data The metadata to set
-	 * @return The new Disguise object (for chaining)
+	 * @return The Disguise object (for chaining)
 	 */
 	public Disguise setData(LinkedList<String> data) {
 		this.data = data;
@@ -141,12 +141,9 @@ public class Disguise {
 	/**
 	 * Sets the metadata to a single value (Likely a player name)
 	 * @param data The metadata to set
-	 * @return The new Disguise object (for chaining)
+	 * @return The Disguise object (for chaining)
 	 */
 	public Disguise setSingleData(String data) {
-		if (this.data == null) {
-			this.data = new LinkedList<String>();
-		}
 		this.data.clear();
 		this.data.addFirst(data);
 		metadata = new DataWatcher();
@@ -158,17 +155,24 @@ public class Disguise {
 	/**
 	 * Adds a single metadata string
 	 * @param data The metadata to add
-	 * @return The new Disguise object (for chaining)
+	 * @return The Disguise object (for chaining)
 	 */
 	public Disguise addSingleData(String data) {
-		if (this.data == null) {
-			this.data = new LinkedList<String>();
-		}
 		if (!this.data.contains(data)) {
 			this.data.add(data);
 		}
 		initializeData();
 		handleData();
+		return this;
+	}
+	
+	/**
+	 * Clears the metadata
+	 * @return The Disguise object (for chaining)
+	 */
+	public Disguise clearData() {
+		data.clear();
+		dataCheck();
 		return this;
 	}
 	
@@ -243,7 +247,7 @@ public class Disguise {
 	}
 	
 	public void handleData() {
-		if (data != null) {
+		if (!data.isEmpty()) {
 			// Index 0
 			byte firstIndex = 0;
 			if (data.contains("burning")) {
@@ -407,7 +411,7 @@ public class Disguise {
 		String[] colors = {"black", "blue", "brown", "cyan", "gray", "green",
 			"lightblue", "lime", "magenta", "orange", "pink", "purple", "red",
 			"silver", "white", "yellow", "sheared"};
-		if (data != null) {
+		if (!data.isEmpty()) {
 			for (String color : colors) {
 				if (data.contains(color)) {
 					return color;
@@ -423,7 +427,7 @@ public class Disguise {
 	 */
 	public String getSize() {
 		String[] sizes = {"tiny", "small", "big"};
-		if (data != null) {
+		if (!data.isEmpty()) {
 			for (String size : sizes) {
 				if (data.contains(size)) {
 					return size;
@@ -470,7 +474,7 @@ public class Disguise {
 	 * @return The block ID of the held block (null if not holding anything)
 	 */
 	public Byte getHolding() {
-		if (data != null) {
+		if (!data.isEmpty()) {
 			for (String one : data) {
 				if (one.startsWith("holding")) {
 					String[] parts = one.split(":");
@@ -492,7 +496,7 @@ public class Disguise {
 	 */
 	public boolean hasPermission(Player player) {
 		DisguiseCraft plugin = (DisguiseCraft) Bukkit.getServer().getPluginManager().getPlugin("DisguiseCraft");
-		if (data != null && data.contains("burning") && !plugin.hasPermissions(player, "disguisecraft.burning")) {
+		if (data.contains("burning") && !plugin.hasPermissions(player, "disguisecraft.burning")) {
 			return false;
 		}
 		if (type.isPlayer()) { // Check Player
@@ -503,7 +507,7 @@ public class Disguise {
 			if (!plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
 				return false;
 			}
-			if (data != null) {
+			if (!data.isEmpty()) {
 				for (String dat : data) { // Check Subtypes
 					if (dat.equalsIgnoreCase("crouched") || dat.equalsIgnoreCase("riding") || dat.equalsIgnoreCase("sprinting") || dat.equalsIgnoreCase("nopickup")) { // Ignore some statuses
 						continue;
