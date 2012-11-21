@@ -105,7 +105,7 @@ public class Disguise {
 		}
 		
 		// Check for object data
-		if (type.isObject()) {
+		/*if (type.isObject()) {
 			if (data.isEmpty()) {
 				data.add("1:0");
 			} else {
@@ -113,7 +113,7 @@ public class Disguise {
 					data.addFirst("1:0");
 				}
 			}
-		}
+		}*/
 	}
 	
 	/**
@@ -133,8 +133,10 @@ public class Disguise {
 	 */
 	public Disguise setData(LinkedList<String> data) {
 		this.data = data;
-		initializeData();
-		handleData();
+		if (!type.isObject()) {
+			initializeData();
+			handleData();
+		}
 		return this;
 	}
 	
@@ -146,9 +148,11 @@ public class Disguise {
 	public Disguise setSingleData(String data) {
 		this.data.clear();
 		this.data.addFirst(data);
-		metadata = new DataWatcher();
-		initializeData();
-		handleData();
+		if (!type.isObject()) {
+			metadata = new DataWatcher();
+			initializeData();
+			handleData();
+		}
 		return this;
 	}
 	
@@ -161,8 +165,10 @@ public class Disguise {
 		if (!this.data.contains(data)) {
 			this.data.add(data);
 		}
-		initializeData();
-		handleData();
+		if (!type.isObject()) {
+			initializeData();
+			handleData();
+		}
 		return this;
 	}
 	
@@ -236,7 +242,9 @@ public class Disguise {
 	@SuppressWarnings("rawtypes")
 	public void safeAddData(int index, Object value) {
 		try {
-			if (!((Map) DisguiseType.mapField.get(metadata)).containsKey(index)) {
+			if (((Map) DisguiseType.mapField.get(metadata)).containsKey(index)) {
+				metadata.watch(index, value);
+			} else {
 				metadata.a(index, value);
 			}
 		} catch (IllegalArgumentException e) {
@@ -367,9 +375,14 @@ public class Disguise {
 				metadata.watch(16, (byte) 1);
 			}
 			
-			Byte held = getHolding();
-			if (held != null) {
+			Byte held = getBlockID();
+			if (held != null && type == DisguiseType.Enderman) {
 				metadata.watch(16, held.byteValue());
+				
+				Byte blockData = getBlockData();
+				if (blockData != null) {
+					safeAddData(17, blockData.byteValue());
+				}
 			}
 			
 			if (data.contains("farmer")) {
@@ -470,18 +483,38 @@ public class Disguise {
 	}
 	
 	/**
-	 * Gets the block ID this disguise is holding (according to the metadata)
-	 * @return The block ID of the held block (null if not holding anything)
+	 * Gets the block ID relevant to this disguise (stored within metadata)
+	 * @return The block ID (null if none found)
 	 */
-	public Byte getHolding() {
+	public Byte getBlockID() {
 		if (!data.isEmpty()) {
 			for (String one : data) {
-				if (one.startsWith("holding")) {
+				if (one.startsWith("blockID:")) {
 					String[] parts = one.split(":");
 					try {
 						return Byte.valueOf(parts[1]);
 					} catch (NumberFormatException e) {
-						DisguiseCraft.logger.log(Level.WARNING, "Could not parse the byte of an Enderman holding block!");
+						DisguiseCraft.logger.log(Level.WARNING, "Could not parse the byte of a disguise's block!");
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets any extra block data stored in the metadata list
+	 * @return The block data byte (null if there isn't any)
+	 */
+	public Byte getBlockData() {
+		if (!data.isEmpty()) {
+			for (String one : data) {
+				if (one.startsWith("blockData:")) {
+					String[] parts = one.split(":");
+					try {
+						return Byte.valueOf(parts[1]);
+					} catch (NumberFormatException e) {
+						DisguiseCraft.logger.log(Level.WARNING, "Could not parse the byte of a disguise's block data!");
 					}
 				}
 			}

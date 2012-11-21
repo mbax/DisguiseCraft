@@ -125,13 +125,26 @@ public class DCPacketGenerator {
 	}
 	
 	public Packet23VehicleSpawn getObjectSpawnPacket(Location loc) {
-		// Block fix
+		Packet23VehicleSpawn packet = new Packet23VehicleSpawn();
+		
+		packet.i = 1;
+		
+		// Block specific
     	if (d.type.isBlock()) {
     		loc.setY(loc.getY() + 0.5);
+    		
+    		Byte blockID = d.getBlockID();
+    		if (blockID != null) {
+    			packet.i = (int) blockID;
+    			
+    			Byte blockData = d.getBlockData();
+    			if (blockData != null) {
+    				packet.i = packet.i | (((int) blockData) << 0xC);
+    			}
+    		}
     	}
 		
 		int[] locVars = getLocationVariables(loc);
-		Packet23VehicleSpawn packet = new Packet23VehicleSpawn();
 		packet.a = d.entityID;
 		packet.b = locVars[0];
 		packet.c = locVars[1];
@@ -139,11 +152,6 @@ public class DCPacketGenerator {
 		packet.h = d.type.id;
 		packet.e = packet.f = packet.g = 0;
 		
-		String[] blockData = d.data.getFirst().split(":");
-		packet.i = Integer.parseInt(blockData[0]);
-		if (!blockData[1].equals("0")) {
-			packet.i = packet.i | (Integer.parseInt(blockData[1]) << 0xC);
-		}
 		return packet;
 	}
 	

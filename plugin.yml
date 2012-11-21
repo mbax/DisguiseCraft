@@ -79,6 +79,7 @@ permissions:
             disguisecraft.mob.enderdragon: true
             disguisecraft.mob.enderman: true
             disguisecraft.mob.enderman.hold: true
+            disguisecraft.mob.enderman.hold.metadata: true
             disguisecraft.mob.ghast: true
             disguisecraft.mob.giant: true
             disguisecraft.mob.irongolem: true
@@ -149,6 +150,9 @@ permissions:
     disguisecraft.mob.enderman.hold:
         default: op
         description: Can hold blocks as an enderman.
+    disguisecraft.mob.enderman.hold.metadata:
+        default: op
+        description: Can change the metadata of a held block.
     disguisecraft.mob.ghast:
         default: op
         description: Can disguise as a ghast.
@@ -428,13 +432,25 @@ permissions:
         description: Can disguise as a storage minecart.
     disguisecraft.object.block.*:
         default: op
-        description: Can disguise as any block.
+        description: Can disguise as any block-like entity.
+        children:
+            disguisecraft.object.block.endercrystal: true
+            disguisecraft.object.block.fallingblock: true
+            disguisecraft.object.block.fallingblock.material: true
+            disguisecraft.object.block.fallingblock.material.metadata: true
+            disguisecraft.object.block.tntprimed: true
     disguisecraft.object.block.endercrystal:
         default: op
         description: Can disguise as an endercrystal.
     disguisecraft.object.block.fallingblock:
         default: op
         description: Can disguise as a falling block.
+    disguisecraft.object.block.fallingblock.material:
+        default: op
+        description: Can change material of the falling block.
+    disguisecraft.object.block.fallingblock.material.metadata:
+        default: op
+        description: Can change the metadata of the falling block.
     disguisecraft.object.block.tntprimed:
         default: op
         description: Can disguise as primed TNT.

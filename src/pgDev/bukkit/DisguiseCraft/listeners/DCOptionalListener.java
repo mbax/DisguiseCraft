@@ -38,15 +38,12 @@ public class DCOptionalListener implements Listener {
 	@EventHandler
 	public void onAnimation(PlayerAnimationEvent event) {
 		if (!event.isCancelled()) {
-			// Just a quick check just in case
-			if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) {
-				return;
-			}
-			
-			if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
-				Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
-				if (disguise.type.isPlayer()) {
-					plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.packetGenerator.getAnimationPacket(1));
+			if (event.getAnimationType() == PlayerAnimationType.ARM_SWING) {
+				if (plugin.disguiseDB.containsKey(event.getPlayer().getName())) {
+					Disguise disguise = plugin.disguiseDB.get(event.getPlayer().getName());
+					if (disguise.type.isPlayer() || disguise.type == DisguiseType.IronGolem) {
+						plugin.sendPacketToWorld(event.getPlayer().getWorld(), disguise.packetGenerator.getAnimationPacket(1));
+					}
 				}
 			}
 		}
