@@ -196,8 +196,8 @@ public class Disguise {
 	public void initializeData() { // everything is casted to Object because of method signature
 		if (!type.isObject()) {
 			metadata = type.newMetadata();
-			safeAddData(0, (Object) (byte) 0);
-			safeAddData(12, (Object) 0);
+			safeAddData(0, (Object) (byte) 0, false);
+			safeAddData(12, (Object) 0, false);
 		}
 	
 		/* Old Metadata System
@@ -240,10 +240,12 @@ public class Disguise {
 	}
 	
 	@SuppressWarnings("rawtypes")
-	public void safeAddData(int index, Object value) {
+	public void safeAddData(int index, Object value, boolean forcemodify) {
 		try {
 			if (((Map) DisguiseType.mapField.get(metadata)).containsKey(index)) {
-				metadata.watch(index, value);
+				if (forcemodify) {
+					metadata.watch(index, value);
+				}
 			} else {
 				metadata.a(index, value);
 			}
@@ -381,7 +383,7 @@ public class Disguise {
 				
 				Byte blockData = getBlockData();
 				if (blockData != null) {
-					safeAddData(17, blockData.byteValue());
+					safeAddData(17, blockData.byteValue(), true);
 				}
 			}
 			
