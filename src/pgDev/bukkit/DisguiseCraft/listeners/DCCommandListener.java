@@ -166,10 +166,14 @@ public class DCCommandListener implements CommandExecutor {
 											plugin.disguisePlayer(receiver, disguise);
 										}
 										
+										String blockType = "";
+										if (disguise.type == DisguiseType.FallingBlock) {
+											blockType = Material.getMaterial(disguise.getBlockID()).name() + " ";
+										}
 										if (disguise.type.isPlayer()) {
 											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as player " + ChatColor.GREEN + disguise.data.getFirst() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
 										} else {
-											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + ChatColor.GREEN + disguise.type.name() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
+											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + ChatColor.GREEN + blockType + disguise.type.name() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
 										}
 									}
 									sender.sendMessage(ChatColor.GOLD + "Your disguise has been sent");
@@ -192,12 +196,16 @@ public class DCCommandListener implements CommandExecutor {
 											plugin.disguisePlayer(receiver, disguise);
 										}
 										
+										String blockType = "";
+										if (disguise.type == DisguiseType.FallingBlock) {
+											blockType = Material.getMaterial(disguise.getBlockID()).name() + " ";
+										}
 										if (disguise.type.isPlayer()) {
 											sender.sendMessage(ChatColor.GOLD + "You have disguised " + ChatColor.DARK_GREEN + receiver.getName() + ChatColor.GOLD + " as player " + ChatColor.GREEN + disguise.data.getFirst());
 											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as player " + ChatColor.GREEN + disguise.data.getFirst() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
 										} else {
-											sender.sendMessage(ChatColor.GOLD + "You have disguised " + ChatColor.DARK_GREEN + receiver.getName() + ChatColor.GOLD + " as a " + ChatColor.GREEN + disguise.type.name());
-											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + ChatColor.GREEN + disguise.type.name() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
+											sender.sendMessage(ChatColor.GOLD + "You have disguised " + ChatColor.DARK_GREEN + receiver.getName() + ChatColor.GOLD + " as a " + ChatColor.GREEN + blockType + disguise.type.name());
+											receiver.sendMessage(ChatColor.GOLD + "You have been disguised as a " + ChatColor.GREEN + blockType + disguise.type.name() + ChatColor.GOLD + " by " + ChatColor.DARK_GREEN + player.getName());
 										}
 									}
 								}
@@ -930,7 +938,7 @@ public class DCCommandListener implements CommandExecutor {
 									sender.sendMessage(ChatColor.RED + "No metadata can be added to this block");
 								} else {
 									try {
-										Byte newData = Byte.decode(args[0]);
+										Byte newData = Byte.decode(args[1]);
 										
 										Byte currentData = disguise.getBlockData();
 										if (currentData != null) {
@@ -1064,7 +1072,7 @@ public class DCCommandListener implements CommandExecutor {
 				} else {
 					sender.sendMessage(ChatColor.RED + "You don't have permission to drop your disguise");
 				}
-			} else if (args[0].toLowerCase().startsWith("p") && !args[0].toLowerCase().startsWith("pi") && !args[0].toLowerCase().startsWith("po")) {
+			} else if (args[0].equalsIgnoreCase("player") || args[0].equalsIgnoreCase("p") || args[0].equalsIgnoreCase("pl") || args[0].equalsIgnoreCase("plyr")) {
 				if (args.length > 1) {
 					// Dynamically add the player name as a child for the disguisecraft.player.* node
 					try {
