@@ -421,6 +421,11 @@ public class DisguiseCraft extends JavaPlugin {
     	LinkedList<Packet> toSend = new LinkedList<Packet>();
 		Disguise disguise = disguiseDB.get(disguised.getName());
 		
+		// Block lock
+		if (disguise.data.contains("blocklock")) {
+			to = to.getBlock().getLocation();
+		}
+		
 		// Vehicle fix
     	if (disguise.type.isVehicle()) {
     		to.setY(to.getY() + 0.5);

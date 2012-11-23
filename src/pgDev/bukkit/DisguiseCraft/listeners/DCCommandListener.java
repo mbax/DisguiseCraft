@@ -212,11 +212,22 @@ public class DCCommandListener implements CommandExecutor {
 			} else if (args[0].equalsIgnoreCase("nopickup") || args[0].equalsIgnoreCase("np")) {
 				if (plugin.disguiseDB.containsKey(player.getName())) {
 					Disguise disguise = plugin.disguiseDB.get(player.getName());
-					if (disguise.data != null && disguise.data.remove("nopickup")) {
+					if (disguise.data.remove("nopickup")) {
 						sender.sendMessage(ChatColor.GOLD + "Item pickup enabled");
 					} else {
 						disguise.addSingleData("nopickup");
 						sender.sendMessage(ChatColor.GOLD + "Item pickup disabled");
+					}
+				} else {
+					sender.sendMessage(ChatColor.RED + "Must first be disguised.");
+				}
+			} else if (args[0].equalsIgnoreCase("blocklock") || args[0].equalsIgnoreCase("bl")) {
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					Disguise disguise = plugin.disguiseDB.get(player.getName());
+					if (disguise.data.remove("blocklock")) {
+					} else {
+						disguise.addSingleData("blocklock");
+						sender.sendMessage(ChatColor.GOLD + "Block lock enabled");
 					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "Must first be disguised.");
@@ -862,7 +873,7 @@ public class DCCommandListener implements CommandExecutor {
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("hold")) {
-				if (isConsole || plugin.hasPermissions(player, "disguisecraft.type.enderman.hold")) {
+				if (isConsole || plugin.hasPermissions(player, "disguisecraft.mob.enderman.hold")) {
 					if (args.length > 1) {
 						String specification = remainingWords(args, 1);
 						Material type = Material.matchMaterial(specification);
@@ -893,7 +904,7 @@ public class DCCommandListener implements CommandExecutor {
 										sender.sendMessage(ChatColor.RED + "Only Enderman disguises can hold blocks");
 									}
 								} else {
-									sender.sendMessage(ChatColor.RED + "You must first be disguised");
+									sender.sendMessage(ChatColor.RED + "Must first be disguised as an Enderman");
 								}
 							} else {
 								sender.sendMessage(ChatColor.RED + "Only blocks can be held");
@@ -906,22 +917,26 @@ public class DCCommandListener implements CommandExecutor {
 					player.sendMessage(ChatColor.RED + "You do not have the permissions to hold blocks with your disguise");
 				}
 			} else if (args[0].equalsIgnoreCase("blockdata") || args[0].equalsIgnoreCase("bd")) {
-				if (isConsole || plugin.hasPermissions(player, "disguisecraft.type.enderman.hold")) {
-					if (args.length > 1) {
-						String specification = remainingWords(args, 1);
-						Material type = Material.matchMaterial(specification);
-						if (type == null) {
-							sender.sendMessage(ChatColor.RED + "The block you specified could not be found");
-						} else {
-							if (type.isBlock()) {
-								if (plugin.disguiseDB.containsKey(player.getName())) {
-									Disguise disguise = plugin.disguiseDB.get(player.getName()).clone();
-									if (disguise.type == DisguiseType.Enderman) {
-										Byte currentHold = disguise.getBlockID();
-										if (currentHold != null) {
-											disguise.data.remove("blockID:" + currentHold);
+				if (plugin.disguiseDB.containsKey(player.getName())) {
+					Disguise disguise = plugin.disguiseDB.get(player.getName());
+					if (isConsole || (disguise.type == DisguiseType.Enderman && plugin.hasPermissions(player, "disguisecraft.mob.enderman.hold.metadata"))
+							|| (disguise.type == DisguiseType.FallingBlock && plugin.hasPermissions(player, "disguisecraft.object.block.fallingblock.material.metadata"))) {
+						if (args.length > 1) {
+							Byte block = disguise.getBlockID();
+							if (block == null) {
+								sender.sendMessage(ChatColor.RED + "No block is being held");
+							} else {
+								if (Material.getMaterial(block).getData() == null) {
+									sender.sendMessage(ChatColor.RED + "No metadata can be added to this block");
+								} else {
+									try {
+										Byte newData = Byte.decode(args[0]);
+										
+										Byte currentData = disguise.getBlockData();
+										if (currentData != null) {
+											disguise.data.remove("blockData:" + currentData);
 										}
-										disguise.addSingleData("blockID:" + type.getId());
+										disguise.addSingleData("blockData:" + newData);
 										
 										// Pass the event
 										PlayerDisguiseEvent ev = new PlayerDisguiseEvent(player, disguise);
@@ -929,25 +944,23 @@ public class DCCommandListener implements CommandExecutor {
 										if (ev.isCancelled()) return true;
 										
 										plugin.changeDisguise(player, disguise);
-										player.sendMessage(ChatColor.GOLD + "Your disguise is now holding: " + type.toString());
+										player.sendMessage(ChatColor.GOLD + "Your block's metadata is now: " + newData);
 										if (isConsole) {
-											sender.sendMessage(player.getName() + "'s disguise is now holding: " + type.toString());
+											sender.sendMessage(player.getName() + "'s block's metadata is now: " + newData);
 										}
-									} else {
-										sender.sendMessage(ChatColor.RED + "Only Enderman disguises can hold blocks");
+									} catch (NumberFormatException e) {
+										sender.sendMessage(ChatColor.RED + "Invalid byte");
 									}
-								} else {
-									sender.sendMessage(ChatColor.RED + "You must first be disguised");
 								}
-							} else {
-								sender.sendMessage(ChatColor.RED + "Only blocks can be held");
 							}
+						} else {
+							sender.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " blockdata <metadata>");
 						}
 					} else {
-						sender.sendMessage(ChatColor.DARK_GREEN + "Usage: " + ChatColor.GREEN + "/" + label + " hold <block/id>");
+						player.sendMessage(ChatColor.RED + "You do not have the permissions to change the metadata of your block");
 					}
 				} else {
-					player.sendMessage(ChatColor.RED + "You do not have the permissions to hold blocks with your disguise");
+					sender.sendMessage(ChatColor.RED + "Must first be disguised");
 				}
 			} else if (args[0].equalsIgnoreCase("librarian") || args[0].equalsIgnoreCase("priest") || args[0].equalsIgnoreCase("blacksmith") || args[0].equalsIgnoreCase("butcher")) {
 				if (args.length > 1) { // New disguise
@@ -1148,7 +1161,7 @@ public class DCCommandListener implements CommandExecutor {
 						}
 					}
 				} else {
-					Material block = Material.matchMaterial(args[0]);
+					Material block = Material.matchMaterial(remainingWords(args, 0));
 					if (block != null && block.isBlock()) {
 						type = DisguiseType.FallingBlock;
 						if (isConsole || plugin.hasPermissions(player, "disguisecraft.object.block.fallingblock.material")) {

@@ -512,9 +512,9 @@ public class Disguise {
 				if (one.startsWith("blockData:")) {
 					String[] parts = one.split(":");
 					try {
-						return Byte.valueOf(parts[1]);
+						return Byte.decode(parts[1]);
 					} catch (NumberFormatException e) {
-						DisguiseCraft.logger.log(Level.WARNING, "Could not parse the byte of a disguise's block data!");
+						DisguiseCraft.logger.log(Level.WARNING, "Could not decode the byte of a disguise's block data!");
 					}
 				}
 			}

@@ -101,7 +101,9 @@ public class DCOptionalListener implements Listener {
 		if (!event.isCancelled()) {
 			Player player = event.getPlayer();
 			if (plugin.disguiseDB.containsKey(player.getName())) {
-				plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).packetGenerator.getPickupPacket(event.getItem().getEntityId()));
+				if (!plugin.disguiseDB.get(player.getName()).type.isObject()) {
+					plugin.sendPacketToWorld(player.getWorld(), plugin.disguiseDB.get(player.getName()).packetGenerator.getPickupPacket(event.getItem().getEntityId()));
+				}
 			}
 		}
 	}
