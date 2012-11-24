@@ -9,17 +9,16 @@
 #		http://dev.bukkit.org/server-mods/protocollib/
 disguisePVP=true
 
-# Efficiency Booster
-#	With this false, the following features are disabled
-#	to increase efficiency:
-#		-Player held item changing
-#		-Player arm-swing animation
-#		-Player sneak animation
-#		-Disguise damage animation
-#		-Disguise death animation
-#		-Disguise armor updates
-#		-Item pickup animation
-optionals=true
+# Optional Event Listeners
+#	Any of the following can be disabled to increase
+#	efficiency or cater to server-specific needs.
+playerHeldItemChange=true
+playerArmSwingAnimation=true
+playerSneakAnimation=true
+disguiseDamageAnimation=true
+disguiseDeathAnimation=true
+itemPickupAnimation=true
+disguiseArmorUpdates=true
 
 # Update Notification
 #	With this set to true, the plugin will check for

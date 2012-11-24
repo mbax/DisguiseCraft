@@ -3,6 +3,7 @@ package pgDev.bukkit.DisguiseCraft;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Properties;
@@ -17,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
@@ -27,7 +29,6 @@ import pgDev.bukkit.DisguiseCraft.api.DisguiseCraftAPI;
 import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.listeners.DCCommandListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCMainListener;
-import pgDev.bukkit.DisguiseCraft.listeners.DCOptionalListener;
 import pgDev.bukkit.DisguiseCraft.listeners.DCPacketListener;
 import pgDev.bukkit.DisguiseCraft.listeners.attack.AttackProcessor;
 import pgDev.bukkit.DisguiseCraft.listeners.movement.DCPlayerMoveListener;
@@ -69,7 +70,6 @@ public class DisguiseCraft extends JavaPlugin {
     DCMainListener mainListener;
     DCPlayerMoveListener moveListener;
     DCPacketListener packetListener; // Not a real listener o.o
-    DCOptionalListener optionalListener;
     
     // Disguise database
     public ConcurrentHashMap<String, Disguise> disguiseDB = new ConcurrentHashMap<String, Disguise>();
@@ -129,8 +129,24 @@ public class DisguiseCraft extends JavaPlugin {
 		if (!pluginSettings.movementUpdateThreading) {
 			pm.registerEvents(moveListener = new DCPlayerMoveListener(this), this);
 		}
-		if (pluginSettings.optionalListeners) {
-			pm.registerEvents(optionalListener = new DCOptionalListener(this), this);
+		for (Class<?> optional : pluginSettings.optionals.values()) {
+			if (optional != null) {
+				try {
+					pm.registerEvents((Listener) optional.getConstructor(this.getClass()).newInstance(this), this);
+				} catch (InstantiationException e) {
+					logger.log(Level.WARNING, "Could not instantiate a " + optional.getSimpleName() + " class", e);
+				} catch (IllegalAccessException e) {
+					logger.log(Level.WARNING, "Could not access constructor for a " + optional.getSimpleName() + " class", e);
+				} catch (IllegalArgumentException e) {
+					logger.log(Level.WARNING, "Illegal arguments for " + optional.getSimpleName() + " class constructor", e);
+				} catch (InvocationTargetException e) {
+					logger.log(Level.WARNING, "Something bad happened when constructing a " + optional.getSimpleName() + " class", e);
+				} catch (NoSuchMethodException e) {
+					logger.log(Level.WARNING, "Could not find constructor for a " + optional.getSimpleName() + " class", e);
+				} catch (SecurityException e) {
+					logger.log(Level.WARNING, "Could not access/construct a " + optional.getSimpleName() + " class", e);
+				}
+			}
 		}
 		
 		// Toss over the command events

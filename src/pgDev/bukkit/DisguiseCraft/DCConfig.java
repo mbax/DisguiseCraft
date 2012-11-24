@@ -9,15 +9,20 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
+
+import pgDev.bukkit.DisguiseCraft.listeners.optional.*;
 
 public class DCConfig {
 	private Properties properties;
 	private final DisguiseCraft plugin;
 	public boolean upToDate = true;
 	
+	// List of Optionals
+	ConcurrentHashMap<String, Class<?>> optionals = new ConcurrentHashMap<String, Class<?>>();
+	
 	// List of Config Options
-	public boolean optionalListeners;
 	public boolean disguisePVP;
 	public boolean updateNotification;
 	public int biggerCube;
@@ -34,8 +39,21 @@ public class DCConfig {
 		properties = p;
         this.plugin = plugin;
         
+        // Set optional listeners
+        optionals.put("playerHeldItemChange", PlayerItemHeldListener.class);
+        optionals.put("playerArmSwingAnimation", PlayerAnimationListener.class);
+        optionals.put("playerSneakAnimation", PlayerToggleSneakListener.class);
+        optionals.put("disguiseDamageAnimation", EntityDamageListener.class);
+        optionals.put("disguiseDeathAnimation", EntityDeathListener.class);
+        optionals.put("itemPickupAnimation", PlayerPickupItemListener.class);
+        optionals.put("disguiseArmorUpdates", InventoryClickListener.class);
+        
         // Grab values here.
-        optionalListeners = getBoolean("optionals", true);
+        for (String key : optionals.keySet()) {
+        	if (!getBoolean(key, true)) {
+        		optionals.put(key, null);
+        	}
+        }
         disguisePVP = getBoolean("disguisePVP", true);
         updateNotification = getBoolean("updateNotification", true);
         biggerCube = getInt("bigger", 20);
@@ -173,17 +191,16 @@ public class DCConfig {
     		out.write("#		http://dev.bukkit.org/server-mods/protocollib/\r\n");
     		out.write("disguisePVP=" + disguisePVP + "\r\n");
     		out.write("\r\n");
-    		out.write("# Efficiency Booster\r\n");
-    		out.write("#	With this false, the following features are disabled\r\n");
-    		out.write("#	to increase efficiency:\r\n");
-    		out.write("#		-Player held item changing\r\n");
-    		out.write("#		-Player arm-swing animation\r\n");
-    		out.write("#		-Player sneak animation\r\n");
-    		out.write("#		-Disguise damage animation\r\n");
-    		out.write("#		-Disguise death animation\r\n");
-    		out.write("#		-Disguise armor updates\r\n");
-    		out.write("#		-Item pickup animation\r\n");
-    		out.write("optionals=" + optionalListeners + "\r\n");
+    		out.write("# Optional Event Listeners\r\n");
+    		out.write("#	Any of the following can be disabled to increase\r\n");
+    		out.write("#	efficiency or cater to server-specific needs.\r\n");
+    		out.write("playerHeldItemChange=" + (optionals.get("playerHeldItemChange") != null ) + "\r\n");
+    		out.write("playerArmSwingAnimation=" + (optionals.get("playerArmSwingAnimation") != null ) + "\r\n");
+    		out.write("playerSneakAnimation=" + (optionals.get("playerSneakAnimation") != null ) + "\r\n");
+    		out.write("disguiseDamageAnimation=" + (optionals.get("disguiseDamageAnimation") != null ) + "\r\n");
+    		out.write("disguiseDeathAnimation=" + (optionals.get("disguiseDeathAnimation") != null ) + "\r\n");
+    		out.write("itemPickupAnimation=" + (optionals.get("itemPickupAnimation") != null ) + "\r\n");
+    		out.write("disguiseArmorUpdates=" + (optionals.get("disguiseArmorUpdates") != null ) + "\r\n");
     		out.write("\r\n");
     		out.write("# Update Notification\r\n");
     		out.write("#	With this set to true, the plugin will check for\r\n");
