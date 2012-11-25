@@ -78,3 +78,9 @@ nopickupDefault=false
 #	polling thread. This is how often (in ticks)
 #	that this thread will process attacks.
 attackInterval=2
+
+# Tab List No-Hide
+#	If you have ProtocolLib installed on your server,
+#	you can prevent players from having their name
+#	removed from the client tab list when they disguise.
+noTabHide=false

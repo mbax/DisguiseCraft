@@ -1,5 +1,6 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 
 import org.bukkit.craftbukkit.CraftServer;
@@ -14,11 +15,13 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FieldAccessException;
 
-import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
+import pgDev.bukkit.DisguiseCraft.*;
 
 public class DCPacketListener {
 	final DisguiseCraft plugin;
 	ProtocolManager pM = DisguiseCraft.protocolManager;
+	
+	public ConcurrentLinkedQueue<String> recentlyDisguised;
 	
 	public DCPacketListener(final DisguiseCraft plugin) {
 		this.plugin = plugin;
@@ -50,5 +53,33 @@ public class DCPacketListener {
 			        }
 			    }
 		});
+	}
+	
+	public void setupTabListListener() {
+		// Make database
+		recentlyDisguised = new ConcurrentLinkedQueue<String>();
+		
+		// Set up listener
+		pM.addPacketListener(new PacketAdapter(plugin,
+			ConnectionSide.SERVER_SIDE, ListenerPriority.NORMAL, 0xC9) {
+			    @Override
+			    public void onPacketSending(PacketEvent event) {
+			        if (event.getPacketID() == 0xC9) {
+			        	try {
+				        	if (recentlyDisguised.contains(event.getPacket().getStrings().read(0))) {
+				        		event.setCancelled(true);
+				        	}
+			        	} catch (FieldAccessException e) {
+			                DisguiseCraft.logger.log(Level.SEVERE, "Couldn't access a field in an 0xC9-PlayerInfo packet!", e);
+			            }
+			        }
+			    }
+		});
+	}
+	
+	public void addHiddenName(String name) {
+		if (DisguiseCraft.pluginSettings.noTabHide) {
+			recentlyDisguised.add(name);
+		}
 	}
 }

@@ -170,6 +170,15 @@ public class DisguiseCraft extends JavaPlugin {
         	}
         }
         
+        // Check for tab list no-hide
+        if (pluginSettings.noTabHide) {
+        	if (protocolManager == null) {
+        		logger.log(Level.SEVERE, "You have \"noTabHide\" enabled in the configuration, but do not have the ProtocolLib plugin installed!");
+        	} else {
+        		packetListener.setupTabListListener();
+        	}
+        }
+        
         // Set up statistics!
         setupMetrics();
         
@@ -412,6 +421,7 @@ public class DisguiseCraft extends JavaPlugin {
 			disguiseToWorld(disguised.getWorld(), disguised, toSend);
 		} else {
 			if (!hasPermissions(observer, "disguisecraft.seer")) {
+				packetListener.addHiddenName(disguised.getName());
 				observer.hidePlayer(disguised);
 			}
 			sendPacketsToObserver(observer, toSend);
@@ -507,6 +517,7 @@ public class DisguiseCraft extends JavaPlugin {
     	for (Player observer : world.getPlayers()) {
 	    	if (observer != player) {
 	    		if (!hasPermissions(observer, "disguisecraft.seer")) {
+	    			packetListener.addHiddenName(player.getName());
 					observer.hidePlayer(player);
 				}
 	    		for (Packet p : packets) {

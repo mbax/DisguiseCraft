@@ -34,6 +34,7 @@ public class DCConfig {
 	public int movementUpdateFrequency;
 	public boolean nopickupDefault;
 	public int attackInterval;
+	public boolean noTabHide;
 	
 	public DCConfig(Properties p, final DisguiseCraft plugin) {
 		properties = p;
@@ -65,6 +66,7 @@ public class DCConfig {
         movementUpdateFrequency = getInt("movementUpdateFrequency", 4);
         nopickupDefault = getBoolean("nopickupDefault", false);
         attackInterval = getInt("attackInterval", 2);
+        noTabHide = getBoolean("noTabHide", false);
 	}
 	
 	// Value obtaining functions down below
@@ -260,6 +262,12 @@ public class DCConfig {
     		out.write("#	polling thread. This is how often (in ticks)\r\n");
     		out.write("#	that this thread will process attacks.\r\n");
     		out.write("attackInterval=" + attackInterval + "\r\n");
+    		out.write("\r\n");
+    		out.write("# Tab List No-Hide\r\n");
+    		out.write("#	If you have ProtocolLib installed on your server,\r\n");
+    		out.write("#	you can prevent players from having their name\r\n");
+    		out.write("#	removed from the client tab list when they disguise.\r\n");
+    		out.write("noTabHide=" + noTabHide + "\r\n");
     		out.close();
     	} catch (Exception e) {
     		DisguiseCraft.logger.log(Level.SEVERE, "There was a problem while writing config to disk", e);
