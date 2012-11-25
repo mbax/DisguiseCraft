@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.server.Packet;
+import net.minecraft.server.Packet201PlayerInfo;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -411,7 +412,9 @@ public class DisguiseCraft extends JavaPlugin {
 		Disguise disguise = disguiseDB.get(disguised.getName());
 		toSend.add(disguise.packetGenerator.getSpawnPacket(disguised));
 		if (disguise.type.isPlayer()) { // Player disguise
-			toSend.add(disguise.packetGenerator.getPlayerInfoPacket(disguised, true));
+			if (!pluginSettings.noTabHide) {
+				toSend.add(disguise.packetGenerator.getPlayerInfoPacket(disguised, true));
+			}
 			toSend.addAll(disguise.packetGenerator.getArmorPackets(disguised));
 		} else if (disguise.type == DisguiseType.Zombie || disguise.type == DisguiseType.PigZombie || disguise.type == DisguiseType.Skeleton) {
 			toSend.add(disguise.packetGenerator.getEquipmentChangePacket((short) 0, disguised.getItemInHand()));
@@ -421,7 +424,9 @@ public class DisguiseCraft extends JavaPlugin {
 			disguiseToWorld(disguised.getWorld(), disguised, toSend);
 		} else {
 			if (!hasPermissions(observer, "disguisecraft.seer")) {
-				packetListener.addHiddenName(disguised.getName());
+				if (pluginSettings.noTabHide) {
+					packetListener.recentlyDisguised.add(disguised.getName());
+				}
 				observer.hidePlayer(disguised);
 			}
 			sendPacketsToObserver(observer, toSend);
@@ -432,7 +437,7 @@ public class DisguiseCraft extends JavaPlugin {
     	LinkedList<Packet> toSend = new LinkedList<Packet>();
 		Disguise disguise = disguiseDB.get(disguised.getName());
 		toSend.add(disguise.packetGenerator.getEntityDestroyPacket());
-		if (disguise.type.isPlayer()) {
+		if (disguise.type.isPlayer() && !pluginSettings.noTabHide) {
 			toSend.add(disguise.packetGenerator.getPlayerInfoPacket(disguised, false));
 		}
 		if (observer == null) {
@@ -517,7 +522,9 @@ public class DisguiseCraft extends JavaPlugin {
     	for (Player observer : world.getPlayers()) {
 	    	if (observer != player) {
 	    		if (!hasPermissions(observer, "disguisecraft.seer")) {
-	    			packetListener.addHiddenName(player.getName());
+	    			if (pluginSettings.noTabHide) {
+						packetListener.recentlyDisguised.add(player.getName());
+					}
 					observer.hidePlayer(player);
 				}
 	    		for (Packet p : packets) {
@@ -545,6 +552,9 @@ public class DisguiseCraft extends JavaPlugin {
 				if (disguised.getWorld() == observer.getWorld()) {
 					sendDisguise(disguised, observer);
 				}
+			}
+			if (pluginSettings.noTabHide) {
+				((CraftPlayer) observer).getHandle().netServerHandler.sendPacket(new Packet201PlayerInfo(disguisedName, true, ((CraftPlayer) disguised).getHandle().ping));
 			}
 		}
     }

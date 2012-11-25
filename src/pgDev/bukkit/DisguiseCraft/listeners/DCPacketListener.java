@@ -76,10 +76,4 @@ public class DCPacketListener {
 			    }
 		});
 	}
-	
-	public void addHiddenName(String name) {
-		if (DisguiseCraft.pluginSettings.noTabHide) {
-			recentlyDisguised.add(name);
-		}
-	}
 }
