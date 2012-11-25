@@ -97,12 +97,13 @@ public class DCCommandListener implements CommandExecutor {
 					String types = "";
 					for (DisguiseType type : DisguiseType.values()) {
 						if (DisguiseType.missingDisguises.contains(type)) continue; 
-						if (plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) {
-							if (types.equals("")) {
-								types = type.name();
-							} else {
-								types = types + ", " + type.name();
-							}
+						if (type.isMob() && !plugin.hasPermissions(player, "disguisecraft.mob." + type.name().toLowerCase())) continue;
+						if (type.isVehicle() && !plugin.hasPermissions(player, "disguisecraft.object.vehicle." + type.name().toLowerCase())) continue;
+						if (type.isBlock() && !plugin.hasPermissions(player, "disguisecraft.object.block." + type.name().toLowerCase())) continue;
+						if (types.equals("")) {
+							types = type.name();
+						} else {
+							types = types + ", " + type.name();
 						}
 					}
 					if (!types.equals("")) {
@@ -218,27 +219,35 @@ public class DCCommandListener implements CommandExecutor {
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("nopickup") || args[0].equalsIgnoreCase("np")) {
-				if (plugin.disguiseDB.containsKey(player.getName())) {
-					Disguise disguise = plugin.disguiseDB.get(player.getName());
-					if (disguise.data.remove("nopickup")) {
-						sender.sendMessage(ChatColor.GOLD + "Item pickup enabled");
+				if (isConsole || plugin.hasPermissions(player, "disguisecraft.nopickup")) {
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName());
+						if (disguise.data.remove("nopickup")) {
+							sender.sendMessage(ChatColor.GOLD + "Item pickup enabled");
+						} else {
+							disguise.addSingleData("nopickup");
+							sender.sendMessage(ChatColor.GOLD + "Item pickup disabled");
+						}
 					} else {
-						disguise.addSingleData("nopickup");
-						sender.sendMessage(ChatColor.GOLD + "Item pickup disabled");
+						sender.sendMessage(ChatColor.RED + "Must first be disguised.");
 					}
 				} else {
-					sender.sendMessage(ChatColor.RED + "Must first be disguised.");
+					player.sendMessage(ChatColor.RED + "You do not have permission to toggle nopickup");
 				}
 			} else if (args[0].equalsIgnoreCase("blocklock") || args[0].equalsIgnoreCase("bl")) {
-				if (plugin.disguiseDB.containsKey(player.getName())) {
-					Disguise disguise = plugin.disguiseDB.get(player.getName());
-					if (disguise.data.remove("blocklock")) {
+				if (isConsole || plugin.hasPermissions(player, "disguisecraft.blocklock")) {
+					if (plugin.disguiseDB.containsKey(player.getName())) {
+						Disguise disguise = plugin.disguiseDB.get(player.getName());
+						if (disguise.data.remove("blocklock")) {
+						} else {
+							disguise.addSingleData("blocklock");
+							sender.sendMessage(ChatColor.GOLD + "Block lock enabled");
+						}
 					} else {
-						disguise.addSingleData("blocklock");
-						sender.sendMessage(ChatColor.GOLD + "Block lock enabled");
+						sender.sendMessage(ChatColor.RED + "Must first be disguised.");
 					}
 				} else {
-					sender.sendMessage(ChatColor.RED + "Must first be disguised.");
+					player.sendMessage(ChatColor.RED + "You do not have permission to toggle blocklock");
 				}
 			} else if (args[0].equalsIgnoreCase("baby")) {
 				if (args.length > 1) { // New disguise

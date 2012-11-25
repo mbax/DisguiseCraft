@@ -66,7 +66,7 @@ public class DCPacketListener {
 			    public void onPacketSending(PacketEvent event) {
 			        if (event.getPacketID() == 0xC9) {
 			        	try {
-				        	if (recentlyDisguised.contains(event.getPacket().getStrings().read(0))) {
+				        	if (recentlyDisguised.remove(event.getPacket().getStrings().read(0))) {
 				        		event.setCancelled(true);
 				        	}
 			        	} catch (FieldAccessException e) {

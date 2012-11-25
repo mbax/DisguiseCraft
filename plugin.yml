@@ -60,6 +60,12 @@ permissions:
     disguisecraft.drop:
         default: op
         description: Can drop their disguise.
+    disguisecraft.nopickup:
+        default: op
+        description: Can toggle nopickup option.
+    disguisecraft.blocklock:
+        default: op
+        description: Can toggle blocklock option.
     disguisecraft.player.*:
         default: op
         description: Can disguise as any other player.

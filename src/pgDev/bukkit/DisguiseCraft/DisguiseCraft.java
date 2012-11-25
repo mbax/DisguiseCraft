@@ -455,6 +455,8 @@ public class DisguiseCraft extends JavaPlugin {
 		// Block lock
 		if (disguise.data.contains("blocklock")) {
 			to = to.getBlock().getLocation();
+			to.setX(to.getX() + 0.5);
+			to.setZ(to.getZ() + 0.5);
 		}
 		
 		// Vehicle fix
