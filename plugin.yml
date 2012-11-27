@@ -4,6 +4,7 @@ version: 4.0
 author: PG Dev Team
 authors: [Tux2, DrKabob, Devil Boy]
 description: Turn into any mob you want!
+website: http://dev.bukkit.org/server-mods/disguisecraft/
 softdepend: [ProtocolLib]
 
 commands:
