@@ -65,7 +65,20 @@ public class DCMainListener implements Listener {
 		
 		// Updates?
 		if (DisguiseCraft.pluginSettings.updateNotification && plugin.hasPermissions(player, "disguisecraft.update")) {
+			// Check for new DisguiseCraft version
 			plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new DCUpdateNotifier(plugin, player));
+			
+			// Bad configuration?
+			if (DisguiseCraft.protocolManager == null) {
+				if (DisguiseCraft.pluginSettings.disguisePVP) {
+					player.sendMessage(ChatColor.RED + "DisguiseCraft's configuration has " + ChatColor.GOLD + "\"disguisePVP\" " +
+							ChatColor.RED + "set to " + ChatColor.GOLD + "true " + ChatColor.RED + "but ProtocolLib is not installed!");
+				}
+				if (DisguiseCraft.pluginSettings.noTabHide) {
+					player.sendMessage(ChatColor.RED + "DisguiseCraft's configuration has " + ChatColor.GOLD + "\"noTabHide\" " +
+							ChatColor.RED + "set to " + ChatColor.GOLD + "true " + ChatColor.RED + "but ProtocolLib is not installed!");
+				}
+			}
 		}
 	}
 	

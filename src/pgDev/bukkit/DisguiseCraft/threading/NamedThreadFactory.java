@@ -9,13 +9,15 @@ public class NamedThreadFactory implements ThreadFactory {
 	int count = 0;
 	String name = "";
 	
+	public ThreadGroup group = new ThreadGroup(name + "Group");
+	
 	public NamedThreadFactory(String name) {
 		this.name = name;
 	}
 
 	@Override
 	public Thread newThread(Runnable r) {
-		Thread t = new Thread(r, name + "-" + count++);
+		Thread t = new Thread(group, r, name + "-" + count++);
 		t.setDaemon(true);
 		t.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
