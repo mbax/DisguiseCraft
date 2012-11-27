@@ -104,16 +104,12 @@ public class Disguise {
 			data.add("Glaciem");
 		}
 		
-		// Check for object data
-		/*if (type.isObject()) {
-			if (data.isEmpty()) {
-				data.add("1:0");
-			} else {
-				if (!data.getFirst().matches("\\d+:\\d+")) {
-					data.addFirst("1:0");
-				}
+		// Check for block data
+		if (type == DisguiseType.FallingBlock) {
+			if (getBlockID() == null) {
+				data.add("blockID:19"); // In honor of my first plugin
 			}
-		}*/
+		}
 	}
 	
 	/**
