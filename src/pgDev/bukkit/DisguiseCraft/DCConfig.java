@@ -24,6 +24,7 @@ public class DCConfig {
 	
 	// List of Config Options
 	public boolean disguisePVP;
+	public int pvpThreads;
 	public boolean updateNotification;
 	public int biggerCube;
 	public int massiveCube;
@@ -56,6 +57,7 @@ public class DCConfig {
         	}
         }
         disguisePVP = getBoolean("disguisePVP", true);
+        pvpThreads = getInt("pvpThreads", 1);
         updateNotification = getBoolean("updateNotification", true);
         biggerCube = getInt("bigger", 20);
         massiveCube = getInt("massive", 50);
@@ -192,6 +194,7 @@ public class DCConfig {
     		out.write("#	installed on your server:\r\n");
     		out.write("#		http://dev.bukkit.org/server-mods/protocollib/\r\n");
     		out.write("disguisePVP=" + disguisePVP + "\r\n");
+    		out.write("pvpThreads=" + pvpThreads + "\r\n");
     		out.write("\r\n");
     		out.write("# Optional Event Listeners\r\n");
     		out.write("#	Any of the following can be disabled to increase\r\n");

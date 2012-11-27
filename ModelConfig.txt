@@ -8,6 +8,7 @@
 #	installed on your server:
 #		http://dev.bukkit.org/server-mods/protocollib/
 disguisePVP=true
+pvpThreads=1
 
 # Optional Event Listeners
 #	Any of the following can be disabled to increase

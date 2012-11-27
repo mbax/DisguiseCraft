@@ -208,7 +208,10 @@ public class DisguiseCraft extends JavaPlugin {
 	
     @Override
 	public void onDisable() {
-    	// Stop threads
+    	// Stop executor threads
+    	mainListener.invalidInteractExecutor.shutdown();
+    	
+    	// Stop sync threads
     	getServer().getScheduler().cancelTasks(this);
     	
     	// Wipe dropped disguises

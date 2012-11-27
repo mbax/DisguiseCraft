@@ -1,6 +1,8 @@
 package pgDev.bukkit.DisguiseCraft.listeners;
 
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import net.minecraft.server.Packet;
 
@@ -15,10 +17,14 @@ import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.listeners.attack.InvalidInteractHandler;
 import pgDev.bukkit.DisguiseCraft.api.PlayerUndisguiseEvent;
+import pgDev.bukkit.DisguiseCraft.threading.NamedThreadFactory;
 import pgDev.bukkit.DisguiseCraft.update.DCUpdateNotifier;
 
 public class DCMainListener implements Listener {
 	final DisguiseCraft plugin;
+	
+	public ExecutorService invalidInteractExecutor = Executors.newFixedThreadPool(
+			DisguiseCraft.pluginSettings.pvpThreads, new NamedThreadFactory("DCInvalidInteractHandler"));
 	
 	public DCMainListener(final DisguiseCraft plugin) {
 		this.plugin = plugin;
@@ -65,7 +71,7 @@ public class DCMainListener implements Listener {
 	
 	@EventHandler
 	public void onDisguiseHit(PlayerInvalidInteractEvent event) {
-		new Thread(new InvalidInteractHandler(event, plugin)).start();
+		invalidInteractExecutor.execute(new InvalidInteractHandler(event, plugin));
 	}
 	
 	@EventHandler

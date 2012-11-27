@@ -1179,7 +1179,7 @@ public class DCCommandListener implements CommandExecutor {
 					}
 				} else {
 					Material block = Material.matchMaterial(remainingWords(args, 0));
-					if (block != null && block.isBlock()) {
+					if (block != null && block.isBlock() && block != Material.AIR) {
 						type = DisguiseType.FallingBlock;
 						if (isConsole || plugin.hasPermissions(player, "disguisecraft.object.block.fallingblock.material")) {
 							String newData = "blockID:" + block.getId();
