@@ -243,6 +243,7 @@ public class DCCommandListener implements CommandExecutor, TabCompleter {
 					if (plugin.disguiseDB.containsKey(player.getName())) {
 						Disguise disguise = plugin.disguiseDB.get(player.getName());
 						if (disguise.data.remove("blocklock")) {
+							sender.sendMessage(ChatColor.GOLD + "Block lock disabled");
 						} else {
 							disguise.addSingleData("blocklock");
 							sender.sendMessage(ChatColor.GOLD + "Block lock enabled");
