@@ -189,11 +189,16 @@ public class Disguise {
 		return this;
 	}
 	
-	public void initializeData() { // everything is casted to Object because of method signature
+	public void initializeData() {
 		if (!type.isObject()) {
 			metadata = type.newMetadata();
-			safeAddData(0, (Object) (byte) 0, false);
+			safeAddData(0, (Object) (byte) 0, false); // everything is casted to Object because of method signature
 			safeAddData(12, (Object) 0, false);
+		}
+		
+		// Bat fix
+		if (type == DisguiseType.Bat) {
+			metadata.watch(16, (byte) -2);
 		}
 	
 		/* Old Metadata System

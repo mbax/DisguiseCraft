@@ -22,7 +22,7 @@ import pgDev.bukkit.DisguiseCraft.api.*;
 public class DCCommandListener implements CommandExecutor, TabCompleter {
 	final DisguiseCraft plugin;
 	
-	String[] subCommands = new String[] {"subtypes", "send", "nopickup", "blocklock", "drop"};
+	public static String[] subCommands = new String[] {"subtypes", "send", "nopickup", "blocklock", "drop"};
 	
 	public DCCommandListener(final DisguiseCraft plugin) {
 		this.plugin = plugin;
