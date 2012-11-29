@@ -163,7 +163,7 @@ public enum DisguiseType {
 	 * @return true if the type is of a vehicle, false otherwise
 	 */
 	public boolean isVehicle() {
-		return this.isSubclass(Vehicle.class);
+		return this.isSubclass(Vehicle.class) && this != Pig;
 	}
 	
 	/**
@@ -240,5 +240,5 @@ public enum DisguiseType {
 		"gray, green, lightblue, lime, magenta, orange, pink, purple, red, " +
 		"silver, white, yellow, sheared, charged, tiny, small, big, bigger, massive, godzilla, " +
 		"tamed, aggressive, tabby, tuxedo, siamese, burning, saddled, " +
-		"librarian, priest, blacksmith, butcher, nopickup";
+		"librarian, priest, blacksmith, butcher";
 }

@@ -2,6 +2,7 @@ package pgDev.bukkit.DisguiseCraft.listeners;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.commons.lang.WordUtils;
 import org.bukkit.ChatColor;
@@ -9,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -17,8 +19,10 @@ import pgDev.bukkit.DisguiseCraft.DisguiseCraft;
 import pgDev.bukkit.DisguiseCraft.disguise.*;
 import pgDev.bukkit.DisguiseCraft.api.*;
 
-public class DCCommandListener implements CommandExecutor {
+public class DCCommandListener implements CommandExecutor, TabCompleter {
 	final DisguiseCraft plugin;
+	
+	String[] subCommands = new String[] {"subtypes", "send", "nopickup", "blocklock", "drop"};
 	
 	public DCCommandListener(final DisguiseCraft plugin) {
 		this.plugin = plugin;
@@ -1292,6 +1296,66 @@ public class DCCommandListener implements CommandExecutor {
 		}
 		return true;
 	}
+	
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    	LinkedList<String> output = new LinkedList<String>();
+    	Player player = null;
+    	String lastArg = "";
+    	
+    	// Check if player
+    	if (sender instanceof Player) {
+    		player = (Player) sender;
+    	}
+    	
+    	// Get last argument
+    	if (args.length > 0) {
+    		lastArg = args[args.length - 1];
+    	}
+    	
+
+		if (command.getName().equals("disguise")) {
+			// Add subcommands
+			for (String sC : subCommands) {
+				if (sC.startsWith(lastArg.toLowerCase())) {
+					output.add(sC);
+				}
+			}
+			
+			// Add disguise names
+	    	if (!lastArg.equals("")) {
+	    		for (DisguiseType dis : DisguiseType.values()) {
+	    			if (dis.name().toLowerCase().startsWith(lastArg.toLowerCase())) {
+	    				output.add(dis.name());
+	    			}
+	    		}
+	    	}
+    		
+    		// Add player names
+    		if (args.length > 1) {
+    			output.addAll(playerNames(lastArg, player == null || DisguiseCraft.pluginSettings.noTabHide));
+    		}
+		} else if (command.getName().equals("undisguise")) {
+			if (args.length == 1) {
+				output.addAll(playerNames(lastArg, player == null || DisguiseCraft.pluginSettings.noTabHide));
+			}
+		}
+    	
+    	return output;
+    }
+    
+    public LinkedList<String> playerNames(String start, boolean disguised) {
+    	LinkedList<String> names = new LinkedList<String>();
+    	for (Player player : plugin.getServer().getOnlinePlayers()) {
+    		if (!disguised && plugin.disguiseDB.containsKey(player.getName())) {
+    			continue;
+    		}
+    		if (player.getDisplayName().toLowerCase().startsWith(start.toLowerCase())) {
+    			names.add(player.getDisplayName());
+    		}
+    	}
+    	return names;
+    }
 	
 	// List Words After Specified Index
     public static String remainingWords(String[] wordArray, int startWord) {
